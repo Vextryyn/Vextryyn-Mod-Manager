@@ -1,0 +1,44 @@
+{
+    "colors": {
+        "main-color": "#42b9ff",
+        "sub-color": "#1c2328",
+        "button-color": "#263238",
+        "accent-color": "#2d3b40",
+        "font-main-color": "#ffffff",
+        "font-sub-color": "#acb7b9",
+        "font-button-color": "#84959b",
+        "font-disabled-color": "#84959b",
+        "hp-high-color": "#82e026",
+        "hp-mid-color": "#ecd031",
+        "hp-low-color": "#dc2222",
+        "xp-color": "#2eb2f8",
+        "friendship-color": "#b61ae8",
+        "icon-color": "#ffffff",
+        "water-background": "#1c2328",
+        "water-warning": "#dc2222",
+        "berry-progress": "#42b9ff",
+        "berry-progress-warning": "#42b9ff",
+        "berry-progress-disabled": "#ffffff",
+        "reshiram-color": "#1b2526",
+        "reshiram-aura": "#cb4e03",
+        "zekrom-color": "#070b0b",
+        "zekrom-aura": "#00a5c9",
+        "counter-ball-color": "#ff0000",
+        "counter-ball-outline": "#ffffff",
+        "counter-min-max-button-color": "#ffffff",
+        "counter-main-color": "#1c2328",
+        "counter-sub-color": "#42b9ff",
+        "counter-font-color": "#ffffff",
+        "counter-font-border": "#ffffff"
+    },
+    "paths": {
+        "custom_login": "./CustomThemes",
+        "custom_counter": "./CustomCounters",
+        "previewimages": "./Preview",
+        "game_path": "/home/vextryyn/.local/share/pokemmo"
+    },
+    "state": {
+        "current_tab": 5,
+        "loginDrop": 0
+    }
+}

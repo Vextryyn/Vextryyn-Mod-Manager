@@ -1,0 +1,1498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1118</width>
+    <height>788</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1116</width>
+      <height>721</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="LoginScreen">
+     <attribute name="title">
+      <string>Login Screen</string>
+     </attribute>
+     <widget class="QFrame" name="unovaLoginOptions">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>415</y>
+        <width>340</width>
+        <height>261</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>65</y>
+         <width>181</width>
+         <height>201</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>reshiram color
+
+reshiram aura
+
+zekrom color
+
+zekrom aura</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_9">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>15</y>
+         <width>311</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Unova Login Screen Options</string>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="zekromColor">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>175</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="reshiramColor">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>90</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="zekromAura">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>220</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="reshiramAura">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>130</y>
+         <width>48</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="addOwnLogin">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>15</y>
+        <width>436</width>
+        <height>66</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>4</x>
+         <y>15</y>
+         <width>241</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Add Your Own Login Screen</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="loginBrowse">
+       <property name="geometry">
+        <rect>
+         <x>235</x>
+         <y>20</y>
+         <width>80</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="chooseLogin">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>90</y>
+        <width>340</width>
+        <height>320</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QComboBox" name="loginDrop">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>35</y>
+         <width>301</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>-10</y>
+         <width>226</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Choose Login Screen</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="loginPreviewFrame">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>170</y>
+        <width>731</width>
+        <height>506</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QWidget" name="loginPreview" native="true">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>721</width>
+         <height>496</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="EncounterCounter">
+     <attribute name="title">
+      <string>Encounter Counter</string>
+     </attribute>
+     <widget class="QFrame" name="counterColorFrame">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>105</y>
+        <width>306</width>
+        <height>391</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="KColorButton" name="ballColor">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>75</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="mainColor">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>205</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="fontColor">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>290</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>15</y>
+         <width>311</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Encounter Counter Colors</string>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="minMaxButtonColor">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>160</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="ballOutline">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>115</y>
+         <width>48</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="subColor">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>250</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>35</y>
+         <width>181</width>
+         <height>361</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string> ball color
+
+ ball outline
+
+ min max button color
+
+ main color
+
+ sub color
+
+ font
+
+ font border</string>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="fontBorder">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>335</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="counterSelectorFrame">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>20</y>
+        <width>531</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QComboBox" name="counterDrop">
+       <property name="geometry">
+        <rect>
+         <x>225</x>
+         <y>25</y>
+         <width>301</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>211</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Encounter Counter</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="counterPreviewFrame">
+      <property name="geometry">
+       <rect>
+        <x>345</x>
+        <y>125</y>
+        <width>731</width>
+        <height>506</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QWidget" name="counterPreview" native="true">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>721</width>
+         <height>496</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="addOwnVaritou">
+      <property name="geometry">
+       <rect>
+        <x>565</x>
+        <y>20</y>
+        <width>456</width>
+        <height>86</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>25</x>
+         <y>0</y>
+         <width>211</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string> Add Vartiou here</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="varitouBrowse">
+       <property name="geometry">
+        <rect>
+         <x>235</x>
+         <y>5</y>
+         <width>80</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_16">
+       <property name="geometry">
+        <rect>
+         <x>25</x>
+         <y>35</y>
+         <width>386</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>This will do the work getting what is needed, just choose the zip file</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="customDrop">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>55</y>
+         <width>301</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_18">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>50</y>
+         <width>141</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Choose Custom</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="WindowColors">
+     <attribute name="title">
+      <string>Window Colors</string>
+     </attribute>
+     <widget class="QFrame" name="windowPreviewFrame">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>25</y>
+        <width>829</width>
+        <height>653</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QWidget" name="windowPreview" native="true">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>805</width>
+         <height>577</height>
+        </rect>
+       </property>
+       <widget class="QLabel" name="label_19">
+        <property name="geometry">
+         <rect>
+          <x>42</x>
+          <y>164</y>
+          <width>717</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string> Modest    20        11    16    23    27    $5,000    Just now    28 days    Buy</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="hpBar" native="true">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>592</y>
+         <width>297</width>
+         <height>63</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QWidget" name="BerryPreview" native="true">
+       <property name="geometry">
+        <rect>
+         <x>347</x>
+         <y>592</y>
+         <width>307</width>
+         <height>57</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="MainWindowFrame">
+      <property name="geometry">
+       <rect>
+        <x>868</x>
+        <y>10</y>
+        <width>233</width>
+        <height>677</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="KColorButton" name="accentColorW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>151</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="subColorW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>93</y>
+         <width>48</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="mainColorW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>66</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_11">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>171</y>
+         <width>101</width>
+         <height>146</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>hp high 
+hp mid
+hp low
+xp
+friendship</string>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="fontButtonW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>378</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_10">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>56</y>
+         <width>81</width>
+         <height>121</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>main
+sub
+button
+accent</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>319</y>
+         <width>146</width>
+         <height>137</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>font main
+font sub
+font button
+font disabled
+Icon</string>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="buttonColorW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>123</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="fontSubW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>348</y>
+         <width>48</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="fontDisabledColorW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>406</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="xpColorW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>263</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="friendshipColorW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>292</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="fontMainW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>320</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="hpHighW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>179</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="hpLowW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>233</y>
+         <width>48</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="hpMidW">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>206</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_13">
+       <property name="geometry">
+        <rect>
+         <x>46</x>
+         <y>1</y>
+         <width>155</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Main Window</string>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="subColorW_2">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>546</y>
+         <width>48</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_14">
+       <property name="geometry">
+        <rect>
+         <x>-2</x>
+         <y>464</y>
+         <width>230</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Berry Watering Colors</string>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="mainColorW_2">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>518</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="buttonColorW_2">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>576</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_12">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>515</y>
+         <width>143</width>
+         <height>139</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>waterbg
+waterw
+berryp
+berrywarn
+berrydisabled</string>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="accentColorW_2">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>604</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="fontDisabledColorW_2">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>434</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="KColorButton" name="accentColorW_3">
+       <property name="geometry">
+        <rect>
+         <x>158</x>
+         <y>632</y>
+         <width>48</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+      <zorder>label_12</zorder>
+      <zorder>label_11</zorder>
+      <zorder>label_4</zorder>
+      <zorder>label_10</zorder>
+      <zorder>accentColorW</zorder>
+      <zorder>subColorW</zorder>
+      <zorder>mainColorW</zorder>
+      <zorder>fontButtonW</zorder>
+      <zorder>buttonColorW</zorder>
+      <zorder>fontSubW</zorder>
+      <zorder>fontDisabledColorW</zorder>
+      <zorder>xpColorW</zorder>
+      <zorder>friendshipColorW</zorder>
+      <zorder>fontMainW</zorder>
+      <zorder>hpHighW</zorder>
+      <zorder>hpLowW</zorder>
+      <zorder>hpMidW</zorder>
+      <zorder>label_13</zorder>
+      <zorder>subColorW_2</zorder>
+      <zorder>label_14</zorder>
+      <zorder>mainColorW_2</zorder>
+      <zorder>buttonColorW_2</zorder>
+      <zorder>accentColorW_2</zorder>
+      <zorder>fontDisabledColorW_2</zorder>
+      <zorder>accentColorW_3</zorder>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="OtherScreen">
+     <attribute name="title">
+      <string>Other</string>
+     </attribute>
+     <widget class="QFrame" name="cursoFrame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>561</width>
+        <height>121</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QComboBox" name="cursorDrop">
+       <property name="geometry">
+        <rect>
+         <x>225</x>
+         <y>25</y>
+         <width>301</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_15">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>211</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Cursor Type</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cursorBrowse">
+       <property name="geometry">
+        <rect>
+         <x>435</x>
+         <y>70</y>
+         <width>80</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_17">
+       <property name="geometry">
+        <rect>
+         <x>195</x>
+         <y>65</y>
+         <width>241</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Add Custom Cursor</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="cursorPreviewFrame">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>10</y>
+        <width>321</width>
+        <height>166</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QWidget" name="cursorPreview" native="true">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>310</width>
+         <height>155</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="iconFrame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>225</y>
+        <width>561</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QComboBox" name="iconDrop">
+       <property name="geometry">
+        <rect>
+         <x>225</x>
+         <y>25</y>
+         <width>301</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>Round</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Sharp</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="label_20">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>211</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Icon Type</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="speechBubblesFrame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>385</y>
+        <width>561</width>
+        <height>121</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QComboBox" name="speechDrop">
+       <property name="geometry">
+        <rect>
+         <x>225</x>
+         <y>25</y>
+         <width>301</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_23">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>211</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Speech Bubbles</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="speechBrowse">
+       <property name="geometry">
+        <rect>
+         <x>435</x>
+         <y>70</y>
+         <width>80</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_24">
+       <property name="geometry">
+        <rect>
+         <x>195</x>
+         <y>65</y>
+         <width>241</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Add Custom Speech Bubbles</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="speechBubblePreviewFrame">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>365</y>
+        <width>321</width>
+        <height>166</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QWidget" name="speechBubblePreview" native="true">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>310</width>
+         <height>155</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Archetype">
+     <attribute name="title">
+      <string>Archetype</string>
+     </attribute>
+     <widget class="QFrame" name="GetArchtype">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>80</y>
+        <width>1011</width>
+        <height>596</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <widget class="QLabel" name="label_25">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>5</y>
+         <width>236</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Get/Update Archetype</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="downloadArch">
+       <property name="geometry">
+        <rect>
+         <x>245</x>
+         <y>15</y>
+         <width>281</width>
+         <height>46</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Download</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_26">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>70</y>
+         <width>210</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Save Config</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="saveConfig">
+       <property name="geometry">
+        <rect>
+         <x>245</x>
+         <y>80</y>
+         <width>280</width>
+         <height>46</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Save</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="loadConfig">
+       <property name="geometry">
+        <rect>
+         <x>245</x>
+         <y>140</y>
+         <width>280</width>
+         <height>46</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Load</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_27">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>130</y>
+         <width>210</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Load Config</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="completeMod">
+       <property name="geometry">
+        <rect>
+         <x>595</x>
+         <y>70</y>
+         <width>280</width>
+         <height>46</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Complete</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_28">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>0</y>
+         <width>306</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Finish and add to Pokemmo</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_29">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>190</y>
+         <width>210</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Set Game Path</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="setGamePath">
+       <property name="geometry">
+        <rect>
+         <x>245</x>
+         <y>200</y>
+         <width>280</width>
+         <height>46</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Browse</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="status_label_archetype">
+       <property name="geometry">
+        <rect>
+         <x>72</x>
+         <y>358</y>
+         <width>537</width>
+         <height>143</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1118</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOptions"/>
+    <addaction name="actionLoad"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOptions">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KColorButton</class>
+   <extends>QPushButton</extends>
+   <header>kcolorbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

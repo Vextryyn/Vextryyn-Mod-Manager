@@ -1,0 +1,40 @@
+{
+    "colors": {
+        "mainColorW": "#42b9ff",
+        "subColorW": "#1c2328",
+        "buttonColorW": "#263238",
+        "accentColorW": "#2d3b40",
+        "fontMainW": "#ffffff",
+        "fontSubW": "#acb7b9",
+        "fontButtonW": "#84959b",
+        "fontDisabledColorW": "#84959b",
+        "hpHighW": "#82e026",
+        "hpLowW": "#dc2222",
+        "hpMidCW": "#ecd031",
+        "xpColorW": "#2eb2f8",
+        "friendshipColorW": "#b61ae8",
+        "waterbg": "#1c2328",
+        "waterW": "#dc2222",
+        "berryProgress": "#42b9ff",
+        "berryWarning": "#42b9ff",
+        "iconColor": "#ffffff",
+        "ballColor": "#42b9ff",
+        "mainColor": "#1c2328",
+        "subColor": "#42b9ff",
+        "reshiramColor": "#1b2526",
+        "reshiramAura": "#cb4e03",
+        "zekromColor": "#070b0b",
+        "zekromAura": "#00a5c9",
+        "minMaxButtonColor": "#ffffff"
+    },
+    "paths": {
+        "custom_login": "./CustomThemes",
+        "custom_counter": "./CustomCounters",
+        "previewimages": "./Preview",
+        "game_path": ""
+    },
+    "state": {
+        "current_tab": 4,
+        "loginDrop": 0
+    }
+}
