@@ -23,7 +23,7 @@
         "reshiram-aura": "#cb4e03",
         "zekrom-color": "#070b0b",
         "zekrom-aura": "#00a5c9",
-        "counter-ball-color": "#ff0000",
+        "counter-ball-color": "#42b9ff",
         "counter-ball-outline": "#ffffff",
         "counter-min-max-button-color": "#ffffff",
         "counter-main-color": "#1c2328",
@@ -32,13 +32,27 @@
         "counter-font-border": "#ffffff"
     },
     "paths": {
-        "custom_login": "./CustomThemes",
-        "custom_counter": "./CustomCounters",
-        "previewimages": "./Preview",
+        "login_screen": "Allstars.xml",
+        "encounter_counter": "Counter-Left-Icon.xml",
+        "custom_counter_current": "CharizardEncounter",
         "game_path": "/home/vextryyn/.local/share/pokemmo"
     },
+    "look": {
+        "login_screen": "assets/Allstars.xml",
+        "arch_cursor": "assets/Cursors-Black-Alt.xml",
+        "arch_shape": "assets/Round.xml",
+        "speech_bubbles": "assets/Default-Black.xml"
+    },
+    "counter": {
+        "encounter_counter": "assets/CharizardEncounter"
+    },
     "state": {
-        "current_tab": 5,
-        "loginDrop": 0
+        "current_tab": 1,
+        "loginDrop": 0,
+        "counterDrop": 0,
+        "customDrop": 0,
+        "bubblesDrop": 0,
+        "icon_drop": 0,
+        "cursor_drop": 0
     }
 }

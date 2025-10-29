@@ -545,6 +545,11 @@ class Ui_MainWindow(object):
         self.status_label_archetype.setText("")  # start empty
         self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
 
+        self.status_label_custom_counter = QtWidgets.QLabel(self.counterPreview)
+        self.status_label_custom_counter.setGeometry(QtCore.QRect(277, 10, 383, 17))
+        self.status_label_custom_counter.setText("")  # start empty
+        self.status_label_custom_counter.setStyleSheet("color: green; font-size: 8pt;")
+
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(5)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -825,7 +830,7 @@ class Ui_MainWindow(object):
             },    
         )
         if "Vartiou" in text:
-            layer = [*["Blank1.png"] * 3,os.path.relpath(os.path.join(self.custom_counter,self.customDrop.currentText(),"counter-theme.png"), self.previewimages)]
+            layer = [*["Blank1.png"] * 3,os.path.relpath(os.path.join(self.custom_counter,self.customDrop.currentText(),"data/themes/default/res/counter-theme.png"), self.previewimages)]
             self.update_preview_layers(
             self.counterPreview,
             self.previewimages,
@@ -840,8 +845,6 @@ class Ui_MainWindow(object):
             },    
         )
             
-            print("did it work??")
-
     def flip_layers_y(self, image_paths: list, layers_to_flip: list = None):
         flipped_paths = []
         flipped_dir = os.path.join(self.previewimages, "Flipped")
@@ -965,7 +968,6 @@ class Ui_MainWindow(object):
         file_path, _ = QFileDialog.getOpenFileName(None, "Select a Theme ZIP", "", "Zip Files (*.zip);;All Files (*)")
         if not file_path:
             return
-
         new_theme = self.theme_manager.add_theme_from_zip(file_path, parent_widget=self)
         if new_theme:
             update_func()
@@ -977,11 +979,26 @@ class Ui_MainWindow(object):
 
         QTimer.singleShot(30000, lambda: label_widget.setText(""))
 
+    def handle_basic_import(self, update_func,target_dir, label_widget):
+        file_path, _ = QFileDialog.getOpenFileName(None, "Select a Theme ZIP", "", "Zip Files (*.zip);;All Files (*)")
+        if not file_path:
+            return
+        new_theme = self.theme_manager.unzip_file(file_path,target_dir, parent_widget=self)
+        if new_theme:
+            update_func()
+            label_widget.setText(f"✔ Imported: {os.path.basename(new_theme)}")
+            label_widget.setStyleSheet("color: green; font-size: 9pt;")
+        else:
+            label_widget.setText("✖ Import failed. Please try again.")
+            label_widget.setStyleSheet("color: red; font-size: 9pt;")
+
+        QTimer.singleShot(30000, lambda: label_widget.setText(""))    
+
     def handle_login_browse(self):
         self.handle_zip_import(self.update_login_drop, self.label_2_status)
 
     def handle_vartiou_browse(self):
-        self.handle_zip_import(self.update_vartiou_drop, self.label_2_status)      
+        self.handle_basic_import(self.update_vartiou_drop,self.custom_counter, self.status_label_custom_counter)      
 
     def git_clone_or_pull(self, repo_url, destination, status_label):
         try:
@@ -1013,7 +1030,6 @@ class Ui_MainWindow(object):
 
         QTimer.singleShot(30000, lambda: status_label.setText(""))
         self.get_Archstatus
-
 
     def downloadLatestArch(self):
         self.git_clone_or_pull("https://github.com/ssjshields/archetype", "Archetype", self.status_label_archetype)
@@ -1084,7 +1100,7 @@ class Ui_MainWindow(object):
             "paths": {
                 "login_screen": self.loginDrop.currentText(),
                 "encounter_counter": self.counterDrop.currentText(),
-                "custom_counter": self.customDrop.currentText(),
+                "custom_counter_current": self.customDrop.currentText(),
                 # Only use self.gamePath if there's no existing value
                 "game_path": self.gamePath or existing_game_path,
             },
@@ -1185,7 +1201,7 @@ class Ui_MainWindow(object):
             "paths": {
                 "login_screen": self.loginDrop.currentText(),
                 "encounter_counter": self.counterDrop.currentText(),
-                "custom_counter": self.customDrop.currentText(),
+                "custom_counter_current": self.customDrop.currentText(),
                 # Only use self.gamePath if there's no existing value
                 "game_path": self.gamePath or existing_game_path,
             },
@@ -1274,10 +1290,10 @@ class Ui_MainWindow(object):
                 widget.setColor(QtGui.QColor(value)) 
 
         # Restore paths 
-        paths = config.get("paths", {}) 
-        self.custom_login = paths.get("custom_login", self.custom_login) 
-        self.custom_counter = paths.get("custom_counter", self.custom_counter) 
-        self.previewimages = paths.get("previewimages", self.previewimages)
+        # paths = config.get("paths", {}) 
+        # self.custom_login = paths.get("custom_login", self.custom_login) 
+        # # self.custom_counter = paths.get("custom_counter", self.custom_counter) 
+        # self.previewimages = paths.get("previewimages", self.previewimages)
 
         # Restore state (tabs, combo boxes, etc.)
         state = config.get("state", {})

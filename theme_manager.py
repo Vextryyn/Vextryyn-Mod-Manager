@@ -79,6 +79,38 @@ class ThemeManager:
                     themes.append(os.path.join(root, f))
         return sorted(themes)
 
+
+    def unzip_file(self, zip_path,target_dir, parent_widget=None, overwrite=True):
+        print(target_dir)
+        if not os.path.exists(zip_path):
+            self._show_message("Error", f"ZIP file does not exist:\n{zip_path}", parent_widget)
+            return None
+
+        zip_name = os.path.splitext(os.path.basename(zip_path))[0]
+        extract_path = os.path.join(target_dir, zip_name)
+
+        try:
+            # Remove existing folder if overwrite=True
+            if os.path.exists(extract_path):
+                if overwrite:
+                    shutil.rmtree(extract_path)
+                else:
+                    self._show_message("Info", f"Directory already exists:\n{extract_path}", parent_widget)
+                    return extract_path
+
+            os.makedirs(extract_path, exist_ok=True)
+
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(extract_path)
+
+            self._show_message("Success", f"ZIP extracted to:\n{extract_path}", parent_widget)
+            return extract_path
+
+        except Exception as e:
+            self._show_message("Error", f"Failed to extract ZIP:\n{str(e)}", parent_widget)
+            return None
+
+
     def _show_message(self, title, message, parent_widget=None):
         """
         Safely show a message box if parent_widget is a QWidget,
@@ -88,3 +120,12 @@ class ThemeManager:
             QMessageBox.information(parent_widget, title, message)
         else:
             print(f"[{title}] {message}")
+
+    # def _show_message(title, message, parent_widget=None):
+    #     """
+    #     Show message box if parent_widget is a QWidget, else print to console.
+    #     """
+    #     if isinstance(parent_widget, QWidget):
+    #         QMessageBox.information(parent_widget, title, message)
+    #     else:
+    #         print(f"[{title}] {message}")
