@@ -15,7 +15,7 @@ import zipfile
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, QDir
 from PyQt5.QtGui import QColor, QFont
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QApplication
 from xmlpreview import XmlAnimationPreview 
 from theme_manager import ThemeManager
 from counterpreview import CounterPreview
@@ -81,6 +81,8 @@ class Ui_MainWindow(object):
         self.label_2_status.setGeometry(QtCore.QRect(25, 55, 400, 20))
         self.label_2_status.setText("")  # start empty
         self.label_2_status.setStyleSheet("color: green; font-size: 9pt;")
+        if not self.ensure_archetype(MainWindow):
+            sys.exit(0)  # Exit if user cancels installation
         ##Login Selector        
         self.loginBrowse = QtWidgets.QPushButton(self.addOwnLogin)
         self.loginBrowse.setGeometry(QtCore.QRect(235, 20, 80, 25))
@@ -586,17 +588,18 @@ class Ui_MainWindow(object):
         self.zekromColor.setColor(QColor("#070b0b"))
 
         ##defs##
-        self.setup_color_hooks() 
-        self.update_login_drop()
-        self.update_counter_drop()
-        self.update_vartiou_drop()
-        self.update_counter_preview()   
-        self.update_login_preview()
-        self.update_window_preview()
-        self.update_hp_preview()
-        self.update_bubbles_drop()
-        self.update_icon_drop()
-        self.update_cursor_drop()
+        if os.path.exists("./Archetype"):
+            self.setup_color_hooks() 
+            self.update_login_drop()
+            self.update_counter_drop()
+            self.update_vartiou_drop()
+            self.update_counter_preview()   
+            self.update_login_preview()
+            self.update_window_preview()
+            self.update_hp_preview()
+            self.update_bubbles_drop()
+            self.update_icon_drop()
+            self.update_cursor_drop()
 
         ##Drops##
         self.loginDrop.currentIndexChanged.connect(self.update_login_preview)
@@ -1112,7 +1115,7 @@ class Ui_MainWindow(object):
                 "speech_bubbles": os.path.join("assets/",self.speechDrop.currentText()),
             },
             "counter":{
-                "encounter_counter":os.path.join("assets/",self.customDrop.currentText()),
+                "encounter_counter":os.path.join("assets/",self.counterDrop.currentText()),
             },
 
             "state": {
@@ -1213,7 +1216,7 @@ class Ui_MainWindow(object):
                 "speech_bubbles": os.path.join("assets/",self.speechDrop.currentText()),
             },
             "counter":{
-                "encounter_counter":os.path.join("assets/",self.customDrop.currentText()),
+                "encounter_counter":os.path.join("assets/",self.counterDrop.currentText()),
             },
 
             "state": {
@@ -1383,20 +1386,23 @@ class Ui_MainWindow(object):
                 self.save_config()  # save it immediately to config (if you want)
 
     def complete_build(self):
-        self.save_config
-        colors = CompleteBuild(self.configPath,os.path.join(self.themeFolder,"CHOOSE_YOUR_COLORS.xml"))
-        counter = CompleteBuild(self.configPath,os.path.join(self.themeFolder,"CHOOSE_YOUR_COUNTER.xml"))
-        look = CompleteBuild(self.configPath,os.path.join(self.themeFolder,"CHOOSE_YOUR_LOOK.xml"))
+        self.save_config()
+        colors = CompleteBuild(self.configPath, os.path.join(self.themeFolder, "CHOOSE_YOUR_COLORS.xml"), category="colors")
+        counter = CompleteBuild(self.configPath, os.path.join(self.themeFolder, "CHOOSE_YOUR_COUNTER.xml"), category="counter")
+        look = CompleteBuild(self.configPath, os.path.join(self.themeFolder, "CHOOSE_YOUR_LOOK.xml"), category="look")
 
+        print(self.counterDrop.currentText())
         colors.generate_xml()
         counter.generate_xml()
         look.generate_xml()
-
-        if self.loginDrop.currentText() != "Unova.xml" or "Allstars.xml":
+        if not os.path.exists(self.xml_path):
+            print("Warning: XML file not found:", self.xml_path)
+            return
+        if self.loginDrop.currentText() not in ("Unova.xml", "Allstars.xml"):           
             self.copy_files(os.path.join("./CustomThemes",self.loginDrop.currentText().removesuffix(".xml")) ,self.assets_dir)
 
-        if self.customDrop.currentIndex() == "Counter-Vartiou.xml":
-            self.copy_files(os.path.join("./CustomCounters",self.customDrop.currentText()) ,self.assets_dir)
+        if self.counterDrop.currentText() == "Counter-Vartiou.xml":
+            self.copy_files(os.path.join("./CustomCounters",self.customDrop.currentText(),"data/themes/default/res"),os.path.join(self.assets_dir,"jaejGI7pIp/res/counter/vartiou"))
 
         self.gamePath = self.get_current_path(self.configPath)
         print(f"current path is: {self.gamePath}")
@@ -1448,6 +1454,47 @@ class Ui_MainWindow(object):
                 shutil.copy2(src_path, dst_path)
         
         print(f"Contents copied from '{src_folder}' to '{dst_folder}'")
+
+    def ensure_archetype(self, parent=None):
+        """Check if Archetype folder exists, and prompt install if missing."""
+        if os.path.exists(self.archetype_root):
+            return True  # folder exists, proceed
+
+        # Ask user if they want to install
+        choice = QMessageBox.question(
+            parent,
+            "Archetype Missing",
+            "Archetype is required in order to use the Archetype Manager.\nThere are 2 ways to do this:\n\nOption 1: Go to https://github.com/ssjshields/archetype download and extract into the Archetype Manager folder\n\nOption 2: press Yes and this will download all the files for you",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.Yes
+        )
+
+        if choice == QMessageBox.No:
+            return False  # user canceled
+
+        # User wants to install → run your download function
+        status_win = QtWidgets.QWidget()
+        status_win.setWindowTitle("Installing Archetype")
+        status_win.setFixedSize(300, 100)
+        from PyQt5.QtWidgets import QVBoxLayout, QLabel
+        layout = QVBoxLayout()
+        status_label = QLabel("Downloading Archetype...")
+        layout.addWidget(status_label)
+        status_win.setLayout(layout)
+        status_win.show()
+        QApplication.processEvents()  # refresh GUI
+
+        # Clone or pull repo
+        repo_url = "https://github.com/ssjshields/archetype"
+        if os.path.exists(self.archetype_root):
+            subprocess.run(["git", "-C", self.archetype_root, "pull"])
+        else:
+            subprocess.run(["git", "clone", repo_url, self.archetype_root])
+
+        status_label.setText("Download complete!")
+        QApplication.processEvents()
+        status_win.close()
+        return True
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
