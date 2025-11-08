@@ -1,0 +1,27 @@
+ArchtypeManager.py
+colorButton.py
+completeBuild.py
+counterpreview.py
+precheck.py
+theme_manager.py
+xmlpreview.py
+/Preview
+
+First step makes exe and is first step for linux
+pyinstaller --onefile --windowed --add-data "Preview:Preview" ArchtypeManager.py  
+
+linux only:
+
+mkdir -p AppDir/usr/bin
+cp -r dist/ArchtypeManager/* AppDir/usr/bin/
+
+Create AppRun file in AppDir
+#!/bin/bash
+HERE="$(dirname "$(readlink -f "$0")")"
+export PATH="$HERE/usr/bin:$PATH"
+exec "$HERE/usr/bin/ArchtypeManager" "$@"
+
+chmod +x AppDir/AppRun
+
+
+appimagetool AppDir
