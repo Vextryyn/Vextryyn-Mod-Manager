@@ -443,6 +443,18 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.completeMod.setFont(font)
         self.completeMod.setObjectName("completeMod")
+
+        self.playPokemmo = QtWidgets.QPushButton(self.GetArchtype)
+        self.playPokemmo.setGeometry(QtCore.QRect(722, 542, 280, 46))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.playPokemmo.setFont(font)
+        self.playPokemmo.setObjectName("playPokemmo")
+        
+
+        
         self.label_28 = self.make_label(self.GetArchtype,"label_28",16,True,(590,0,306,61),None)
         self.tabWidget.addTab(self.Mods, "")
         MainWindow.setCentralWidget(self.centralwidget)
@@ -584,6 +596,8 @@ class Ui_MainWindow(object):
         self.actionAbout.triggered.connect(self.show_about_window)
         self.cursorBrowse.clicked.connect(self.handle_cursor_browse)
         self.completeMod.clicked.connect(self.complete_build)
+        self.playPokemmo.clicked.connect(self.poke_start)
+
 
         ##Text Colors##
         self.colorLinkedLabels = [
@@ -715,6 +729,33 @@ class Ui_MainWindow(object):
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Default-"),
         )  
+
+    def poke_start(self, *args):
+        with open("config.json", "r") as f:
+            config = json.load(f)
+
+        gamepath = config["paths"]["game_path"]
+        script_name = "PokeMMO"
+
+        if sys.platform.startswith("win"):
+            script_path = os.path.join(gamepath, script_name + ".exe")
+            cmd = [script_path]
+        else:
+            script_path = os.path.join(gamepath, script_name + ".sh")
+
+            if not os.access(script_path, os.X_OK):
+                os.chmod(script_path, 0o755)
+
+            cmd = ["bash", script_path]
+
+        if not os.path.exists(script_path):
+            raise FileNotFoundError(f"Script not found: {script_path}")
+
+        try:
+            subprocess.run(cmd, cwd=gamepath, check=True)
+            print(f"{script_path} ran successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error running {script_path}: {e}")
 
     def update_icon_drop(self):
 
@@ -1420,17 +1461,10 @@ class Ui_MainWindow(object):
             selected_files = dialog.selectedFiles()
             if selected_files:
                 self.gamePath = selected_files[0]
-
-                # Update status label
                 self.status_label_archetype.setText(f"Game path set to {self.gamePath}")
                 self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
 
-                # Save config
                 self.save_config()
-
-                # -------------------------------
-                # 🔍 CHECK ARCHETYPE VERSION HERE
-                # -------------------------------
                 up_to_date = self.check_remote_version(
                     "https://github.com/ssjshields/archetype",
                     "Archetype"
@@ -1646,6 +1680,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.OtherScreen), _translate("MainWindow", "Other"))
         self.label_25.setText(_translate("MainWindow", "Get/Update Archetype"))
         self.downloadArch.setText(_translate("MainWindow", "Download"))
+        self.playPokemmo.setText(_translate("MainWindow", "Play Pokemmo"))
         self.modButtonLabel.setText(_translate("MainWindow","Mod List"))
         self.setGamePath.setText(_translate("MainWindow", "Browse"))
         self.completeMod.setText(_translate("MainWindow", "Complete"))
