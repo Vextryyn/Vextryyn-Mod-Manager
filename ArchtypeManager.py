@@ -122,7 +122,7 @@ class Ui_MainWindow(object):
         self.label_7 = self.make_label(self.counterColorFrame,"label_7",12,False,(20,35,181,361),None)
         self.ballColor = self.make_color_button(self.counterColorFrame,"counter-ball-color",220,75)
         self.mainColor = self.make_color_button(self.counterColorFrame,"counter-main-color",220,205)
-        self.fontColor = self.make_color_button(self.counterColorFrame,"counter-font-color",220,290)
+        self.fontColor = self.make_color_button(self.counterColorFrame,"counter-font",220,290)
         self.minMaxButtonColor = self.make_color_button(self.counterColorFrame,"counter-min-max-button-color",220,160)
         self.ballOutline = self.make_color_button(self.counterColorFrame,"ballOutline",220,115)
         self.subColor = self.make_color_button(self.counterColorFrame,"counter-sub-color",220,250)
@@ -510,6 +510,7 @@ class Ui_MainWindow(object):
             self.hpMidW: "#ecd031",
             self.xpColorW: "#2eb2f8",
             self.friendshipColorW: "#b61ae8",
+            self.fontBorder:"#233031",
             self.fontMainW: "#ffffff",
             self.fontSubW: "#acb7b9",
             self.fontButtonW: "#84959b",
@@ -595,8 +596,19 @@ class Ui_MainWindow(object):
         self.windowTextFontButton3,
         ]
         
-        self.status_label_archetype2 = self.make_label(self.GetArchtype,f"<b>Pokemmo Location:</b> {self.get_current_path(self.configPath)}<br><b>Archetype Status:</b> {self.get_Archstatus()}<br><b>ModCount:</b> {self.mod_count(self.modsLocation)}",16,False,(56,148,819,143),None)
+        self.status_label_archetype2 = self.make_label(
+            self.GetArchtype,
+            f"<b>Pokemmo Location:</b> {self.get_current_path(self.configPath)}<br>"
+            f"<b>Archetype Status:</b> {self.get_Archstatus()}<br>"
+            f"<b>ModCount:</b> {self.mod_count(self.modsLocation)}",
+            16,
+            False,
+            (56,148,819,143),
+            None
+        )
         self.status_label_archetype2.setTextFormat(QtCore.Qt.RichText)
+        self.update_archetype_summary()
+
         self.load_last_config()
 
     def populate_dropdown(
@@ -971,6 +983,65 @@ class Ui_MainWindow(object):
     def handle_vartiou_browse(self):
         self.handle_basic_import(self.update_vartiou_drop,self.custom_counter, self.status_label_custom_counter)      
 
+    def update_archetype_summary(self):
+        try:
+            up_to_date = self.check_remote_version(
+                "https://github.com/ssjshields/archetype",
+                "Archetype"
+            )
+
+            if up_to_date:
+                archetype_status = '<span style="color:#28a745;">Up to date.</span>'
+            else:
+                archetype_status = '<span style="color:#ff9800;">Update available!</span>'
+
+        except Exception:
+            archetype_status = '<span style="color:#ff3b3b;">Could not check status.</span>'
+
+        # Update label HTML
+        self.status_label_archetype2.setText(
+            f"<b>Pokemmo Location:</b> {self.get_current_path(self.configPath)}<br>"
+            f"<b>Archetype Status:</b> {archetype_status}<br>"
+            f"<b>ModCount:</b> {self.mod_count(self.modsLocation)}"
+        )
+
+    def check_remote_version(self, repo_url, destination):
+        try:
+            # 1. Get remote default branch
+            remote_refs = subprocess.run(
+                ["git", "ls-remote", "--symref", repo_url, "HEAD"],
+                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
+
+            for line in remote_refs.stdout.splitlines():
+                if line.startswith("ref:"):
+                    default_branch = line.split()[1].split("/")[-1]
+                    break
+            else:
+                default_branch = "main"
+
+            # 2. Get remote latest commit hash
+            remote_hash = subprocess.run(
+                ["git", "ls-remote", repo_url, f"refs/heads/{default_branch}"],
+                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            ).stdout.split()[0].strip()
+
+            # 3. Get local commit hash
+            local_hash = None
+            if os.path.exists(destination) and os.path.exists(os.path.join(destination, ".git")):
+                local_hash_output = subprocess.run(
+                    ["git", "-C", destination, "rev-parse", default_branch],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+                )
+                if local_hash_output.returncode == 0:
+                    local_hash = local_hash_output.stdout.strip()
+
+            # 4. Compare
+            return local_hash == remote_hash
+
+        except:
+            return False  # assume update needed if error
+
     def git_clone_or_pull(self, repo_url, destination, status_label):
         try:
             subprocess.run(["git", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -981,29 +1052,60 @@ class Ui_MainWindow(object):
             return
 
         try:
-            # Check if destination exists and is a git repo
-            if os.path.exists(destination) and os.path.exists(os.path.join(destination, ".git")):
-                subprocess.run(["git", "-C", destination, "pull"], check=True)
-                msg = "Updated"
-            else:
-                # If folder exists but not a git repo, delete it before cloning
-                if os.path.exists(destination):
-                    import shutil
-                    shutil.rmtree(destination)
-                subprocess.run(["git", "clone", repo_url, destination], check=True)
-                msg = "Downloaded"
+            remote_refs = subprocess.run(
+                ["git", "ls-remote", "--symref", repo_url, "HEAD"],
+                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
             
-            status_label.setText(f"Archetype {msg}")
-            status_label.setStyleSheet("color: green; font-size: 18pt;")
+            for line in remote_refs.stdout.splitlines():
+                if line.startswith("ref:"):
+                    default_branch = line.split()[1].split("/")[-1]
+                    break
+            else:
+                default_branch = "main"
+
+            remote_hash_output = subprocess.run(
+                ["git", "ls-remote", repo_url, f"refs/heads/{default_branch}"],
+                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
+            remote_hash = remote_hash_output.stdout.split()[0].strip()
+
+            local_hash = None
+            if os.path.exists(destination) and os.path.exists(os.path.join(destination, ".git")):
+                local_hash_output = subprocess.run(
+                    ["git", "-C", destination, "rev-parse", default_branch],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+                )
+                if local_hash_output.returncode == 0:
+                    local_hash = local_hash_output.stdout.strip()
+
+            if local_hash == remote_hash:
+                status_label.setText("Archetype is already up to date.")
+                status_label.setStyleSheet("color: green; font-size: 18pt;")
+            else:
+                # NEED UPDATE
+                if local_hash:
+                    subprocess.run(["git", "-C", destination, "pull"], check=True)
+                    msg = "Updated"
+                else:
+                    if os.path.exists(destination):
+                        import shutil
+                        shutil.rmtree(destination)
+                    subprocess.run(["git", "clone", repo_url, destination], check=True)
+                    msg = "Downloaded"
+
+                status_label.setText(f"Archetype {msg}")
+                status_label.setStyleSheet("color: green; font-size: 18pt;")
+
         except subprocess.CalledProcessError as e:
             status_label.setText(f"Failed!: {e}")
             status_label.setStyleSheet("color: red; font-size: 18pt;")
 
         QTimer.singleShot(30000, lambda: status_label.setText(""))
-        self.get_Archstatus
 
     def downloadLatestArch(self):
         self.git_clone_or_pull("https://github.com/ssjshields/archetype", "Archetype", self.status_label_archetype)
+        self.update_archetype_summary()
 
     def make_label(self, parent, text="", font_size=12, bold=False, geometry=None, align=None):
         label = QtWidgets.QLabel(parent)
@@ -1070,7 +1172,7 @@ class Ui_MainWindow(object):
                 "counter-min-max-button-color": self.minMaxButtonColor.color().name(),
                 "counter-main-color": self.mainColor.color().name(),
                 "counter-sub-color": self.subColor.color().name(),
-                "counter-font-color": self.fontColor.color().name(),
+                "counter-font": self.fontColor.color().name(),
                 "counter-font-border":self.fontBorder.color().name(),
             },
             
@@ -1171,7 +1273,7 @@ class Ui_MainWindow(object):
                 "counter-min-max-button-color": self.minMaxButtonColor.color().name(),
                 "counter-main-color": self.mainColor.color().name(),
                 "counter-sub-color": self.subColor.color().name(),
-                "counter-font-color": self.fontColor.color().name(),
+                "counter-font": self.fontColor.color().name(),
                 "counter-font-border":self.fontBorder.color().name(),
             },
             
@@ -1348,15 +1450,31 @@ class Ui_MainWindow(object):
             selected_files = dialog.selectedFiles()
             if selected_files:
                 self.gamePath = selected_files[0]
-                # Update status_label_archetype
+
+                # Update status label
                 self.status_label_archetype.setText(f"Game path set to {self.gamePath}")
                 self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
+
                 # Save config
                 self.save_config()
 
+                # -------------------------------
+                # 🔍 CHECK ARCHETYPE VERSION HERE
+                # -------------------------------
+                up_to_date = self.check_remote_version(
+                    "https://github.com/ssjshields/archetype",
+                    "Archetype"
+                )
+
+                if up_to_date:
+                    archetype_status = "Up to Date."
+                else:
+                    archetype_status = "Update available!"
+
+                # Update the summary label
                 self.status_label_archetype2.setText(
                     f"<b>Pokemmo Location:</b> {self.get_current_path(self.configPath)}<br>"
-                    f"<b>Archetype Status:</b> {self.get_Archstatus()}<br>"
+                    f"<b>Archetype Status:</b> {archetype_status}<br>"
                     f"<b>ModCount:</b> {self.mod_count(self.modsLocation)}"
                 )
 
@@ -1382,37 +1500,13 @@ class Ui_MainWindow(object):
         self.gamePath = self.get_current_path(self.configPath)
 
         print(f"current path is: {self.gamePath}")
-        self.compress_move("./Archetype", os.path.join(self.gamePath,"data/mods/"),"Archetype")
+        if os.path.exists(os.path.join(self.gamePath,"data/mods/Archetype")):
+            shutil.rmtree(os.path.join(self.gamePath,"data/mods/Archetype"))
+        self.copy_files("./Archetype", os.path.join(self.gamePath,"data/mods/Archetype"))
         self.copy_files(self.modsLocation,os.path.join(self.gamePath,"data/mods"))
         PokeGen.update_poke(os.path.join(self.gamePath,"config/main.properties"),self.modsLocation)
         self.status_label_archetype.setText(f"All Mods Installed Successfully!!")
         self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
-
-    def compress_move(self, source_folder: str, destination_dir: str, zip_name: str = None):
-        import os, shutil, zipfile
-
-        if not os.path.isdir(source_folder):
-            raise FileNotFoundError(f"Source folder not found: {source_folder}")
-
-        os.makedirs(destination_dir, exist_ok=True)
-
-        if not zip_name:
-            zip_name = os.path.basename(os.path.normpath(source_folder))
-
-        zip_path = os.path.join(destination_dir, f"{zip_name}.zip")
-        temp_zip = f"{zip_name}.zip"
-
-        with zipfile.ZipFile(temp_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for root, _, files in os.walk(source_folder):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    arcname = os.path.relpath(file_path, source_folder)
-                    zipf.write(file_path, arcname)
-
-        shutil.move(temp_zip, zip_path)
-        print(f"'{source_folder}' compressed and moved to '{zip_path}'")
-
-        return zip_path
 
     def copy_files(self,src_folder, dst_folder):
         if not os.path.exists(src_folder):

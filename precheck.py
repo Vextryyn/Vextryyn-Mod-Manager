@@ -1,11 +1,27 @@
 import sys
 import os
 import subprocess
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QMessageBox
 from PyQt5.QtCore import Qt
+
+def check_git_installed(parent=None):
+    """Check if Git is installed."""
+    try:
+        subprocess.run(["git", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        msg_box = QMessageBox(parent)
+        msg_box.setWindowTitle("Git Not Found")
+        msg_box.setText("Git is not installed or not in your PATH.\nPlease install Git to continue.")
+        msg_box.setIcon(QMessageBox.Critical)
+        msg_box.exec()
+        return False
 
 def check_archetype(parent=None):
     """Check if Archetype exists. If not, show dialog and optionally install."""
+    if not check_git_installed(parent):
+        sys.exit(1)
+
     if os.path.exists("Archetype"):
         return True  # Folder exists, continue normally
 

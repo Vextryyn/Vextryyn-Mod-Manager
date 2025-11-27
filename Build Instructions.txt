@@ -1,27 +1,35 @@
-ArchtypeManager.py
-colorButton.py
-completeBuild.py
-counterpreview.py
-precheck.py
-theme_manager.py
-xmlpreview.py
-/Preview
+Linux:
+1. create a general executable:
+"pyinstaller --onefile --windowed ArchtypeManager.py"  
 
-First step makes exe and is first step for linux
-pyinstaller --onefile --windowed --add-data "Preview:Preview" ArchtypeManager.py  
+2.Prepare for conversion to AppImage:
+"mkdir -p AppDir/usr/bin"
+"cp -r dist/* AppDir/usr/bin/"
 
-linux only:
 
-mkdir -p AppDir/usr/bin
-cp -r dist/ArchtypeManager/* AppDir/usr/bin/
+3. Create AppRun file in AppDir(created in previous step):
 
-Create AppRun file in AppDir
 #!/bin/bash
 HERE="$(dirname "$(readlink -f "$0")")"
 export PATH="$HERE/usr/bin:$PATH"
 exec "$HERE/usr/bin/ArchtypeManager" "$@"
 
-chmod +x AppDir/AppRun
+4. Make the AppRun file executable:
+"chmod +x AppDir/AppRun"
+
+5. Make the AppImage:
+"appimagetool AppDir"
 
 
-appimagetool AppDir
+
+Windows:
+Please note you will need to install python 3.13.7 and PyInstaller to make this work, nothing else should be required(I dont use windows anymore)
+
+1. Copy folder to another location (Optional)
+"cp -r ./ArchtypeAnimated ./ArchtypeAnimated_Windows/"
+
+2. Create the exe:
+Using Wine:
+'wine PyInstaller --onefile --windowed --hidden-import=PIL  "Z:\Path\To\ArchtypeManager.py"'
+Using Windows:
+'PyInstaller --onefile --windowed --hidden-import=PIL  "Z:\Path\To\ArchtypeManager.py"'
