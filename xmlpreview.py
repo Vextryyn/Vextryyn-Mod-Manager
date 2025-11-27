@@ -36,9 +36,6 @@ class XmlAnimationPreview(QWidget):
         self.build_composed_animations()
         self.start_first_animation()
 
-    # -------------------
-    # XML Loading
-    # -------------------
     def load_xml(self, xml_path=None):
         if xml_path:
             self.xml_path = xml_path
@@ -51,7 +48,6 @@ class XmlAnimationPreview(QWidget):
 
         base_dir = os.path.dirname(self.xml_path)
 
-        # PASS 1: Collect all <area> definitions from <images>
         for img_tag in self.root.findall(".//images"):
             file_path = img_tag.attrib.get("file")
             pixmap = None
@@ -64,10 +60,7 @@ class XmlAnimationPreview(QWidget):
                 tint = area.attrib.get("tint")
                 if name and pixmap and not pixmap.isNull():
                     self.image_map[name] = {"pixmap": pixmap, "tint": tint}
-            #print("Trying to load:", abs_path, "Exists?", os.path.exists(abs_path))
 
-
-        # PASS 2: Collect all animations (anywhere in XML)
         for anim_tag in self.root.findall(".//animation"):
             anim_name = anim_tag.attrib.get("name")
             if not anim_name:
@@ -78,7 +71,6 @@ class XmlAnimationPreview(QWidget):
             if frames:
                 self.animations[anim_name] = frames
 
-        # PASS 3: Collect all grids
         for grid_tag in self.root.findall(".//grid"):
             grid_name = grid_tag.attrib.get("name")
             if grid_name:
@@ -88,9 +80,6 @@ class XmlAnimationPreview(QWidget):
         self.composed_xml_nodes = self.root.findall(".//composed")
 
 
-    # -------------------
-    # Resolve frames recursively
-    # -------------------
     def resolve_frames(self, node):
         frames = []
 
@@ -187,10 +176,6 @@ class XmlAnimationPreview(QWidget):
                 return []
 
 
-
-    # -------------------
-    # Composed animations
-    # -------------------
     def build_composed_animations(self):
         self.composed_animations.clear()
         for composed_tag in self.composed_xml_nodes:
@@ -209,9 +194,6 @@ class XmlAnimationPreview(QWidget):
                     alias_frames_map[alias_name] = frames
             self.composed_animations[comp_name] = alias_frames_map
 
-    # -------------------
-    # Playback
-    # -------------------
     def start_first_animation(self):
         if self.composed_animations:
             first_anim = list(self.composed_animations.keys())[0]
@@ -268,9 +250,9 @@ class XmlAnimationPreview(QWidget):
                 continue
 
             idx = self.layer_frame_indices.get(alias_name, 0)
-            frame = frames[idx % len(frames)]  # <-- safe wrap-around
+            frame = frames[idx % len(frames)]  
 
-            if "grid" in frame:  # --- special case: layered grid ---
+            if "grid" in frame:  
                 grid_layers = frame["grid"]
                 parent_idx = self.layer_frame_indices.get(alias_name, 0)
                 for sub_alias, sub_frames in grid_layers.items():
@@ -279,8 +261,6 @@ class XmlAnimationPreview(QWidget):
                     sub_frame = sub_frames[parent_idx % len(sub_frames)]
                     pix = sub_frame.get("pixmap")
                     frame_tint = sub_frame.get("tint")
-
-                    # --- apply tint ---
                     if isinstance(frame_tint, QColor):
                         final_tint = frame_tint
                     elif isinstance(frame_tint, str):
@@ -296,7 +276,7 @@ class XmlAnimationPreview(QWidget):
 
                     log_parts.append(f"{sub_alias}({parent_idx % len(sub_frames)}/{len(sub_frames)-1})")
 
-            else:  # --- normal single frame ---
+            else: 
                 pix = frame.get("pixmap")
                 frame_tint = frame.get("tint")
 
@@ -317,20 +297,17 @@ class XmlAnimationPreview(QWidget):
 
         painter.end()
 
-        # --- Step 3: update preview ---
         self.label.setPixmap(
             merged_pixmap.scaled(self.label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
 
         current_anim_name = getattr(self, "current_composed_name", None)
-        #print(f"[Animation: {current_anim_name}] Playing frames: " + ", ".join(log_parts))
+
 
 
     def start_frame_timer(self):
         if not hasattr(self, "alias_frames_map") or not self.alias_frames_map:
             return
-
-        # Determine shortest duration among all animating frames
         durations = []
 
         for alias_name, frames in self.alias_frames_map.items():
@@ -340,7 +317,6 @@ class XmlAnimationPreview(QWidget):
             first_frame = frames[0]
 
             if "grid" in first_frame:
-                # Use parent index to get current frame for grid layers
                 parent_idx = self.layer_frame_indices.get(alias_name, 0)
                 for sub_alias, sub_frames in first_frame["grid"].items():
                     if not sub_frames:
@@ -350,22 +326,17 @@ class XmlAnimationPreview(QWidget):
                     if dur is not None:
                         durations.append(dur)
             elif len(frames) > 1:
-                # Multi-frame animation
                 idx = self.layer_frame_indices.get(alias_name, 0)
                 dur = frames[idx].get("duration")
                 if dur is not None:
                     durations.append(dur)
             else:
-                # Static frame: skip
                 continue
 
         self.timer.start(min(durations, default=50))
 
     def update_frame(self):
-        """
-        Advance all layers in a composed animation in lock-step.
-        Skip empty frame lists to avoid IndexError.
-        """
+
         if not hasattr(self, "alias_frames_map") or not self.alias_frames_map:
             return
 
@@ -411,13 +382,6 @@ class XmlAnimationPreview(QWidget):
         self.timer.start(min(durations, default=50))
 
 
-
-
-
-
-    # -------------------
-    # Tints / XML switch
-    # -------------------
     def set_layer_color(self, layer_name, qcolor):
         if not isinstance(qcolor, QColor):
             qcolor = QColor(qcolor)
@@ -432,9 +396,6 @@ class XmlAnimationPreview(QWidget):
         self.build_composed_animations()
         self.start_first_animation()
 
-    # -------------------
-    # Tint helper
-    # -------------------
     def apply_tint(self, pixmap, qcolor):
         if pixmap.isNull() or not qcolor:
             return pixmap

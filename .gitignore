@@ -27,4 +27,5 @@ config.json
 Mods/
 config/
 *.exe
+*.spec
 BuildInstructionsVexVersion.txt

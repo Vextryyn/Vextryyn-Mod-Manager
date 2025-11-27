@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ArchtypeManager.ui'
+# Form implementation generated from reading ui file 'VMM.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -80,10 +80,10 @@ class Ui_MainWindow(object):
 
         self.label_2_status = QtWidgets.QLabel(self.LoginScreen)
         self.label_2_status.setGeometry(QtCore.QRect(25, 55, 400, 20))
-        self.label_2_status.setText("")  # start empty
+        self.label_2_status.setText("") 
         self.label_2_status.setStyleSheet("color: green; font-size: 9pt;")
         if not self.ensure_archetype(MainWindow):
-            sys.exit(0)  # Exit if user cancels installation
+            sys.exit(0) 
         ##Login Selector        
         self.loginBrowse = QtWidgets.QPushButton(self.addOwnLogin)
         self.loginBrowse.setGeometry(QtCore.QRect(235, 20, 80, 25))
@@ -407,7 +407,7 @@ class Ui_MainWindow(object):
 
         self.mods_widget = ModListWidget(mods_folder=self.modsLocation,parent=self.modOrderFrame)
         layout = QtWidgets.QVBoxLayout(self.modOrderFrame)
-        layout.setContentsMargins(0, 0, 0, 0)  # optional: remove padding
+        layout.setContentsMargins(0, 0, 0, 0) 
         layout.addWidget(self.mods_widget)
 
         # self.cursorPreview = ImagePreview(parent=self.cursorPreviewFrame)
@@ -483,17 +483,17 @@ class Ui_MainWindow(object):
 
         self.status_label_archetype = QtWidgets.QLabel(self.GetArchtype)
         self.status_label_archetype.setGeometry(QtCore.QRect(72, 358, 863, 143))
-        self.status_label_archetype.setText("")  # start empty
+        self.status_label_archetype.setText("") 
         self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
 
         self.status_label_custom_counter = QtWidgets.QLabel(self.counterPreview)
         self.status_label_custom_counter.setGeometry(QtCore.QRect(277, 10, 383, 17))
-        self.status_label_custom_counter.setText("")  # start empty
+        self.status_label_custom_counter.setText("") 
         self.status_label_custom_counter.setStyleSheet("color: green; font-size: 8pt;")
 
         self.status_label_mods = QtWidgets.QLabel(self.modButtonsFrame)
         self.status_label_mods.setGeometry(QtCore.QRect(0, 0, 255, 30))
-        self.status_label_mods.setText("")  # start empty
+        self.status_label_mods.setText("") 
         self.status_label_mods.setStyleSheet("color: green; font-size: 12pt;")
 
         self.retranslateUi(MainWindow)
@@ -640,12 +640,10 @@ class Ui_MainWindow(object):
             for file_name in sorted(os.listdir(folder)):
                 full_path = os.path.join(folder, file_name)
 
-                # --- folder-only mode (no extension) ---
                 if not file_ext and os.path.isdir(full_path):
                     combo.addItem(file_name, full_path)
                     continue
 
-                # --- file mode ---
                 if file_ext and not file_name.lower().endswith(file_ext.lower()):
                     continue
 
@@ -694,7 +692,7 @@ class Ui_MainWindow(object):
         self.populate_dropdown(
             combo=self.customDrop,
             base_folder=self.custom_counter,
-            file_ext=None,  # folders only
+            file_ext=None, 
             include_subfolders=False
         ) 
          
@@ -703,7 +701,7 @@ class Ui_MainWindow(object):
         self.populate_dropdown(
             combo=self.cursorDrop,
             base_folder=self.assets_dir,
-            file_ext=".xml",  # folders only
+            file_ext=".xml", 
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Cursors-"),
         )  
@@ -713,7 +711,7 @@ class Ui_MainWindow(object):
         self.populate_dropdown(
             combo=self.speechDrop,
             base_folder=self.assets_dir,
-            file_ext=".xml",  # folders only
+            file_ext=".xml",
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Default-"),
         )  
@@ -723,13 +721,12 @@ class Ui_MainWindow(object):
         self.populate_dropdown(
             combo=self.iconDrop,
             base_folder=self.assets_dir,
-            file_ext=".xml",  # folders only
+            file_ext=".xml", 
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Sharp") or f.startswith("Round"),
         )  
 
     def update_login_preview(self):
-        # Get the full path stored in the dropdown's item data
         xml_path = self.loginDrop.currentData()
         if xml_path and os.path.exists(xml_path):
             self.loginPreview.set_xml_path(xml_path)
@@ -742,15 +739,12 @@ class Ui_MainWindow(object):
         layer_paths = [os.path.join(base_path, img) for img in image_list]
         preview_widget.layer_paths = [p if os.path.exists(p) else None for p in layer_paths]
 
-        # Expand tints to correct size
         while len(preview_widget.layer_tints) < len(layer_paths):
             preview_widget.layer_tints.append(QColor(255, 255, 255, 255))
 
-        # Apply individual colors
         for idx, color_btn in color_map.items():
             preview_widget.layer_tints[idx] = color_btn.color()
 
-        # Handle combined colors (dict: index -> (colorBtn1, colorBtn2))
         if combine_map:
             for idx, (c1, c2) in combine_map.items():
                 preview_widget.layer_tints[idx] = self.combine_colors(c1.color(), c2.color())
@@ -770,7 +764,6 @@ class Ui_MainWindow(object):
             os.path.relpath(os.path.join(self.pokeballIcon, "Pokeball-Icon.png"), self.previewimages),   # 8
         ]
 
-        # Map layer names to indexes
         layer_map = {
             "maincolor": 0,
             "sidecolor": 1,
@@ -779,14 +772,12 @@ class Ui_MainWindow(object):
             "icon": 8,
         }
 
-        # Example: hide icons if "Icon" not in text
         if "Icon" not in text:
             for name in ["icon", "icon2"]:
                 idx = layer_map.get(name)
                 if idx is not None and idx < len(layer):
                     layer[idx] = "Blank1.png"
 
-        # Flip layers if Left
         if "Left" in text:
             flipped_paths = self.flip_layers_y(layer, [0, 1])
             layer = [os.path.relpath(p, self.previewimages) for p in flipped_paths]
@@ -835,16 +826,13 @@ class Ui_MainWindow(object):
                     else os.path.join(self.previewimages, path)
                 )
 
-                # Only flip layers that need it
                 if layers_to_flip and idx in layers_to_flip:
-                    # Check cache first
                     if full_path in self.flipped_cache:
                         flipped_path = self.flipped_cache[full_path]
                     else:
                         img = Image.open(full_path).convert("RGBA")
                         img = img.transpose(Image.FLIP_LEFT_RIGHT)
 
-                        # Save to flipped folder
                         flipped_path = os.path.join(flipped_dir, os.path.basename(full_path))
                         img.save(flipped_path)
                         self.flipped_cache[full_path] = flipped_path
@@ -1127,7 +1115,6 @@ class Ui_MainWindow(object):
         return btn
 
     def save_config(self):
-        # Load existing config if it exists
         if os.path.exists(self.configPath):
             try:
                 with open(self.configPath, "r", encoding="utf-8") as f:
@@ -1138,10 +1125,8 @@ class Ui_MainWindow(object):
         else:
             existing_config = {}
 
-        # Preserve existing game path if it exists
         existing_game_path = existing_config.get("paths", {}).get("game_path")
 
-        # Build new config
         config = {
             "colors": {
                 "main-color": self.mainColorW.color().name(),
@@ -1180,7 +1165,6 @@ class Ui_MainWindow(object):
                 "login_screen": self.loginDrop.currentText(),
                 "encounter_counter": self.counterDrop.currentText(),
                 "custom_counter_current": self.customDrop.currentText(),
-                # Only use self.gamePath if there's no existing value
                 "game_path": self.gamePath or existing_game_path,
             },
 
@@ -1205,18 +1189,16 @@ class Ui_MainWindow(object):
             },
         }
 
-        # Save
         with open(self.configPath, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
 
         print(f"Config saved: {self.configPath}")
 
     def save_config_as(self):
-        # Open a "Save As" dialog
         new_path, _ = QtWidgets.QFileDialog.getSaveFileName(
             None,
             "Save Configuration As",
-            os.path.expanduser("~"),  # Start in home dir
+            os.path.expanduser("~"),
             "JSON Files (*.json);;All Files (*)"
         )
 
@@ -1224,11 +1206,9 @@ class Ui_MainWindow(object):
             print("Save As canceled.")
             return
 
-        # Ensure the path ends with .json
         if not new_path.lower().endswith(".json"):
             new_path += ".json"
 
-        # Load existing config if possible
         if os.path.exists(self.configPath):
             try:
                 with open(self.configPath, "r", encoding="utf-8") as f:
@@ -1239,10 +1219,8 @@ class Ui_MainWindow(object):
         else:
             existing_config = {}
 
-        # Preserve existing game path
         existing_game_path = existing_config.get("paths", {}).get("game_path")
 
-        # Build config (same as save_config)
         config = {
             "colors": {
                 "main-color": self.mainColorW.color().name(),
@@ -1281,7 +1259,6 @@ class Ui_MainWindow(object):
                 "login_screen": self.loginDrop.currentText(),
                 "encounter_counter": self.counterDrop.currentText(),
                 "custom_counter_current": self.customDrop.currentText(),
-                # Only use self.gamePath if there's no existing value
                 "game_path": self.gamePath or existing_game_path,
             },
 
@@ -1306,12 +1283,10 @@ class Ui_MainWindow(object):
             },
         }
 
-        # Write out the new file
         try:
             with open(new_path, "w", encoding="utf-8") as f:
                 json.dump(config, f, indent=4)
             print(f"Config saved as: {new_path}")
-            # Optionally update self.configPath to new one:
             self.configPath = new_path
         except Exception as e:
             print(f"Failed to save config as {new_path}: {e}")
@@ -1392,22 +1367,19 @@ class Ui_MainWindow(object):
             self.cursorDrop.setCurrentIndex(state.get("cursor_drop", 0))
 
     def load_last_config(self):
-        """Load last used config file."""
         self._load_config_from_path(self.configPath)
 
     def load_default_config(self):
-        """Load default config file."""
         self._load_config_from_path(self.defaultConfig)
 
     def load_config(self):
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
-            None,  # <- no parent, works in all cases
+            None,  
             "Select Config File",
             os.path.dirname(self.configPath) if hasattr(self, "configPath") else "",
             "JSON Files (*.json);;All Files (*)"
         )
 
-        # If user cancels
         if not file_path:
             print("No config file selected, using defaults.")
             return
@@ -1416,10 +1388,8 @@ class Ui_MainWindow(object):
             print(f"Selected file does not exist: {file_path}")
             return
 
-        # Use the shared loader
         self._load_config_from_path(file_path)
 
-        # Update internal config path to the chosen one
         self.configPath = file_path
 
         print(f"Loaded config from: {file_path}")
@@ -1559,23 +1529,20 @@ class Ui_MainWindow(object):
         return file_path
 
     def ensure_archetype(self, parent=None):
-        """Check if Archetype folder exists, and prompt install if missing."""
         if os.path.exists(self.archetype_root):
-            return True  # folder exists, proceed
+            return True
 
-        # Ask user if they want to install
         choice = QMessageBox.question(
             parent,
             "Archetype Missing",
-            "Archetype is required in order to use the Archetype Manager.\nThere are 2 ways to do this:\n\nOption 1: Go to https://github.com/ssjshields/archetype download and extract into the Archetype Manager folder\n\nOption 2: press Yes and this will download all the files for you",
+            "Archetype is required in order to use Vextryyn's Mod Manager.\nThere are 2 ways to do this:\n\nOption 1: Go to https://github.com/ssjshields/archetype download and extract into the Archetype Manager folder\n\nOption 2: press Yes and this will download all the files for you",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.Yes
         )
 
         if choice == QMessageBox.No:
-            return False  # user canceled
+            return False 
 
-        # User wants to install → run your download function
         status_win = QtWidgets.QWidget()
         status_win.setWindowTitle("Installing Archetype")
         status_win.setFixedSize(300, 100)
@@ -1605,7 +1572,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Archetype Manager"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Vextryyn's Mod Manager"))
         self.label_8.setText(_translate("MainWindow", "reshiram color\n"
         "\n"
         "reshiram aura\n"
@@ -1652,7 +1619,6 @@ class Ui_MainWindow(object):
         "font button\n"
         "font disabled\nIcon"))
         self.label_13.setText(_translate("MainWindow", "Main Window"))
-        # self.label_12.setText(_translate("MainWindow", "main \n\nsub\n\nbutton\n\naccent\n\nIcon"))
 
         self.counterText.setText(_translate("MainWindow","Pokemon        1\n\n\nPokemon        2\n\n\nPokemon        3"))
         self.windowTextFontMain.setText(_translate("MainWindow","           Global Trade Link"))
@@ -1673,11 +1639,6 @@ class Ui_MainWindow(object):
         self.label_15.setText(_translate("MainWindow", "Cursor Type"))
         self.cursorBrowse.setText(_translate("MainWindow", "Browse..."))
         self.label_17.setText(_translate("MainWindow", "Add Custom Cursor"))
-        # self.modSave.setText(_translate("MainWindow", "Save"))
-        # self.modRefresh.setText(_translate("MainWindow", "Refresh"))
-        # self.modBrowse.setText(_translate("MainWindow", "Browse..."))
-        # self.iconDrop.setItemText(0, _translate("MainWindow", "Round"))
-        # self.iconDrop.setItemText(1, _translate("MainWindow", "Sharp"))
         self.label_20.setText(_translate("MainWindow", "Icon Type"))
         self.label_23.setText(_translate("MainWindow", "Speech Bubbles"))
         self.speechBrowse.setText(_translate("MainWindow", "Browse..."))
@@ -1687,8 +1648,6 @@ class Ui_MainWindow(object):
         self.downloadArch.setText(_translate("MainWindow", "Download"))
         self.modButtonLabel.setText(_translate("MainWindow","Mod List"))
         self.setGamePath.setText(_translate("MainWindow", "Browse"))
-        # self.loadConfig.setText(_translate("MainWindow", "Load"))
-        # self.label_27.setText(_translate("MainWindow", "Load Default Config"))
         self.completeMod.setText(_translate("MainWindow", "Complete"))
         self.label_28.setText(_translate("MainWindow", "Finish and add to Pokemmo"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Archetype), _translate("MainWindow", "Archetype"))
