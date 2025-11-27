@@ -735,6 +735,14 @@ class Ui_MainWindow(object):
             config = json.load(f)
 
         gamepath = config["paths"]["game_path"]
+
+        # ---- NEW: Check if gamepath exists ----
+        if not os.path.isdir(gamepath):
+            self.status_label_archetype.setText(
+                f"Error: Game path does not exist:\n{gamepath}"
+            )
+            return  # Abort function early
+
         script_name = "PokeMMO"
 
         if sys.platform.startswith("win"):
@@ -742,20 +750,25 @@ class Ui_MainWindow(object):
             cmd = [script_path]
         else:
             script_path = os.path.join(gamepath, script_name + ".sh")
-
             if not os.access(script_path, os.X_OK):
                 os.chmod(script_path, 0o755)
-
             cmd = ["bash", script_path]
 
+        # Check if script exists
         if not os.path.exists(script_path):
-            raise FileNotFoundError(f"Script not found: {script_path}")
+            self.status_label_archetype.setText(
+                f"Error: Launch script not found:\n{script_path}"
+            )
+            return
 
         try:
             subprocess.run(cmd, cwd=gamepath, check=True)
-            print(f"{script_path} ran successfully.")
+            self.status_label_archetype.setText("PokeMMO launched successfully.")
         except subprocess.CalledProcessError as e:
-            print(f"Error running {script_path}: {e}")
+            self.status_label_archetype.setText(
+                f"Error running PokeMMO:\n{e}"
+            )
+
 
     def update_icon_drop(self):
 

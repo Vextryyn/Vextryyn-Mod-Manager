@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="LoginScreen">
      <attribute name="title">
@@ -1524,6 +1524,26 @@ berrydisabled</string>
        </property>
        <property name="text">
         <string>TextLabel</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="completeMod_2">
+       <property name="geometry">
+        <rect>
+         <x>722</x>
+         <y>542</y>
+         <width>280</width>
+         <height>46</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Complete</string>
        </property>
       </widget>
      </widget>
