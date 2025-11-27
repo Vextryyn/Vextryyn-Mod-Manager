@@ -1535,7 +1535,7 @@ class Ui_MainWindow(object):
         choice = QMessageBox.question(
             parent,
             "Archetype Missing",
-            "Archetype is required in order to use Vextryyn's Mod Manager.\nThere are 2 ways to do this:\n\nOption 1: Go to https://github.com/ssjshields/archetype download and extract into the Archetype Manager folder\n\nOption 2: press Yes and this will download all the files for you",
+            "Archetype is required in order to use Vextryyn's Mod Manager.\nThere are 2 ways to do this:\n\nOption 1: Go to https://github.com/ssjshields/archetype download and extract into the VMM folder\n\nOption 2: press Yes and this will download all the files for you",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.Yes
         )
