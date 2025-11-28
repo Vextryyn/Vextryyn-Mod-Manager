@@ -1,3 +1,5 @@
+Vextryyn's Mod Manager(Name is not final)
+
 Overall this is part of a larger Mod Manager project im working on. At the time im opening this up, there is no viable linux solution for pokemmo mod management, so I figured this was a good starting point for a mod manager that works for all the games I play. Since it functions I decided someone out there may find it useful. Still pretty ugly and will need a full rewrite before I consider it finished.
 
 For Windows, there is a perfectly viable solution by Ryukotsuki https://github.com/Ryukotsuki/Poke-Manager
