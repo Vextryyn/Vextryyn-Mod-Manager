@@ -1,9 +1,8 @@
-This is a mod manager for pokemmo and theme customizer for Archetype
+Overall this is part of a larger Mod Manager project im working on. At the time im opening this up, there is no viable linux solution for pokemmo mod management, so I figured this was a good starting point for a mod manager that works for all the games I play. Since it functions I decided someone out there may find it useful. Still pretty ugly and will need a full rewrite before I consider it finished.
 
-Pretty much created this because there is currently nothing on linux to manage pokemmo mods.
+For Windows, there is a perfectly viable solution by Ryukotsuki https://github.com/Ryukotsuki/Poke-Manager
 
-For right now, I recommend to keep it in its own folder. At this moment I havent moved all folders into cache or set up automated cleanup for most things, so it will keep your custom items in their respective folders.
-
+Whenever a Linux port is released by Ryukotsuki, I will likely quit building only this and pivot back to my main project.
 
 Not implemented yet:
 Custom Cursors
@@ -15,6 +14,8 @@ Login Screen Preview - complex animations like the Unova login screen may work b
 Encounter Counter - minimal counters have not been added for preview yet, please note they are just icons and counts, where normal also has pokemon names
 
 How To:
+
+For right now, I recommend to extract in its own folder. At this moment I havent moved all folders into cache or set up automated cleanup for most things, so it will keep your custom items in their respective folders.
 
 1. Login Screen
     You should be able to just add old login screen animations and it will remove all the old fluff and should load in correctly. I have had a tough time tracking down the old login screen animations since the change, so i have limited testing material. If you have any that do not work, or can point me to where i can find all the old login animations please let me know.
