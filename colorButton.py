@@ -7,26 +7,26 @@ class ColorButton(QPushButton):
 
     def __init__(self, parent=None, initial_color=QColor("white"), *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self._color = QColor(initial_color)  # clone
+        self._color = QColor(initial_color)
         self.update_style()
         self.clicked.connect(self.choose_color)
 
     def choose_color(self):
         color = QColorDialog.getColor(self._color, self, "Select Color")
         if color.isValid():
-            self._color = QColor(color)               # clone
+            self._color = QColor(color)
             self.update_style()
-            self.colorChanged.emit(QColor(self._color))  # emit clone
+            self.colorChanged.emit(QColor(self._color))
 
     def update_style(self):
         self.setStyleSheet(f"background-color: {self._color.name()};")
 
     def color(self):
-        return QColor(self._color)  # always return a clone
+        return QColor(self._color)
 
     def setColor(self, color):
         if not isinstance(color, QColor):
             color = QColor(color)
-        self._color = QColor(color)                     # clone
+        self._color = QColor(color)
         self.update_style()
-        self.colorChanged.emit(QColor(self._color))     # emit clone
+        self.colorChanged.emit(QColor(self._color))

@@ -1,4 +1,3 @@
-# modOrganizer.py
 import os
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QListWidgetItem
@@ -10,22 +9,18 @@ class ModListWidget(QtWidgets.QWidget):
         self.mods_folder = mods_folder
         self.mod_order_file = os.path.join(self.mods_folder, "mod_order.txt")
 
-        # Main layout
         layout = QtWidgets.QVBoxLayout(self)
 
-        # Instruction label
         label = QtWidgets.QLabel("Drag mods to change their load order:")
         layout.addWidget(label)
 
-        # List widget
         self.mod_list = QtWidgets.QListWidget()
-        self.mod_list.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)  # PyQt5 enum
+        self.mod_list.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         layout.addWidget(self.mod_list)
         self.mod_list.setAcceptDrops(True)
         self.mod_list.dragEnterEvent = self.dragEnterEvent
         self.mod_list.dropEvent = self.dropEvent
 
-        # Buttons layout
         button_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(button_layout)
 
@@ -41,27 +36,22 @@ class ModListWidget(QtWidgets.QWidget):
         save_button.clicked.connect(self.save_mod_order)
         button_layout.addWidget(save_button)
 
-        # Status label
         self.status_label = QtWidgets.QLabel("")
         layout.addWidget(self.status_label)
 
-        # Initial load
         self.load_mods()
 
     def load_mods(self):
         self.mod_list.clear()
 
-        # Ensure folder exists
         if not os.path.exists(self.mods_folder):
             os.makedirs(self.mods_folder)
 
-        # List all mods
         mods = sorted([
             f for f in os.listdir(self.mods_folder)
             if f.lower().endswith((".pak", ".zip", ".mod", ".json"))
         ])
 
-        # Load saved order
         saved_order = []
         if os.path.exists(self.mod_order_file):
             with open(self.mod_order_file, "r") as f:
@@ -85,14 +75,12 @@ class ModListWidget(QtWidgets.QWidget):
             mod_name = item.text()
             mod_path = os.path.join(self.mods_folder, mod_name)
 
-            # Remove from disk if it exists
             if os.path.exists(mod_path):
                 try:
                     os.remove(mod_path)
                 except Exception as e:
                     print(f"Error deleting {mod_name}: {e}")
 
-            # Remove from the list widget
             self.mod_list.takeItem(self.mod_list.row(item))
 
         self.status_label.setText(f"Deleted {len(selected_items)} mod(s).")
@@ -113,11 +101,10 @@ class ModListWidget(QtWidgets.QWidget):
         for url in event.mimeData().urls():
             file_path = url.toLocalFile()
             if os.path.isfile(file_path) and file_path.lower().endswith((".pak", ".zip", ".mod", ".json")):
-                # Copy file to mods folder
                 dest_path = os.path.join(self.mods_folder, os.path.basename(file_path))
                 try:
                     import shutil
                     shutil.copy(file_path, dest_path)
                 except Exception as e:
                     print(f"Error copying file: {e}")
-        self.load_mods()  # refresh the list after drop
+        self.load_mods()

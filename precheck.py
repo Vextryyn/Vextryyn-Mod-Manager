@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QMessage
 from PyQt5.QtCore import Qt
 
 def check_git_installed(parent=None):
-    """Check if Git is installed."""
+
     try:
         subprocess.run(["git", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return True
@@ -18,14 +18,13 @@ def check_git_installed(parent=None):
         return False
 
 def check_archetype(parent=None):
-    """Check if Archetype exists. If not, show dialog and optionally install."""
+
     if not check_git_installed(parent):
         sys.exit(1)
 
     if os.path.exists("Archetype"):
-        return True  # Folder exists, continue normally
+        return True
 
-    # Show a blocking window/dialog
     msg_box = QMessageBox(parent)
     msg_box.setWindowTitle("Archetype Missing")
     msg_box.setText("The Archetype folder is missing.\nDo you want to install it now?")
@@ -34,9 +33,8 @@ def check_archetype(parent=None):
     choice = msg_box.exec()
 
     if choice == QMessageBox.No:
-        sys.exit(0)  # Exit app if user cancels
+        sys.exit(0)
 
-    # User wants to install
     status_win = QWidget()
     status_win.setWindowTitle("Installing Archetype")
     status_win.setFixedSize(300, 100)
@@ -46,9 +44,8 @@ def check_archetype(parent=None):
     layout.addWidget(status_label)
     status_win.setLayout(layout)
     status_win.show()
-    QApplication.processEvents()  # Force GUI to update
+    QApplication.processEvents()
 
-    # Run clone/pull
     repo_url = "https://github.com/ssjshields/archetype"
     target_dir = "Archetype"
 

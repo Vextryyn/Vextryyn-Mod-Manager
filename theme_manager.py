@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QMessageBox, QWidget
 
 class ThemeManager:
     def __init__(self, custom_dir=None):
-        # Default to ./CustomThemes
         self.custom_dir = custom_dir or os.path.join(os.getcwd(), "CustomThemes")
         os.makedirs(self.custom_dir, exist_ok=True)
 
@@ -20,7 +19,6 @@ class ThemeManager:
         extract_path = os.path.join(self.custom_dir, zip_name)
 
         try:
-            # Check if login-animation.xml exists inside ZIP first
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                 if "login-animation.xml" not in zip_ref.namelist():
                     self._show_message(
@@ -30,18 +28,15 @@ class ThemeManager:
                     )
                     return None
 
-                # Now safe to extract
                 if os.path.exists(extract_path):
                     shutil.rmtree(extract_path)
                 os.makedirs(extract_path, exist_ok=True)
                 zip_ref.extractall(extract_path)
 
-            # Rename login-animation.xml
             old_xml_path = os.path.join(extract_path, "login-animation.xml")
             new_xml_path = os.path.join(extract_path, f"{zip_name}.xml")
             os.rename(old_xml_path, new_xml_path)
 
-            # Remove unwanted <theme> entries
             tree = ET.parse(new_xml_path)
             root = tree.getroot()
             modified = False
@@ -68,10 +63,7 @@ class ThemeManager:
             return None
 
     def scan_themes(self):
-        """
-        Returns a list of all XML themes in the CustomThemes folder
-        (including subfolders)
-        """
+
         themes = []
         for root, _, files in os.walk(self.custom_dir):
             for f in files:
@@ -90,7 +82,6 @@ class ThemeManager:
         extract_path = os.path.join(target_dir, zip_name)
 
         try:
-            # Remove existing folder if overwrite=True
             if os.path.exists(extract_path):
                 if overwrite:
                     shutil.rmtree(extract_path)
@@ -112,20 +103,8 @@ class ThemeManager:
 
 
     def _show_message(self, title, message, parent_widget=None):
-        """
-        Safely show a message box if parent_widget is a QWidget,
-        otherwise print to console.
-        """
+
         if isinstance(parent_widget, QWidget):
             QMessageBox.information(parent_widget, title, message)
         else:
             print(f"[{title}] {message}")
-
-    # def _show_message(title, message, parent_widget=None):
-    #     """
-    #     Show message box if parent_widget is a QWidget, else print to console.
-    #     """
-    #     if isinstance(parent_widget, QWidget):
-    #         QMessageBox.information(parent_widget, title, message)
-    #     else:
-    #         print(f"[{title}] {message}")

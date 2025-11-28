@@ -8,7 +8,7 @@ import sys
 class AboutWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("About Archetype Manager")
+        self.setWindowTitle("About Vextryyn's Mod Manager")
         self.setFixedSize(400, 440)
         self.initUI()
 
@@ -16,7 +16,7 @@ class AboutWindow(QDialog):
         layout = QVBoxLayout()
 
         # App name + version
-        title = QLabel("Archetype Manager v0.0.1a")
+        title = QLabel("Vextryyn's Mod Manager v0.0.4a")
         title.setFont(QFont("Arial", 16, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
 

@@ -3,14 +3,12 @@ import os
 class PokeGen:
     @staticmethod
     def update_poke(file_path: str, mods_folder: str):
-        # Read file if it exists
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
         else:
             lines = []
 
-        # Read mod_order.txt
         mod_order_file = os.path.join(mods_folder, "mod_order.txt")
         if os.path.exists(mod_order_file):
             with open(mod_order_file, "r") as f:

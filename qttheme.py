@@ -1,25 +1,19 @@
-# qttheme.py
 import platform
 from PyQt5 import QtWidgets, QtGui
 import subprocess
 
 def system_theme(app: QtWidgets.QApplication):
-    """
-    Apply system-native style and palette.
-    - Windows: detects dark mode
-    - Linux/macOS: uses native style
-    """
+
     current_os = platform.system()
 
     if current_os == "Windows":
-        app.setStyle("windows")  # native Windows style
+        app.setStyle("windows")
         try:
             import winreg
             key = winreg.OpenKey(
                 winreg.HKEY_CURRENT_USER,
                 r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
             )
-            # 0 = dark, 1 = light
             apps_use_light_theme, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
             winreg.CloseKey(key)
         except Exception:
@@ -52,7 +46,7 @@ def system_theme(app: QtWidgets.QApplication):
 
             app.setPalette(dark_palette)
 
-    elif current_os == "Darwin":  # macOS
+    elif current_os == "Darwin":
         app.setStyle(QtWidgets.QStyleFactory.create("macintosh"))
         app.setPalette(app.style().standardPalette())
 

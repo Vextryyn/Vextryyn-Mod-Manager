@@ -23,12 +23,10 @@ class XmlAnimationPreview(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
 
-        # Animation label
         self.label = QLabel(self)
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setMinimumSize(200, 200)
 
-        # Layout
         layout = QVBoxLayout(self)
         layout.addWidget(self.label)
 
@@ -76,7 +74,6 @@ class XmlAnimationPreview(QWidget):
             if grid_name:
                 self.animations[grid_name] = self.resolve_frames(grid_tag)
 
-        # PASS 4: Collect composed animations
         self.composed_xml_nodes = self.root.findall(".//composed")
 
 
@@ -100,14 +97,12 @@ class XmlAnimationPreview(QWidget):
                     })
 
             elif ref:
-                # Look in animations first
                 if ref in self.animations:
                     for f in self.animations[ref]:
                         f_copy = f.copy()
                         if tint:
                             f_copy["tint"] = self.layer_tints.get(tint, tint)
                         frames.append(f_copy)
-                # Or in image_map
                 elif ref in self.image_map:
                     pix_entry = self.image_map[ref]
                     frames.append({
@@ -117,7 +112,6 @@ class XmlAnimationPreview(QWidget):
                     })
 
         elif node.tag == "grid":
-            # Instead of flat frames, build a dict like composed
             grid_frames = {}
             for alias in node.findall("alias"):
                 ref = alias.attrib.get("ref")
@@ -126,7 +120,6 @@ class XmlAnimationPreview(QWidget):
                 sub_frames = self.resolve_frames_by_name(ref)
                 if sub_frames:
                     grid_frames[ref] = sub_frames
-            # Return special marker so caller knows it's a grid composition
             return [{"grid": grid_frames}]
 
         elif node.tag == "alias":
@@ -150,7 +143,6 @@ class XmlAnimationPreview(QWidget):
             pix_entry = self.image_map[name]
             return [{"pixmap": pix_entry["pixmap"], "duration": None, "tint": pix_entry.get("tint")}]
 
-        # composed
         for tag in self.composed_xml_nodes:
             if tag.attrib.get("name") == name:
                 frames = []
@@ -158,7 +150,6 @@ class XmlAnimationPreview(QWidget):
                     frames.extend(self.resolve_frames(alias_tag))
                 return frames
 
-        # grids
         for tag in self.root.findall(".//grid"):
             if tag.attrib.get("name") == name:
                 grid_layers = {}
@@ -171,7 +162,6 @@ class XmlAnimationPreview(QWidget):
                             grid_layers[ref] = sub_frames
                             max_length = max(max_length, len(sub_frames))
                 if grid_layers:
-                    # store max_length so parent index can wrap correctly
                     return [{"grid": grid_layers, "length": max_length}]
                 return []
 
@@ -222,7 +212,6 @@ class XmlAnimationPreview(QWidget):
         if not hasattr(self, "alias_frames_map") or not self.alias_frames_map:
             return
 
-        # --- Step 1: determine canvas size ---
         def all_pixmaps():
             for frames in self.alias_frames_map.values():
                 for f in frames:
@@ -244,7 +233,6 @@ class XmlAnimationPreview(QWidget):
 
         log_parts = []
 
-        # --- Step 2: draw frames ---
         for alias_name, frames in self.alias_frames_map.items():
             if not frames:
                 continue
@@ -340,7 +328,6 @@ class XmlAnimationPreview(QWidget):
         if not hasattr(self, "alias_frames_map") or not self.alias_frames_map:
             return
 
-        # Determine max length among layers for looping (ignore empty frames)
         max_len = 1
         for frames in self.alias_frames_map.values():
             if not frames:
@@ -351,16 +338,13 @@ class XmlAnimationPreview(QWidget):
             else:
                 max_len = max(max_len, len(frames))
 
-        # Advance all layer indices in lock-step
         for alias_name, frames in self.alias_frames_map.items():
             if not frames:
                 continue
             self.layer_frame_indices[alias_name] = (self.layer_frame_indices.get(alias_name, 0) + 1) % max_len
 
-        # Redraw
         self.display_current_frame()
 
-        # Recalculate timer duration
         durations = []
         for alias_name, frames in self.alias_frames_map.items():
             if not frames:
