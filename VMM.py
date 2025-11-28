@@ -710,12 +710,21 @@ class Ui_MainWindow(object):
         )  
 
     def poke_start(self, *args):
-        with open("config.json", "r") as f:
-            config = json.load(f)
+        self.save_config()
+        try:
+            with open("config.json", "r") as f:
+                config = json.load(f)
+        except Exception:
+            self.status_label_archetype.setText("Error: The Game Path is not set")
+            return
 
-        gamepath = config["paths"].get("game_path")
+        # Safely get game path
+        gamepath = (
+            config.get("paths", {})
+                .get("game_path")
+        )
 
-        # 🔹 New check: if the path is missing or empty
+        # 🔹 If missing, empty, or None → error without closing
         if not gamepath:
             self.status_label_archetype.setText("Error: No game path set.")
             return

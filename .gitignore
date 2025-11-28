@@ -14,7 +14,6 @@ venv/
 Archtype/
 CustomCounters/
 CustomThemes/
-Preview/
 *.zip
 *.xml
 *0.*.py
