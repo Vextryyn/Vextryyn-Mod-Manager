@@ -1223,7 +1223,7 @@ class Ui_MainWindow(object):
             existing_config = {}
 
         existing_game_path = existing_config.get("paths", {}).get("game_path")
-
+        # self.customconfig=new_path
         config = {
             "colors": {
                 "main-color": self.mainColorW.color().name(),
@@ -1284,6 +1284,9 @@ class Ui_MainWindow(object):
                 "icon_drop": self.iconDrop.currentIndex(),
                 "cursor_drop": self.cursorDrop.currentIndex(),
             },
+            # "lastconfig":{
+            #     "last_config_location":new_path
+            # }
         }
 
         with open(self.configPath, "w", encoding="utf-8") as f:
@@ -1378,6 +1381,9 @@ class Ui_MainWindow(object):
                 "icon_drop": self.iconDrop.currentIndex(),
                 "cursor_drop": self.cursorDrop.currentIndex(),
             },
+            # "lastconfig":{
+            #     "last_config_location":new_path
+            # }
         }
 
         try:
@@ -1426,41 +1432,66 @@ class Ui_MainWindow(object):
             print(f"Git command failed: {e}")
             return '<span style="color: red;">Git error</span>'
 
-    def _load_config_from_path(self, path): 
+    def _load_config_from_path(self, path):
         if not os.path.exists(path):
-            print(f"No config file found at {path}, using defaults.") 
-            return 
+            print(f"No config file found at {path}, using defaults.")
+            return
 
         with open(path, "r", encoding="utf-8") as f:
             config = json.load(f)
 
-        for key, value in config.get("colors", {}).items(): 
-            widget = getattr(self, key, None) 
-            if widget: 
-                widget.setColor(QtGui.QColor(value)) 
+        color_map = {
+            "main-color": "mainColorW",
+            "sub-color": "subColorW",
+            "button-color": "buttonColorW",
+            "accent-color": "accentColorW",
+            "hp-high-color": "hpHighW",
+            "hp-mid-color": "hpMidW",
+            "hp-low-color": "hpLowW",
+            "xp-color": "xpColorW",
+            "friendship-color": "friendshipColorW",
+            "icon-color": "iconColorW",
+            "counter-main-color": "mainColor",
+            "counter-sub-color": "subColor",
+            "counter-ball-color": "ballColor",
+            "counter-ball-outline": "ballOutline",
+            "counter-min-max-button-color": "minMaxButtonColor",
+        }
+
+        for json_key, widget_attr in color_map.items():
+            widget = getattr(self, widget_attr, None)
+            if widget:
+                value = config["colors"].get(json_key, "#000000")
+                color = QtGui.QColor(value)
+                widget.setColor(color)
+                if hasattr(widget, "colorChanged"):
+                    widget.colorChanged.emit(color)
+            else:
+                print(f"[Warning] No widget found for '{widget_attr}'")
 
         state = config.get("state", {})
 
         if hasattr(self, "tabWidget") and isinstance(self.tabWidget, QtWidgets.QTabWidget):
             self.tabWidget.setCurrentIndex(state.get("current_tab", 0))
 
-        if hasattr(self, "loginDrop") and isinstance(self.loginDrop, QtWidgets.QComboBox):
-            self.loginDrop.setCurrentIndex(state.get("loginDrop", 0))
+        combo_keys = [
+            ("loginDrop", "loginDrop"),
+            ("counterDrop", "counterDrop"),
+            ("customDrop", "customDrop"),
+            ("speechDrop", "speechDrop"),
+            ("bubblesDrop", "bubblesDrop"),
+            ("iconDrop", "icon_drop"),
+            ("cursorDrop", "cursor_drop"),
+        ]
 
-        if hasattr(self, "counterDrop") and isinstance(self.counterDrop, QtWidgets.QComboBox):
-            self.counterDrop.setCurrentIndex(state.get("counterDrop", 0))
-
-        if hasattr(self, "customDrop") and isinstance(self.customDrop, QtWidgets.QComboBox):
-            self.customDrop.setCurrentIndex(state.get("customDrop", 0))
-
-        if hasattr(self, "bubblesDrop") and isinstance(self.bubblesDrop, QtWidgets.QComboBox):
-            self.bubblesDrop.setCurrentIndex(state.get("bubblesDrop", 0))
-
-        if hasattr(self, "iconDrop") and isinstance(self.iconDrop, QtWidgets.QComboBox):
-            self.iconDrop.setCurrentIndex(state.get("icon_drop", 0))
-            
-        if hasattr(self, "cursorDrop") and isinstance(self.cursorDrop, QtWidgets.QComboBox):
-            self.cursorDrop.setCurrentIndex(state.get("cursor_drop", 0))
+        for attr, state_key in combo_keys:
+            combo = getattr(self, attr, None)
+            if combo and isinstance(combo, QtWidgets.QComboBox):
+                index = state.get(state_key, 0)
+                if 0 <= index < combo.count():
+                    combo.setCurrentIndex(index)
+                else:
+                    print(f"[Warning] Index {index} out of range for {attr}")
 
     def load_last_config(self):
         self._load_config_from_path(self.configPath)
