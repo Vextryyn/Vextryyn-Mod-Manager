@@ -816,10 +816,22 @@ class Ui_MainWindow(object):
 
 
     def update_cursor_preview(self):
+        current_index = self.cursorDrop.currentIndex()
+
+        if current_index < 0 or current_index >= self.cursorDrop.count():
+            if self.cursorDrop.count() > 0:
+                current_index = 0
+                self.cursorDrop.setCurrentIndex(0)
+            else:
+                print("cursorDrop has no items to select.")
+                return
+
+        selected_name = self.cursorDrop.itemText(current_index)
+
         self.update_single_preview(
             self.cursorPreview,
             self.assets_dir,
-            self.cursorDrop.currentText()
+            selected_name
         )
 
     def update_preview_layers(self, preview_widget, base_path, image_list, color_map, combine_map=None):
