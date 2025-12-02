@@ -31,7 +31,13 @@ For right now, I recommend to extract in its own folder. At this moment I havent
     pretty self explanitory, choose your colors
 
 4. Other
-    Selections work, but no previews or customs currently
+    Selections work for all.
+    Custom cursors and preview now available as of 0.0.6a
+    default cursor is 128x64 but as far as ive tested any size shoud work as long as you select the correct region for its respective cursor type.
+    Bigger does not mean better, it just means bigger. If you make your cursors double the size the cursor in game will be double the size. 
+    Feedback is appreciated, im not sure what special formats yal may do, but if i need to make the preview window bigger please let me know.
+    Cursor Custimization
+    Green rectangles highlight each cursor area and red dots indicate the hotspot(clicking point) clicking y is relative to the square, where as xywh is respectve of the whole image. xywh is top left corner is the xy and wh is width and height from there
 
 5. Mods
     Simple drag and drop mod manager, drag mods to rearrange them. Currently there is no enable disabled option so anything included will be enabled.
