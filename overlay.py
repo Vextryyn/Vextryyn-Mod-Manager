@@ -7,20 +7,18 @@ class OverlayLabel(QLabel):
         super().__init__(parent)
         self.pixmap_original = None
         self.cursors_data = []
-        self.setMinimumSize(310, 155)  # force preview window size
+        self.setMinimumSize(310, 155)
         self.setMaximumSize(310, 155)
 
     def set_image(self, pixmap, cursors_data=None):
         self.pixmap_original = pixmap
         if cursors_data:
             self.cursors_data = cursors_data
-        # Force QLabel to have a tiny pixmap so it repaints
         self.setPixmap(QPixmap(1,1))
         self.update()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        # No scaling here; paintEvent handles scaling
         self.update()
 
     def paintEvent(self, event):
@@ -32,12 +30,10 @@ class OverlayLabel(QLabel):
         painter.setRenderHint(QPainter.Antialiasing)
 
         label_size = self.size()
-        # Scale the original pixmap to fit the label while keeping aspect ratio
         scaled_pix = self.pixmap_original.scaled(
             label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation
         )
 
-        # Center the image in the label
         pix_rect = QRect(
             (label_size.width() - scaled_pix.width()) // 2,
             (label_size.height() - scaled_pix.height()) // 2,
@@ -45,14 +41,11 @@ class OverlayLabel(QLabel):
             scaled_pix.height()
         )
 
-        # Draw the scaled image
         painter.drawPixmap(pix_rect, scaled_pix)
 
-        # Compute scaling factors for hotspots/rectangles
         x_scale = scaled_pix.width() / self.pixmap_original.width()
         y_scale = scaled_pix.height() / self.pixmap_original.height()
 
-        # Draw cursors
         cursor_lookup = {c['name']: c for c in self.cursors_data}
         for cursor in self.cursors_data:
             rect_x = rect_y = rect_w = rect_h = 0
@@ -71,7 +64,6 @@ class OverlayLabel(QLabel):
                 if "hotspot" in ref_cursor:
                     hx, hy = ref_cursor["hotspot"]
 
-            # Draw rectangle
             if rect_w and rect_h:
                 rect = QRect(
                     pix_rect.left() + int(rect_x * x_scale),
@@ -85,7 +77,6 @@ class OverlayLabel(QLabel):
                 painter.setPen(pen)
                 painter.drawRect(rect)
 
-            # Draw hotspot
             if hx is not None and hy is not None:
                 abs_x = rect_x + hx
                 abs_y = rect_y + hy

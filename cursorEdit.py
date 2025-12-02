@@ -9,7 +9,7 @@ class CursorEdit(QtWidgets.QDialog):
         self.resize(600, 500)
 
         self.xml_path = xml_path
-        self.on_save = on_save  # store the callback
+        self.on_save = on_save
 
         layout = QtWidgets.QVBoxLayout(self)
         scroll = QtWidgets.QScrollArea()
@@ -20,7 +20,6 @@ class CursorEdit(QtWidgets.QDialog):
         self.form_layout = QtWidgets.QFormLayout(container)
         scroll.setWidget(container)
 
-        # load XML
         self.tree = ET.parse(self.xml_path)
         self.root = self.tree.getroot()
 
@@ -85,10 +84,8 @@ class CursorEdit(QtWidgets.QDialog):
 
         self.tree.write(self.xml_path, encoding="utf-8", xml_declaration=True)
 
-        # Call the callback if defined
         if self.on_save:
             self.on_save()
 
         QtWidgets.QMessageBox.information(self, "Saved", "Cursor settings updated!")
-        # self.accept()
 

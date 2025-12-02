@@ -809,7 +809,6 @@ class Ui_MainWindow(object):
 
             image_path = os.path.join(base_path, image_attr.attrib["file"])
 
-            # Pass XML path as second argument to overlay hotspots/regions
             preview_widget.set_image(image_path, xml_path=xml_path)
 
         except ET.ParseError as e:
@@ -1587,14 +1586,6 @@ class Ui_MainWindow(object):
             QtWidgets.QMessageBox.warning(None, "Invalid Image", "The selected file is not a valid image.")
             return None
 
-        # if image.width() > 126 or image.height() > 54:
-        #     QtWidgets.QMessageBox.warning(
-        #         None,
-        #         "Image Too Large",
-        #         f"The selected image is {image.width()}×{image.height()} px.\n"
-        #         f"Maximum allowed size is 126×54 px."
-        #     )
-        #     return None
 
         base_name = os.path.splitext(os.path.basename(file_path))[0]
         cursor_name = base_name
@@ -1639,19 +1630,17 @@ class Ui_MainWindow(object):
     def edit_cursor_data(self):
         cursor_name = self.cursorDrop.currentText()
 
-        # Ensure the file has .xml extension
         if not cursor_name.lower().endswith(".xml"):
             cursor_name = f"{cursor_name}.xml"
 
         xml_path = os.path.join(self.assets_dir, cursor_name)
 
-        # Create the dialog and pass a callback to update preview
         dialog = CursorEdit(
             xml_path,
-            on_save=self.update_cursor_preview  # callback triggers after saving
+            on_save=self.update_cursor_preview
         )
 
-        dialog.exec_()  # runs modally
+        dialog.exec_()
 
     def ensure_archetype(self, parent=None):
         if os.path.exists(self.archetype_root):
