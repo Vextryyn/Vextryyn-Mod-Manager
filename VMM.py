@@ -7,6 +7,7 @@ import shutil
 import json
 import zipfile
 import tempfile
+import xml.etree.ElementTree as ET
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, QDir
 from PyQt5.QtGui import QColor, QFont
@@ -15,13 +16,16 @@ from xmlpreview import XmlAnimationPreview
 from theme_manager import ThemeManager
 from counterpreview import CounterPreview
 from completeBuild import CompleteBuild
+from otherWidget import OtherWidget
 from PokeGen import PokeGen
+from cursorEdit import CursorEdit
 from qttheme import system_theme
 from functools import partial
 from typing import Dict
 from PIL import Image
 from messagebox import AboutWindow
 from modOrganizer import ModListWidget
+from otherWidget import OtherWidget
 
 
 
@@ -32,7 +36,8 @@ class Ui_MainWindow(object):
         self.assets_dir = "./Archetype/theme/assets"
         self.archetype_root="./Archetype"
         self.custom_login = "./CustomThemes"
-        self.custom_counter = "./CustomCounters"    
+        self.custom_counter = "./CustomCounters"
+        self.custom_cursor = "./CustomCursors"    
         if getattr(sys, "frozen", False):
             self.previewimages = os.path.join(os.path.dirname(sys.executable), "Preview")
         else:
@@ -325,27 +330,31 @@ class Ui_MainWindow(object):
         self.berryProgress.raise_()
         self.berryWarning.raise_()
         self.tabWidget.addTab(self.WindowColors, "")
+
         self.OtherScreen = QtWidgets.QWidget()
         self.OtherScreen.setObjectName("OtherScreen")
         self.cursoFrame = QtWidgets.QFrame(self.OtherScreen)
-        self.cursoFrame.setGeometry(QtCore.QRect(10, 30, 561, 121))
+        self.cursoFrame.setGeometry(QtCore.QRect(10, 30, 561, 141))
         self.cursoFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.cursoFrame.setObjectName("cursoFrame")
         self.cursorDrop = QtWidgets.QComboBox(self.cursoFrame)
         self.cursorDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
         self.cursorDrop.setObjectName("cursorDrop")
-
         self.label_15 = self.make_label(self.cursoFrame,"label_15",16,True,(5,5,211,61),None)
-
         self.cursorBrowse = QtWidgets.QPushButton(self.cursoFrame)
         self.cursorBrowse.setGeometry(QtCore.QRect(435, 70, 80, 25))
         self.cursorBrowse.setObjectName("cursorBrowse")
         self.label_17 = self.make_label(self.cursoFrame,"label_17",12,True,(195,65,241,30),None)
+        self.label_30 = self.make_label(self.cursoFrame,"label_30",12,True,(195,96,241,30),None)
+        self.cursorEditButton = QtWidgets.QPushButton(self.cursoFrame)
+        self.cursorEditButton.setGeometry(QtCore.QRect(435, 101, 80, 25))
+        self.cursorEditButton.setObjectName("cursorEdit")
+
         self.cursorPreviewFrame = QtWidgets.QFrame(self.OtherScreen)
         self.cursorPreviewFrame.setGeometry(QtCore.QRect(680, 10, 321, 166))
         self.cursorPreviewFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.cursorPreviewFrame.setObjectName("cursorPreviewFrame")
-        self.cursorPreview = QtWidgets.QWidget(self.cursorPreviewFrame)
+        self.cursorPreview = OtherWidget(self.cursorPreviewFrame)
         self.cursorPreview.setGeometry(QtCore.QRect(5, 5, 310, 155))
         self.cursorPreview.setObjectName("cursorPreview")
         self.iconFrame = QtWidgets.QFrame(self.OtherScreen)
@@ -377,6 +386,10 @@ class Ui_MainWindow(object):
         self.speechBubblePreview = QtWidgets.QWidget(self.speechBubblePreviewFrame)
         self.speechBubblePreview.setGeometry(QtCore.QRect(5, 5, 310, 155))
         self.speechBubblePreview.setObjectName("speechBubblePreview")
+
+
+
+
         self.tabWidget.addTab(self.OtherScreen, "")
         self.Archetype = QtWidgets.QWidget()
         self.Archetype.setObjectName("Archetype")
@@ -542,10 +555,13 @@ class Ui_MainWindow(object):
         self.update_bubbles_drop()
         self.update_icon_drop()
         self.update_cursor_drop()
+        self.update_cursor_preview()
 
         self.loginDrop.currentIndexChanged.connect(self.update_login_preview)
         self.counterDrop.currentIndexChanged.connect(self.update_counter_preview)
         self.customDrop.currentIndexChanged.connect(self.update_vartiou_drop)
+        self.cursorDrop.currentIndexChanged.connect(self.update_cursor_preview)
+
 
         self.mainColor.colorChanged.connect(lambda c: self.counterPreview.set_layer_tint(0, QColor(c)))
         self.subColor.colorChanged.connect(lambda c: self.counterPreview.set_layer_tint(1, QColor(c)))
@@ -577,6 +593,7 @@ class Ui_MainWindow(object):
         self.cursorBrowse.clicked.connect(self.handle_cursor_browse)
         self.completeMod.clicked.connect(self.complete_build)
         self.playPokemmo.clicked.connect(self.poke_start)
+        self.cursorEditButton.clicked.connect(self.edit_cursor_data)
 
 
         self.colorLinkedLabels = [
@@ -718,13 +735,11 @@ class Ui_MainWindow(object):
             self.status_label_archetype.setText("Error: The Game Path is not set")
             return
 
-        # Safely get game path
         gamepath = (
             config.get("paths", {})
                 .get("game_path")
         )
 
-        # 🔹 If missing, empty, or None → error without closing
         if not gamepath:
             self.status_label_archetype.setText("Error: No game path set.")
             return
@@ -760,8 +775,6 @@ class Ui_MainWindow(object):
                 f"Error running PokeMMO:\n{e}"
             )
 
-
-
     def update_icon_drop(self):
 
         self.populate_dropdown(
@@ -776,7 +789,40 @@ class Ui_MainWindow(object):
         xml_path = self.loginDrop.currentData()
         if xml_path and os.path.exists(xml_path):
             self.loginPreview.set_xml_path(xml_path)
-  
+
+    def update_single_preview(self, preview_widget, base_path, xml_filename):
+        import xml.etree.ElementTree as ET
+
+        xml_path = os.path.join(base_path, xml_filename)
+        if not os.path.exists(xml_path):
+            print(f"XML file not found: {xml_path}")
+            return
+
+        try:
+            tree = ET.parse(xml_path)
+            root = tree.getroot()
+
+            image_attr = root.find(".//images")
+            if image_attr is None or "file" not in image_attr.attrib:
+                print(f"No <images> tag or 'file' attribute found in {xml_filename}")
+                return
+
+            image_path = os.path.join(base_path, image_attr.attrib["file"])
+
+            # Pass XML path as second argument to overlay hotspots/regions
+            preview_widget.set_image(image_path, xml_path=xml_path)
+
+        except ET.ParseError as e:
+            print(f"Failed to parse XML {xml_filename}: {e}")
+
+
+    def update_cursor_preview(self):
+        self.update_single_preview(
+            self.cursorPreview,
+            self.assets_dir,
+            self.cursorDrop.currentText()
+        )
+
     def update_preview_layers(self, preview_widget, base_path, image_list, color_map, combine_map=None):
         if not base_path or not os.path.exists(base_path):
             print(f"[MainWindow] Invalid base path: {base_path}")
@@ -858,7 +904,6 @@ class Ui_MainWindow(object):
             },    
         )
 
-
     def flip_layers_y(self, image_paths: list, layers_to_flip: list = None):
         flipped_paths = []
 
@@ -894,7 +939,6 @@ class Ui_MainWindow(object):
                 flipped_paths.append(path)
 
         return flipped_paths
-
 
     def update_window_preview(self):
         self.update_preview_layers(
@@ -1530,7 +1574,7 @@ class Ui_MainWindow(object):
     def handle_cursor_browse(self):
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
             None,
-            "Select Config File",
+            "Select New Cursor",
             os.path.dirname(self.configPath) if hasattr(self, "configPath") else "",
             "PNG Files (*.png);;All Files (*)"
         )
@@ -1543,16 +1587,71 @@ class Ui_MainWindow(object):
             QtWidgets.QMessageBox.warning(None, "Invalid Image", "The selected file is not a valid image.")
             return None
 
-        if image.width() > 126 or image.height() > 54:
-            QtWidgets.QMessageBox.warning(
-                None,
-                "Image Too Large",
-                f"The selected image is {image.width()}×{image.height()} px.\n"
-                f"Maximum allowed size is 126×54 px."
-            )
-            return None
+        # if image.width() > 126 or image.height() > 54:
+        #     QtWidgets.QMessageBox.warning(
+        #         None,
+        #         "Image Too Large",
+        #         f"The selected image is {image.width()}×{image.height()} px.\n"
+        #         f"Maximum allowed size is 126×54 px."
+        #     )
+        #     return None
 
-        return file_path
+        base_name = os.path.splitext(os.path.basename(file_path))[0]
+        cursor_name = base_name
+
+        counter = 1
+        target_png = os.path.join(self.assets_dir, f"Cursors-{cursor_name}.png")
+        target_xml = os.path.join(self.assets_dir, f"Cursors-{cursor_name}.xml")
+        extra_png = f"Cursors-{cursor_name}.png"
+
+        while os.path.exists(target_png) or os.path.exists(target_xml):
+            cursor_name = f"{base_name}_{counter}"
+            target_png = os.path.join(self.assets_dir, f"Cursors-{cursor_name}.png")
+            target_xml = os.path.join(self.assets_dir, f"Cursors-{cursor_name}.xml")
+            counter += 1
+
+        shutil.copy(file_path, target_png)
+
+        source_xml = os.path.join(self.assets_dir, "Cursors-Black.xml")
+        if os.path.exists(source_xml):
+            shutil.copy(source_xml, target_xml)
+
+        if os.path.exists(target_xml):
+            try:
+                with open(target_xml, "r", encoding="utf-8") as f:
+                    xml_data = f.read()
+
+                import re
+                xml_data = re.sub(
+                    r'(<images[^>]*file=")([^"]*)(")',
+                    r'\1' + extra_png.replace("\\", "/") + r'\3',
+                    xml_data
+                )
+
+                with open(target_xml, "w", encoding="utf-8") as f:
+                    f.write(xml_data)
+
+            except Exception as e:
+                print("Error updating XML:", e)
+        self.update_cursor_drop()
+        return target_png
+
+    def edit_cursor_data(self):
+        cursor_name = self.cursorDrop.currentText()
+
+        # Ensure the file has .xml extension
+        if not cursor_name.lower().endswith(".xml"):
+            cursor_name = f"{cursor_name}.xml"
+
+        xml_path = os.path.join(self.assets_dir, cursor_name)
+
+        # Create the dialog and pass a callback to update preview
+        dialog = CursorEdit(
+            xml_path,
+            on_save=self.update_cursor_preview  # callback triggers after saving
+        )
+
+        dialog.exec_()  # runs modally
 
     def ensure_archetype(self, parent=None):
         if os.path.exists(self.archetype_root):
@@ -1663,7 +1762,9 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.WindowColors), _translate("MainWindow", "Window Colors"))
         self.label_15.setText(_translate("MainWindow", "Cursor Type"))
         self.cursorBrowse.setText(_translate("MainWindow", "Browse..."))
+        self.cursorEditButton.setText(_translate("MainWindow", "Edit"))
         self.label_17.setText(_translate("MainWindow", "Add Custom Cursor"))
+        self.label_30.setText(_translate("MainWindow", "Edit Cursor Data"))
         self.label_20.setText(_translate("MainWindow", "Icon Type"))
         self.label_23.setText(_translate("MainWindow", "Speech Bubbles"))
         self.speechBrowse.setText(_translate("MainWindow", "Browse..."))
