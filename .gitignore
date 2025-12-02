@@ -30,3 +30,5 @@ config/
 *.spec
 Screenshots/
 BuildInstructionsVexVersion.txt
+cursors-black.png
+cursors-test.png
