@@ -1588,8 +1588,8 @@ class Ui_MainWindow(object):
         print(f"current path is: {self.gamePath}")
         if os.path.exists(os.path.join(self.gamePath,"data/mods/Archetype")):
             shutil.rmtree(os.path.join(self.gamePath,"data/mods/Archetype"))
-        self.copy_files("./Archetype", os.path.join(self.gamePath,"data/mods/Archetype"))
-        self.copy_files(self.modsLocation,os.path.join(self.gamePath,"data/mods"))
+        self.symlink_create("./Archetype", os.path.join(self.gamePath,"data/mods/Archetype"))
+        self.symlink_create(self.modsLocation,os.path.join(self.gamePath,"data/mods"))
         PokeGen.update_poke(os.path.join(self.gamePath,"config/main.properties"),self.modsLocation)
         self.status_label_archetype.setText(f"All Mods Installed Successfully!!")
         self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
@@ -1612,6 +1612,43 @@ class Ui_MainWindow(object):
                 shutil.copy2(src_path, dst_path)
         
         print(f"Contents copied from '{src_folder}' to '{dst_folder}'")
+
+    def symlink_create(self, src_folder, dst_folder):
+        if not os.path.exists(src_folder):
+            print(f"Source folder does not exist: {src_folder}")
+            return
+
+        if not os.path.exists(dst_folder):
+            os.makedirs(dst_folder)
+
+        for item in os.listdir(src_folder):
+            src_path = os.path.join(src_folder, item)
+            dst_path = os.path.join(dst_folder, item)
+
+            try:
+                # Remove existing destination
+                if os.path.lexists(dst_path):
+                    if os.path.islink(dst_path) or os.path.isfile(dst_path):
+                        os.remove(dst_path)
+                    elif os.path.isdir(dst_path):
+                        shutil.rmtree(dst_path)
+
+                abs_src = os.path.abspath(src_path)
+                abs_dst = os.path.abspath(dst_path)
+
+                # ⭐ NEW: If it's a folder, create ONE symlink to the entire folder
+                if os.path.isdir(src_path):
+                    print(f"Creating FOLDER symlink: {abs_src} -> {abs_dst}")
+                    os.symlink(abs_src, abs_dst)
+                else:
+                    print(f"Creating FILE symlink: {abs_src} -> {abs_dst}")
+                    os.symlink(abs_src, abs_dst)
+
+            except Exception as e:
+                print(f"Failed to symlink {src_path} -> {dst_path}: {e}")
+
+        print(f"Symlinks created from '{src_folder}' to '{dst_folder}'")
+
 
     def handle_cursor_browse(self):
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
