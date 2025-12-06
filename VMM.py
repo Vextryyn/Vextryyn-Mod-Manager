@@ -1,5 +1,3 @@
-
-
 import os
 import sys
 import subprocess
@@ -640,7 +638,6 @@ class Ui_MainWindow(object):
         self.status_label_archetype2.setTextFormat(QtCore.Qt.RichText)
         self.update_archetype_summary()
 
-
     def populate_dropdown(
         self,
         combo, 
@@ -833,7 +830,6 @@ class Ui_MainWindow(object):
 
         except ET.ParseError as e:
             print(f"Failed to parse XML {xml_filename}: {e}")
-
 
     def update_cursor_preview(self):
         current_index = self.cursorDrop.currentIndex()
@@ -1707,7 +1703,6 @@ class Ui_MainWindow(object):
                 print(f"Failed to symlink {src_path} -> {dst_path}: {e}")
 
         print(f"Symlinks created from '{src_folder}' to '{dst_folder}'")
-
 
     def handle_cursor_browse(self):
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
