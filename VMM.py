@@ -8,7 +8,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, QDir
-from PyQt5.QtGui import QColor, QFont
+from PyQt5.QtGui import QColor, QFont, QGuiApplication
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QApplication
 from xmlpreview import XmlAnimationPreview 
 from theme_manager import ThemeManager
@@ -49,7 +49,6 @@ class Ui_MainWindow(object):
         self.cursorDir = "./Archetype/theme/assets/jaejGI7pIp/res/custom/45pYZKcs0t" 
         self.themeFolder = "./Archetype/theme"
         self.configPath="./config.json"
-        # self.defaultConfig="./default.json"
         if os.path.exists(self.configPath):
             self.modsLocation=self.get_current_path("mods_path",self.configPath)
         else:
@@ -524,6 +523,24 @@ class Ui_MainWindow(object):
         self.status_label_mods.setText("") 
         self.status_label_mods.setStyleSheet("color: green; font-size: 12pt;")
 
+        self.screenDrop = QtWidgets.QComboBox(self.GetArchtype)
+        self.screenDrop.setGeometry(QtCore.QRect(806, 560, 280, 25))
+        self.screenDrop.setObjectName("screenDrop")
+        self.screenDrop.addItems(["PokeMMO Default","Gamescope Fullscreen Wayland","Gamescope Fullscreen X11"])
+        self.screenDrop.setCurrentIndex(0)
+
+        self.label_29 = self.make_label(self.GetArchtype,"label_29",14,True,(800,504,61,29),None)
+        self.label_31 = self.make_label(self.GetArchtype,"label_31",14,True,(948,504,69,29),None)
+
+        self.screenResW = QtWidgets.QTextEdit(self.GetArchtype)
+        self.screenResW.setGeometry(QtCore.QRect(866,504,61,29))
+        self.screenResW.setText("1920")
+        self.screenResW.setObjectName("res_w")
+        self.screenResH = QtWidgets.QTextEdit(self.GetArchtype)
+        self.screenResH.setGeometry(QtCore.QRect(1022,504,61,29))
+        self.screenResH.setText("1080")
+        self.screenResH.setObjectName("res_h")
+
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(5)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -632,7 +649,7 @@ class Ui_MainWindow(object):
             f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}",
             16,
             False,
-            (5,446,1071,143),
+            (5,446,793,143),
             None
         )
         self.status_label_archetype2.setTextFormat(QtCore.Qt.RichText)
@@ -743,6 +760,7 @@ class Ui_MainWindow(object):
             file_filter=lambda f: f.startswith("Default-"),
         )  
 
+
     def poke_start(self, *args):
         self.save_config()
         try:
@@ -752,10 +770,7 @@ class Ui_MainWindow(object):
             self.status_label_archetype.setText("Error: The Game Path is not set")
             return
 
-        gamepath = (
-            config.get("paths", {})
-                .get("game_path")
-        )
+        gamepath = config.get("paths", {}).get("game_path")
 
         if not gamepath:
             self.status_label_archetype.setText("Error: No game path set.")
@@ -767,22 +782,50 @@ class Ui_MainWindow(object):
             )
             return
 
-        script_name = "PokeMMO"
 
+        script_name = "PokeMMO"
         if sys.platform.startswith("win"):
             script_path = os.path.join(gamepath, script_name + ".exe")
-            cmd = [script_path]
+            base_cmd = [script_path]
         else:
             script_path = os.path.join(gamepath, script_name + ".sh")
             if not os.access(script_path, os.X_OK):
                 os.chmod(script_path, 0o755)
-            cmd = ["bash", script_path]
+            base_cmd = ["bash", script_path]
 
         if not os.path.exists(script_path):
             self.status_label_archetype.setText(
                 f"Error: Launch script not found:\n{script_path}"
             )
             return
+
+        selection = self.screenDrop.currentText()
+        width = int(self.screenResW.toPlainText())
+        height = int(self.screenResH.toPlainText())
+
+        if selection == "Gamescope Fullscreen Wayland":
+            gamescope_args = [
+                "gamescope",
+                "-w", str(width),
+                "-h", str(height),
+                "-W", str(width),
+                "-H", str(height),
+                "-f",
+                "--expose-wayland"
+            ]
+            cmd = gamescope_args + base_cmd
+        elif selection == "Gamescope Fullscreen X11":
+            gamescope_args = [
+                "gamescope",
+                "-w", str(width),
+                "-h", str(height),
+                "-W", str(width),
+                "-H", str(height),
+                "-f",
+            ]
+            cmd = gamescope_args + base_cmd
+        else:
+            cmd = base_cmd
 
         try:
             subprocess.run(cmd, cwd=gamepath, check=True)
@@ -1242,7 +1285,6 @@ class Ui_MainWindow(object):
         existing_game_path = existing_config.get("paths", {}).get("game_path")
         existing_mods_path = existing_config.get("paths", {}).get("mods_path")
 
-        # self.customconfig=new_path
         config = {
             "colors": {
                 "main-color": self.mainColorW.color().name(),
@@ -1303,10 +1345,8 @@ class Ui_MainWindow(object):
                 "bubblesDrop": self.speechDrop.currentIndex(),
                 "icon_drop": self.iconDrop.currentIndex(),
                 "cursor_drop": self.cursorDrop.currentIndex(),
+                "screenDrop": self.screenDrop.currentIndex(),
             },
-            # "lastconfig":{
-            #     "last_config_location":new_path
-            # }
         }
 
         with open(self.configPath, "w", encoding="utf-8") as f:
@@ -1400,10 +1440,8 @@ class Ui_MainWindow(object):
                 "bubblesDrop": self.speechDrop.currentIndex(),
                 "icon_drop": self.iconDrop.currentIndex(),
                 "cursor_drop": self.cursorDrop.currentIndex(),
+                "screenDrop": self.screenDrop.currentIndex(),
             },
-            # "lastconfig":{
-            #     "last_config_location":new_path
-            # }
         }
 
         try:
@@ -1502,6 +1540,7 @@ class Ui_MainWindow(object):
             ("bubblesDrop", "bubblesDrop"),
             ("iconDrop", "icon_drop"),
             ("cursorDrop", "cursor_drop"),
+            ("screenDrop", "screenDrop")
         ]
 
         for attr, state_key in combo_keys:
@@ -1681,7 +1720,6 @@ class Ui_MainWindow(object):
             dst_path = os.path.join(dst_folder, item)
 
             try:
-                # Remove existing destination
                 if os.path.lexists(dst_path):
                     if os.path.islink(dst_path) or os.path.isfile(dst_path):
                         os.remove(dst_path)
@@ -1691,7 +1729,6 @@ class Ui_MainWindow(object):
                 abs_src = os.path.abspath(src_path)
                 abs_dst = os.path.abspath(dst_path)
 
-                # ⭐ NEW: If it's a folder, create ONE symlink to the entire folder
                 if os.path.isdir(src_path):
                     print(f"Creating FOLDER symlink: {abs_src} -> {abs_dst}")
                     os.symlink(abs_src, abs_dst)
@@ -1895,6 +1932,8 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.OtherScreen), _translate("MainWindow", "Other"))
         self.label_25.setText(_translate("MainWindow", "Get/Update Archetype"))
         self.label_27.setText(_translate("MainWindow", "Set Mods Folder"))
+        self.label_29.setText(_translate("MainWindow", "Width"))
+        self.label_31.setText(_translate("MainWindow", "Height"))
         self.downloadArch.setText(_translate("MainWindow", "Download"))
         self.setModFolder.setText(_translate("MainWindow", "Browse..."))
         self.playPokemmo.setText(_translate("MainWindow", "Play Pokemmo"))

@@ -1466,12 +1466,12 @@ berrydisabled</string>
         <string>Finish and add to Pokemmo</string>
        </property>
       </widget>
-      <widget class="QLabel" name="status_label_archetype_3">
+      <widget class="QLabel" name="status_label_archetype_2">
        <property name="geometry">
         <rect>
          <x>5</x>
          <y>446</y>
-         <width>1071</width>
+         <width>793</width>
          <height>143</height>
         </rect>
        </property>
@@ -1563,6 +1563,72 @@ ModFolder</string>
        </property>
        <property name="text">
         <string>Set Mods Folder</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="screenDrop">
+       <property name="geometry">
+        <rect>
+         <x>806</x>
+         <y>560</y>
+         <width>280</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QTextEdit" name="heightText">
+       <property name="geometry">
+        <rect>
+         <x>1022</x>
+         <y>504</y>
+         <width>61</width>
+         <height>29</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QTextEdit" name="widthText">
+       <property name="geometry">
+        <rect>
+         <x>866</x>
+         <y>504</y>
+         <width>61</width>
+         <height>29</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_29">
+       <property name="geometry">
+        <rect>
+         <x>800</x>
+         <y>504</y>
+         <width>61</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Width</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_31">
+       <property name="geometry">
+        <rect>
+         <x>954</x>
+         <y>504</y>
+         <width>61</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Height</string>
        </property>
       </widget>
      </widget>
