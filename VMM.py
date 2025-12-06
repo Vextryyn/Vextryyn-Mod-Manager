@@ -39,16 +39,23 @@ class Ui_MainWindow(object):
         self.custom_counter = "./CustomCounters"
         self.custom_cursor = "./CustomCursors"    
         if getattr(sys, "frozen", False):
-            self.previewimages = os.path.join(os.path.dirname(sys.executable), "Preview")
+            base_path = os.path.dirname(sys.executable)
         else:
-            self.previewimages = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Preview")
+            base_path = os.path.dirname(os.path.abspath(__file__))
+
+        self.defaultConfig = os.path.join(base_path, "default.json")
+        self.previewimages = os.path.join(base_path, "Preview")
+
         self.pokeballIcon = "./Archetype/theme/assets/jaejGI7pIp/res/custom/counter"
         self.gamePath = ""
         self.cursorDir = "./Archetype/theme/assets/jaejGI7pIp/res/custom/45pYZKcs0t" 
         self.themeFolder = "./Archetype/theme"
         self.configPath="./config.json"
-        self.defaultConfig="./default.json"
-        self.modsLocation="./Mods"
+        # self.defaultConfig="./default.json"
+        if os.path.exists(self.configPath):
+            self.modsLocation=self.get_current_path("mods_path",self.configPath)
+        else:
+            self.modsLocation=self.get_current_path("mods_path",self.defaultConfig)
         self.flipped_cache = {}
         self.mod_order_file = os.path.join(self.modsLocation, "mod_order.txt")
         self.theme_manager = ThemeManager()
@@ -414,7 +421,7 @@ class Ui_MainWindow(object):
 
 
         self.GetArchtype = QtWidgets.QFrame(self.Archetype)
-        self.GetArchtype.setGeometry(QtCore.QRect(40, 80, 1011, 596))
+        self.GetArchtype.setGeometry(QtCore.QRect(12, 19, 1089, 657))
         self.GetArchtype.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.GetArchtype.setObjectName("GetArchtype")
         self.label_25 = self.make_label(self.GetArchtype,"label_25",16,True,(5,5,236,61),None)
@@ -426,6 +433,17 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.downloadArch.setFont(font)
         self.downloadArch.setObjectName("downloadArch")
+
+        self.label_27 = self.make_label(self.GetArchtype,"label_27",16,True,(5,134,210,61),None)
+        self.setModFolder = QtWidgets.QPushButton(self.GetArchtype)
+        self.setModFolder.setGeometry(QtCore.QRect(245, 144, 281, 46))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        font.setWeight(75)
+        self.setModFolder.setFont(font)
+        self.setModFolder.setObjectName("setModFolder")
+
         self.labelBrowse = self.make_label(self.GetArchtype,"Set Game Path",16,True,(5,70,210,61),None)
         self.setGamePath = QtWidgets.QPushButton(self.GetArchtype)
         self.setGamePath.setGeometry(QtCore.QRect(245, 80, 280, 46))
@@ -445,7 +463,7 @@ class Ui_MainWindow(object):
         self.completeMod.setObjectName("completeMod")
 
         self.playPokemmo = QtWidgets.QPushButton(self.GetArchtype)
-        self.playPokemmo.setGeometry(QtCore.QRect(722, 542, 280, 46))
+        self.playPokemmo.setGeometry(QtCore.QRect(806, 606, 280, 46))
         font = QtGui.QFont()
         font.setPointSize(16)
         font.setBold(True)
@@ -494,7 +512,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.status_label_archetype = QtWidgets.QLabel(self.GetArchtype)
-        self.status_label_archetype.setGeometry(QtCore.QRect(72, 358, 863, 143))
+        self.status_label_archetype.setGeometry(QtCore.QRect(4, 610, 795, 35))
         self.status_label_archetype.setText("") 
         self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
 
@@ -583,7 +601,7 @@ class Ui_MainWindow(object):
 
         
         self.downloadArch.clicked.connect(self.downloadLatestArch)
-        self.setGamePath.clicked.connect(self.select_file_path)
+        self.setGamePath.clicked.connect(self.select_game_path)
         self.actionSave.triggered.connect(self.save_config)
         self.actionSaveAs.triggered.connect(self.save_config_as)
         self.actionLoad.triggered.connect(self.load_config)
@@ -594,6 +612,7 @@ class Ui_MainWindow(object):
         self.completeMod.clicked.connect(self.complete_build)
         self.playPokemmo.clicked.connect(self.poke_start)
         self.cursorEditButton.clicked.connect(self.edit_cursor_data)
+        self.setModFolder.clicked.connect(self.select_mods_path)
 
 
         self.colorLinkedLabels = [
@@ -606,20 +625,21 @@ class Ui_MainWindow(object):
         self.windowTextFontButton3,
         ]
         
+        self.load_last_config()
         self.status_label_archetype2 = self.make_label(
             self.GetArchtype,
-            f"<b>Pokemmo Location:</b> {self.get_current_path(self.configPath)}<br>"
+            f"<b>Pokemmo Location:</b> {self.get_current_path("game_path",self.configPath)}<br>"
             f"<b>Archetype Status:</b> {self.get_Archstatus()}<br>"
-            f"<b>ModCount:</b> {self.mod_count(self.modsLocation)}",
+            f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
+            f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}",
             16,
             False,
-            (56,148,819,143),
+            (5,446,1071,143),
             None
         )
         self.status_label_archetype2.setTextFormat(QtCore.Qt.RichText)
         self.update_archetype_summary()
 
-        self.load_last_config()
 
     def populate_dropdown(
         self,
@@ -705,7 +725,7 @@ class Ui_MainWindow(object):
             file_ext=None, 
             include_subfolders=False
         ) 
-         
+
     def update_cursor_drop(self):
 
         self.populate_dropdown(
@@ -1090,9 +1110,10 @@ class Ui_MainWindow(object):
             archetype_status = '<span style="color:#ff3b3b;">Could not check status.</span>'
 
         self.status_label_archetype2.setText(
-            f"<b>Pokemmo Location:</b> {self.get_current_path(self.configPath)}<br>"
+            f"<b>Pokemmo Location:</b> {self.get_current_path("game_path",self.configPath)}<br>"
             f"<b>Archetype Status:</b> {archetype_status}<br>"
-            f"<b>ModCount:</b> {self.mod_count(self.modsLocation)}"
+            f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
+            f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}"
         )
 
     def check_remote_version(self, repo_url, destination):
@@ -1223,6 +1244,8 @@ class Ui_MainWindow(object):
             existing_config = {}
 
         existing_game_path = existing_config.get("paths", {}).get("game_path")
+        existing_mods_path = existing_config.get("paths", {}).get("mods_path")
+
         # self.customconfig=new_path
         config = {
             "colors": {
@@ -1263,6 +1286,7 @@ class Ui_MainWindow(object):
                 "encounter_counter": self.counterDrop.currentText(),
                 "custom_counter_current": self.customDrop.currentText(),
                 "game_path": self.gamePath or existing_game_path,
+                "mods_path": self.modsLocation or existing_mods_path
             },
 
             "look":{
@@ -1492,6 +1516,8 @@ class Ui_MainWindow(object):
                     combo.setCurrentIndex(index)
                 else:
                     print(f"[Warning] Index {index} out of range for {attr}")
+                    
+        self.modsLocation=self.get_current_path("mods_path",self.configPath)
 
     def load_last_config(self):
         self._load_config_from_path(self.configPath)
@@ -1521,7 +1547,7 @@ class Ui_MainWindow(object):
 
         print(f"Loaded config from: {file_path}")
 
-    def get_current_path(self, config_file=None):
+    def get_current_path(self, path_type=None, config_file=None):
             config_file = config_file or getattr(self, "configPath", None)
             if not config_file or not os.path.isfile(config_file):
                 print("Config file not found.")
@@ -1531,12 +1557,44 @@ class Ui_MainWindow(object):
                 with open(config_file, "r", encoding="utf-8") as f:
                     config = json.load(f)
                 paths = config.get("paths", {})
-                return paths.get("game_path", None)
+                return paths.get(path_type, None)
             except Exception as e:
                 print(f"Failed to read config: {e}")
                 return None
+    
+    def select_mods_path(self):
+        dialog = QtWidgets.QFileDialog()
+        dialog.setWindowTitle("Select Mods Location")
+        dialog.setFileMode(QtWidgets.QFileDialog.Directory)
+        dialog.setFilter(QDir.AllEntries | QDir.Hidden) 
+        dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly, False)
 
-    def select_file_path(self):
+        if dialog.exec_():
+            selected_files = dialog.selectedFiles()
+            if selected_files:
+                self.modsLocation = selected_files[0]
+                self.status_label_archetype.setText(f"Mods path set to {self.modsLocation}")
+                self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
+
+                self.save_config()
+                up_to_date = self.check_remote_version(
+                    "https://github.com/ssjshields/archetype",
+                    "Archetype"
+                )
+
+                if up_to_date:
+                    archetype_status = "Up to Date."
+                else:
+                    archetype_status = "Update available!"
+
+                self.status_label_archetype2.setText(
+                    f"<b>Pokemmo Location:</b> {self.get_current_path("game_path",self.configPath)}<br>"
+                    f"<b>Archetype Status:</b> {archetype_status}<br>"
+                    f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
+                    f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}"
+                )
+
+    def select_game_path(self):
         dialog = QtWidgets.QFileDialog()
         dialog.setWindowTitle("Select Pokemmo Installation Location")
         dialog.setFileMode(QtWidgets.QFileDialog.Directory)
@@ -1562,9 +1620,10 @@ class Ui_MainWindow(object):
                     archetype_status = "Update available!"
 
                 self.status_label_archetype2.setText(
-                    f"<b>Pokemmo Location:</b> {self.get_current_path(self.configPath)}<br>"
+                    f"<b>Pokemmo Location:</b> {self.get_current_path("game_path",self.configPath)}<br>"
                     f"<b>Archetype Status:</b> {archetype_status}<br>"
-                    f"<b>ModCount:</b> {self.mod_count(self.modsLocation)}"
+                    f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
+                    f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}"
                 )
 
     def complete_build(self):
@@ -1583,7 +1642,7 @@ class Ui_MainWindow(object):
         if self.counterDrop.currentText() == "Counter-Vartiou.xml":
             self.copy_files(os.path.join("./CustomCounters",self.customDrop.currentText(),"data/themes/default/res"),os.path.join(self.assets_dir,"jaejGI7pIp/res/counter/vartiou"))
         
-        self.gamePath = self.get_current_path(self.configPath)
+        self.gamePath = self.get_current_path("game_path",self.configPath)
 
         print(f"current path is: {self.gamePath}")
         if os.path.exists(os.path.join(self.gamePath,"data/mods/Archetype")):
@@ -1840,10 +1899,12 @@ class Ui_MainWindow(object):
         self.label_24.setText(_translate("MainWindow", "Add Custom Speech Bubbles"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.OtherScreen), _translate("MainWindow", "Other"))
         self.label_25.setText(_translate("MainWindow", "Get/Update Archetype"))
+        self.label_27.setText(_translate("MainWindow", "Set Mods Folder"))
         self.downloadArch.setText(_translate("MainWindow", "Download"))
+        self.setModFolder.setText(_translate("MainWindow", "Browse..."))
         self.playPokemmo.setText(_translate("MainWindow", "Play Pokemmo"))
         self.modButtonLabel.setText(_translate("MainWindow","Mod List"))
-        self.setGamePath.setText(_translate("MainWindow", "Browse"))
+        self.setGamePath.setText(_translate("MainWindow", "Browse..."))
         self.completeMod.setText(_translate("MainWindow", "Complete"))
         self.label_28.setText(_translate("MainWindow", "Finish and add to Pokemmo"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Archetype), _translate("MainWindow", "Archetype"))

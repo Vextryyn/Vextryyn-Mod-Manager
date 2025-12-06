@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="LoginScreen">
      <attribute name="title">
@@ -1337,10 +1337,10 @@ berrydisabled</string>
      <widget class="QFrame" name="GetArchtype">
       <property name="geometry">
        <rect>
-        <x>40</x>
-        <y>80</y>
-        <width>1011</width>
-        <height>596</height>
+        <x>12</x>
+        <y>19</y>
+        <width>1089</width>
+        <height>657</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -1403,7 +1403,7 @@ berrydisabled</string>
         </font>
        </property>
        <property name="text">
-        <string>Save Config</string>
+        <string>Set Game Path</string>
        </property>
       </widget>
       <widget class="QPushButton" name="saveConfig">
@@ -1423,53 +1423,13 @@ berrydisabled</string>
         </font>
        </property>
        <property name="text">
-        <string>Save</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="loadConfig">
-       <property name="geometry">
-        <rect>
-         <x>245</x>
-         <y>140</y>
-         <width>280</width>
-         <height>46</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Load</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_27">
-       <property name="geometry">
-        <rect>
-         <x>5</x>
-         <y>130</y>
-         <width>210</width>
-         <height>61</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Load Config</string>
+        <string>Browse</string>
        </property>
       </widget>
       <widget class="QPushButton" name="completeMod">
        <property name="geometry">
         <rect>
-         <x>595</x>
+         <x>775</x>
          <y>70</y>
          <width>280</width>
          <height>46</height>
@@ -1489,7 +1449,7 @@ berrydisabled</string>
       <widget class="QLabel" name="label_28">
        <property name="geometry">
         <rect>
-         <x>590</x>
+         <x>770</x>
          <y>0</y>
          <width>306</width>
          <height>61</height>
@@ -1506,13 +1466,34 @@ berrydisabled</string>
         <string>Finish and add to Pokemmo</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_29">
+      <widget class="QLabel" name="status_label_archetype_3">
        <property name="geometry">
         <rect>
          <x>5</x>
-         <y>190</y>
-         <width>210</width>
-         <height>61</height>
+         <y>446</y>
+         <width>1071</width>
+         <height>143</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Pokemmo Location
+ArchetypeStatus
+ModCount
+ModFolder</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="completeMod_2">
+       <property name="geometry">
+        <rect>
+         <x>806</x>
+         <y>606</y>
+         <width>280</width>
+         <height>46</height>
         </rect>
        </property>
        <property name="font">
@@ -1523,15 +1504,33 @@ berrydisabled</string>
         </font>
        </property>
        <property name="text">
-        <string>Set Game Path</string>
+        <string>Play PokeMMO</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="setGamePath">
+      <widget class="QLabel" name="status_label_archetype">
+       <property name="geometry">
+        <rect>
+         <x>4</x>
+         <y>610</y>
+         <width>795</width>
+         <height>35</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>18</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Error/Status Message</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="saveConfig_2">
        <property name="geometry">
         <rect>
          <x>245</x>
-         <y>200</y>
-         <width>280</width>
+         <y>144</y>
+         <width>281</width>
          <height>46</height>
         </rect>
        </property>
@@ -1546,26 +1545,13 @@ berrydisabled</string>
         <string>Browse</string>
        </property>
       </widget>
-      <widget class="QLabel" name="status_label_archetype">
+      <widget class="QLabel" name="label_27">
        <property name="geometry">
         <rect>
-         <x>72</x>
-         <y>358</y>
-         <width>537</width>
-         <height>143</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>TextLabel</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="completeMod_2">
-       <property name="geometry">
-        <rect>
-         <x>722</x>
-         <y>542</y>
-         <width>280</width>
-         <height>46</height>
+         <x>5</x>
+         <y>134</y>
+         <width>210</width>
+         <height>61</height>
         </rect>
        </property>
        <property name="font">
@@ -1576,7 +1562,7 @@ berrydisabled</string>
         </font>
        </property>
        <property name="text">
-        <string>Complete</string>
+        <string>Set Mods Folder</string>
        </property>
       </widget>
      </widget>

@@ -28,7 +28,29 @@
         "counter-min-max-button-color": "#ffffff",
         "counter-main-color": "#1c2328",
         "counter-sub-color": "#42b9ff",
-        "counter-font-color": "#ffffff",
+        "counter-font": "#ffffff",
         "counter-font-border": "#233031"
+    },
+    "paths": {
+        "game_path": "",
+        "mods_path":"./Mods"
+    },
+    "look": {
+        "login_screen": "assets/Unova.xml",
+        "arch_cursor": "assets/Cursors-cursors-test.xml",
+        "arch_shape": "assets/Round.xml",
+        "speech_bubbles": "assets/Default-Black.xml"
+    },
+    "counter": {
+        "encounter_counter": "assets/Counter-Minimal-Right-Icon.xml"
+    },
+    "state": {
+        "current_tab": 0,
+        "loginDrop": 1,
+        "counterDrop": 0,
+        "customDrop": 0,
+        "bubblesDrop": 0,
+        "icon_drop": 0,
+        "cursor_drop": 0
     }
-    }
+}
