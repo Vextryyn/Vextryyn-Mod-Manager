@@ -16,7 +16,7 @@ class AboutWindow(QDialog):
         layout = QVBoxLayout()
 
         # App name + version
-        title = QLabel("Vextryyn's Mod Manager v0.0.4a")
+        title = QLabel("Vextryyn's Mod Manager v0.0.7b")
         title.setFont(QFont("Arial", 16, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
 
@@ -28,6 +28,7 @@ class AboutWindow(QDialog):
             '<p>Archetype Manager by <b>Vextryyn</b><br>'
             'Donate to Vextryyn:<br>'
             'BTC: 1PRVhoBaeP5zhKRjzXMYh9hpGJut4QeEDn</p>'
+            'TRX: TMMRVeMvjoDLNRmQmZv8Xvvrd71UFnti6K'
             "<p>If you want to donate any other cryptos, I am a coin collector so I am more than happy to make a new wallet for anything</p>"
             "<p>© 2025 GNU General Public License version 3 (GPLv3)</p>"
         )

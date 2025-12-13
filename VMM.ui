@@ -1607,6 +1607,8 @@ ModFolder</string>
        <property name="font">
         <font>
          <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
@@ -1616,15 +1618,17 @@ ModFolder</string>
       <widget class="QLabel" name="label_31">
        <property name="geometry">
         <rect>
-         <x>954</x>
+         <x>948</x>
          <y>504</y>
-         <width>61</width>
+         <width>69</width>
          <height>29</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">

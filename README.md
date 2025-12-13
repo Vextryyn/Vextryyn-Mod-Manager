@@ -1,7 +1,7 @@
 # **Vextryyn’s Mod Manager**  
-*(Name is not final)*
+*(Name is not final, suggtestions welcome)*
 
-This project is part of a larger mod-management tool I’ve been developing. Right now, there’s no solid Linux solution for managing PokeMMO mods, so this tool started as a way to fill that gap—not just for PokeMMO, but potentially for other games I play as well. Since it’s functional and some people may find it useful, I’m releasing it early, even if it’s still a bit rough around the edges.
+This project is part of a larger mod-management tool I’ve been developing. Right now, there’s no solid Linux solution for managing PokeMMO mods, so this tool started as a way to fill that gap—not just for PokeMMO, but potentially for other games I play as well. Since it’s functional and some people may find it useful, I’m releasing it, even if it’s still a bit rough around the edges.
 
 For Windows users, there’s already a great mod manager by Ryukotsuki:  
 **https://github.com/Ryukotsuki/Poke-Manager**
@@ -11,12 +11,22 @@ If that project ever gets a Linux port, I’ll likely wind down standalone devel
 **Extra note:** True Borderless will likely not be an option until there is something reliable for Wayland, I do not plan to do anything x11 since that will be going away in the near future. Debating on utilizng gamescope for advanced functions but unsure, there also seem to be some pretty universal solutions for hyperland, but I would rather a one approach works for all solution. Any recommendations are appreciated.
 
 ---
+**Requirements**
+ - Git
+
+ Arch
+  - pacman -S git
+
+ Debian/Ubuntu
+  - apt install git
+
+---
 ## **Current Feature Status**
-_Updated for 0.0.6a_
+_Updated for 0.0.7a_
 ### **Not Implemented Yet**
 - Custom speech bubbles  
 - Berry watering colors(colors should work, I rarely do berry stuff, so I havent tested yet. I dont want to move it to partial until I've confirmed its working)
-- Discord Server(I just need to set up my docker bot again)
+- Discord Server
 
 ### **Partially Working**
 - **Login Screen Preview**  
@@ -26,12 +36,13 @@ _Updated for 0.0.6a_
     - If you are unclear what the difference is: Minimal mode shows only icons + counts; normal mode also shows Pokémon names.
   - Varitou Counter may not refresh on add, plese check Encounter Counter section for details
 - **Mod Manager**
+  - symlink handling
+  - custom modfolder location
+  
+Not Working/In Progress
   - No enable/disable toggle yet — **anything in the list is active**.
   - does not check game mods folder for existing mods - **Will overwrite duplicates, but if existing is not in list it will not overwrite or enable**
-  - **In Progress**:
-    - symlinks
-    - custom modfolder location
-    - read existing non duplicate mods
+
 ---
 
 ## **Getting Started**
