@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="LoginScreen">
      <attribute name="title">
@@ -132,7 +132,7 @@ zekrom aura</string>
        <rect>
         <x>5</x>
         <y>15</y>
-        <width>436</width>
+        <width>340</width>
         <height>66</height>
        </rect>
       </property>
@@ -238,6 +238,19 @@ zekrom aura</string>
         </rect>
        </property>
       </widget>
+     </widget>
+     <widget class="QLabel" name="label_2_status">
+      <property name="geometry">
+       <rect>
+        <x>386</x>
+        <y>20</y>
+        <width>685</width>
+        <height>117</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="EncounterCounter">
