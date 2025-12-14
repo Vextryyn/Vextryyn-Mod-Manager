@@ -23,9 +23,9 @@ class AboutWindow(QDialog):
         # Description
         desc = QLabel(
             "<p>This manager is made for easy customization of the Archetype Theme by ssjshields.</p>"
-            '<p>Archetype Theme by: <b>ssjshields</b><br>'
-            'Donate to ssjshields: <a href="https://ko-fi.com/ssjshields">ko-fi.com/ssjshields</a></p>'
-            '<p>Archetype Manager by <b>Vextryyn</b><br>'
+            '<p>Archetype Theme by: <b>nurver</b><br>'
+            'Donate to nurver: <a href="https://ko-fi.com/ssjshields">ko-fi.com/ssjshields</a></p>'
+            '<p>Theme/Mod Tool by <b>Vextryyn</b><br>'
             'Donate to Vextryyn:<br>'
             'BTC: 1PRVhoBaeP5zhKRjzXMYh9hpGJut4QeEDn</p>'
             'TRX: TMMRVeMvjoDLNRmQmZv8Xvvrd71UFnti6K'

@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMessageBox, QWidget
 
 class ThemeManager:
     def __init__(self, custom_dir=None):
-        self.custom_dir = custom_dir or os.path.join(os.getcwd(), "CustomThemes")
+        self.custom_dir = custom_dir or os.path.join(os.getcwd(),"Archetype", "theme", "assets", "CustomThemes")
         os.makedirs(self.custom_dir, exist_ok=True)
 
     def add_theme_from_zip(self, zip_path, parent_widget=None):

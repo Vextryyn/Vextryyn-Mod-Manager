@@ -1,7 +1,7 @@
 # **Vextryyn’s Mod Manager**  
 *(Name is not final, suggtestions welcome)*
 
-This project is part of a larger mod-management tool I’ve been developing. Right now, there’s no solid Linux solution for managing PokeMMO mods, so this tool started as a way to fill that gap—not just for PokeMMO, but potentially for other games I play as well. Since it’s functional and some people may find it useful, I’m releasing it, even if it’s still a bit rough around the edges.
+This project is part of a larger mod-management tool I’ve been developing. Right now, there’s no solid Linux solution for managing PokeMMO mods, so this tool started as a way to fill that gap—not just for PokeMMO, but for other games I play as well. Since it’s functional and some people may find it useful, I’m releasing it, even if it’s still a bit rough around the edges.
 
 For Windows users, there’s already a great mod manager by Ryukotsuki:  
 **https://github.com/Ryukotsuki/Poke-Manager**
@@ -69,7 +69,7 @@ If you’re using **Vartiou’s counters**:
 - You can load multiple Vartiou counters and switch between them freely.
 
 **Note:** After adding a Vartiou counter, the preview may not refresh immediately.  
-Toggling **Normal → Vartiou → Normal** usually fixes it.
+Toggling **Vartiou → any other selection → Vartiou** usually fixes it.
 
 ---
 

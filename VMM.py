@@ -24,6 +24,7 @@ from PIL import Image
 from messagebox import AboutWindow
 from modOrganizer import ModListWidget
 from otherWidget import OtherWidget
+from colorButton import ColorButton
 
 
 
@@ -33,9 +34,7 @@ class Ui_MainWindow(object):
         MainWindow.resize(1118, 788)
         self.assets_dir = "./Archetype/theme/assets"
         self.archetype_root="./Archetype"
-        self.custom_login = "./CustomThemes"
-        self.custom_counter = "./CustomCounters"
-        self.custom_cursor = "./CustomCursors"    
+        self.custom_counter = "./CustomCounters"  
         if getattr(sys, "frozen", False):
             base_path = os.path.dirname(sys.executable)
         else:
@@ -43,7 +42,6 @@ class Ui_MainWindow(object):
 
         self.defaultConfig = os.path.join(base_path, "default.json")
         self.previewimages = os.path.join(base_path, "Preview")
-
         self.pokeballIcon = "./Archetype/theme/assets/jaejGI7pIp/res/custom/counter"
         self.gamePath = ""
         self.cursorDir = "./Archetype/theme/assets/jaejGI7pIp/res/custom/45pYZKcs0t" 
@@ -65,11 +63,9 @@ class Ui_MainWindow(object):
         self.tabWidget.setObjectName("tabWidget")
         self.LoginScreen = QtWidgets.QWidget()
         self.LoginScreen.setObjectName("LoginScreen")
-        self.unovaLoginOptions = QtWidgets.QFrame(self.LoginScreen)
-        self.unovaLoginOptions.setGeometry(QtCore.QRect(5, 415, 340, 261))
-        self.unovaLoginOptions.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.unovaLoginOptions.setObjectName("unovaLoginOptions")
-       
+
+        self.unovaLoginOptions = self.create_frame(self.LoginScreen,5,415,340,261,"unovaLoginOptions")
+
         self.label_8 = self.make_label(self.unovaLoginOptions,"label_8",12,False,(20,65,181,201),None)
         self.label_9 = self.make_label(self.unovaLoginOptions,"label_9",16,True,(15,15,311,41),None)
         self.zekromColor = self.make_color_button(self.unovaLoginOptions,"zekrom-color",150,175)
@@ -77,51 +73,38 @@ class Ui_MainWindow(object):
         self.zekromAura = self.make_color_button(self.unovaLoginOptions,"zekrom-aura",150,220)        
         self.reshiramAura = self.make_color_button(self.unovaLoginOptions,"reshiram-aura",150,130)
 
-        self.addOwnLogin = QtWidgets.QFrame(self.LoginScreen)
-        self.addOwnLogin.setGeometry(QtCore.QRect(5, 15, 436, 66))
-        self.addOwnLogin.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.addOwnLogin.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.addOwnLogin.setObjectName("addOwnLogin")
+        self.addOwnLogin = self.create_frame(self.LoginScreen,5,15,340,66,"addOwnLogin")
         self.label_2 = self.make_label(self.addOwnLogin,"label_2",12,True,(5,15,241,30),None)
 
-        self.label_2_status = QtWidgets.QLabel(self.LoginScreen)
-        self.label_2_status.setGeometry(QtCore.QRect(25, 55, 400, 20))
-        self.label_2_status.setText("") 
-        self.label_2_status.setStyleSheet("color: green; font-size: 9pt;")
+        self.label_2_status = self.make_label(self.LoginScreen,"",9,True,(386,20,685,117),None,"green")
+
         if not self.ensure_archetype(MainWindow):
             sys.exit(0) 
-        self.loginBrowse = QtWidgets.QPushButton(self.addOwnLogin)
-        self.loginBrowse.setGeometry(QtCore.QRect(235, 20, 80, 25))
-        self.loginBrowse.setObjectName("loginBrowse")
+        
+        self.loginBrowse = self.create_button(self.addOwnLogin,235,20,80,25,10,False,"loginBrowse")
         self.loginBrowse.clicked.connect(self.handle_login_browse)        
-        self.chooseLogin = QtWidgets.QFrame(self.LoginScreen)
-        self.chooseLogin.setGeometry(QtCore.QRect(5, 90, 340, 320))
-        self.chooseLogin.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.chooseLogin.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.chooseLogin.setObjectName("chooseLogin")
+
+        self.chooseLogin = self.create_frame(self.LoginScreen,5,90,340,320,"chooseLogin")
+
         self.loginDrop = QtWidgets.QComboBox(self.chooseLogin)
         self.loginDrop.setGeometry(QtCore.QRect(15, 35, 301, 25))
         self.loginDrop.setObjectName("loginDrop")
 
         self.label = self.make_label(self.chooseLogin,"label",16,True,(60,-10,226,51),None)
-        self.loginPreviewFrame = QtWidgets.QFrame(self.LoginScreen)
-        self.loginPreviewFrame.setGeometry(QtCore.QRect(360, 170, 731, 506))
-        self.loginPreviewFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.loginPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.loginPreviewFrame.setObjectName("loginPreviewFrame")
+
+        self.loginPreviewFrame = self.create_frame(self.LoginScreen,360,170,731,506,"loginPreviewFrame")
         default_xml = os.path.join(self.assets_dir, "Allstars.xml")
+
         self.loginPreview = XmlAnimationPreview(default_xml,parent=self.loginPreviewFrame)
         self.loginPreview.setGeometry(QtCore.QRect(5, 5, 721, 496))
         self.loginPreview.setObjectName("loginPreview")
+
         self.tabWidget.addTab(self.LoginScreen, "")
+
         self.EncounterCounter = QtWidgets.QWidget()
         self.EncounterCounter.setObjectName("EncounterCounter")
-        self.counterColorFrame = QtWidgets.QFrame(self.EncounterCounter)
-        self.counterColorFrame.setGeometry(QtCore.QRect(15, 105, 306, 391))
-        self.counterColorFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.counterColorFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.counterColorFrame.setObjectName("counterColorFrame")
 
+        self.counterColorFrame = self.create_frame(self.EncounterCounter,15,105,306,391,"counterColorFrame")
         self.label_6 = self.make_label(self.counterColorFrame,"label_6",16,True,(15,15,311,41),None)
         self.label_7 = self.make_label(self.counterColorFrame,"label_7",12,False,(20,35,181,361),None)
         self.ballColor = self.make_color_button(self.counterColorFrame,"counter-ball-color",220,75)
@@ -131,12 +114,8 @@ class Ui_MainWindow(object):
         self.ballOutline = self.make_color_button(self.counterColorFrame,"ballOutline",220,115)
         self.subColor = self.make_color_button(self.counterColorFrame,"counter-sub-color",220,250)
         self.fontBorder = self.make_color_button(self.counterColorFrame,"counter-font-border",220,335)
+        self.counterSelectorFrame = self.create_frame(self.EncounterCounter,15,20,531,80,"counterSelectorFrame")
 
-        self.counterSelectorFrame = QtWidgets.QFrame(self.EncounterCounter)
-        self.counterSelectorFrame.setGeometry(QtCore.QRect(15, 20, 531, 80))
-        self.counterSelectorFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.counterSelectorFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.counterSelectorFrame.setObjectName("counterSelectorFrame")
         self.counterDrop = QtWidgets.QComboBox(self.counterSelectorFrame)
         self.counterDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
         self.counterDrop.setObjectName("counterDrop")
@@ -144,11 +123,8 @@ class Ui_MainWindow(object):
 
         self.label_5 = self.make_label(self.counterSelectorFrame,"label_5",16,True,(5,5,211,61),None)
 
-        self.counterPreviewFrame = QtWidgets.QFrame(self.EncounterCounter)
-        self.counterPreviewFrame.setGeometry(QtCore.QRect(345, 125, 731, 506))
-        self.counterPreviewFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.counterPreviewFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.counterPreviewFrame.setObjectName("counterPreviewFrame")
+        self.counterPreviewFrame = self.create_frame(self.EncounterCounter,345,125,731,506,"counterPreviewFrame")
+
         default_xml = os.path.join(self.assets_dir, "Counter-Right.xml")
         self.counterPreview = CounterPreview(parent=self.counterPreviewFrame)
         self.counterPreview.setGeometry(QtCore.QRect(5, 5, 721, 496))
@@ -162,18 +138,11 @@ class Ui_MainWindow(object):
         self.counterText.setObjectName("counterText")
         self.fontColor.colorChanged.connect(lambda color: self.updateFontColor(color, self.counterText))
 
- 
-        self.addOwnVaritou = QtWidgets.QFrame(self.EncounterCounter)
-        self.addOwnVaritou.setGeometry(QtCore.QRect(565, 20, 456, 86))
-        self.addOwnVaritou.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.addOwnVaritou.setObjectName("addOwnVaritou")
+        self.addOwnVaritou = self.create_frame(self.EncounterCounter,565,20,456,86,"addOwnVaritou")
         self.label_3 = self.make_label(self.addOwnVaritou,"label_3",12,True,(25,0,211,30),None)
 
-        self.varitouBrowse = QtWidgets.QPushButton(self.addOwnVaritou)
-        self.varitouBrowse.setGeometry(QtCore.QRect(235, 5, 80, 25))
-        self.varitouBrowse.setObjectName("varitouBrowse")
+        self.varitouBrowse = self.create_button(self.addOwnVaritou,235,5,80,25,9,False,"varitouBrowse")
         self.varitouBrowse.clicked.connect(self.handle_vartiou_browse)        
-        
         self.label_16 = self.make_label(self.addOwnVaritou,"label_16",9,False,(25,35,386,17),None)
 
         self.customDrop = QtWidgets.QComboBox(self.addOwnVaritou)
@@ -185,10 +154,9 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.EncounterCounter, "")
         self.WindowColors = QtWidgets.QWidget()
         self.WindowColors.setObjectName("WindowColors")
-        self.windowPreviewFrame = QtWidgets.QFrame(self.WindowColors)
-        self.windowPreviewFrame.setGeometry(QtCore.QRect(15, 25, 829, 653))
-        self.windowPreviewFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.windowPreviewFrame.setObjectName("windowPreviewFrame")
+
+        self.windowPreviewFrame = self.create_frame(self.WindowColors,15, 25, 829, 653,"windowPreviewFrame")
+
         self.windowPreview = CounterPreview(parent=self.windowPreviewFrame)
         self.windowPreview.setGeometry(QtCore.QRect(5, 5, 805, 577))
         self.windowPreview.setObjectName("windowPreview")
@@ -199,11 +167,9 @@ class Ui_MainWindow(object):
         self.BerryPreview = QtWidgets.QWidget(self.windowPreviewFrame)
         self.BerryPreview.setGeometry(QtCore.QRect(347, 592, 307, 57))
         self.BerryPreview.setObjectName("BerryPreview")
-        self.MainWindowFrame = QtWidgets.QFrame(self.WindowColors)
-        self.MainWindowFrame.setGeometry(QtCore.QRect(868, 10, 233, 656))
-        self.MainWindowFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.MainWindowFrame.setObjectName("MainWindowFrame")
-       
+
+        self.MainWindowFrame = self.create_frame(self.WindowColors,868, 10, 233, 656,"MainWindowFrame")
+
         self.label_4 = self.make_label(self.MainWindowFrame,"label_4",16,False,(8,319,146,137),None)        
         self.label_10 = self.make_label(self.MainWindowFrame,"label_10",16,False,(8,56,81,121),None)
         self.label_11 = self.make_label(self.MainWindowFrame,"label_11",16,False,(8,171,101,146),None)        
@@ -244,7 +210,6 @@ class Ui_MainWindow(object):
         self.windowTextFontMain2.setFont(font)
         self.windowTextFontMain2.setObjectName("windowMainText2")
         self.fontMainW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontMain2))
-
 
         self.windowTextFontSub = QtWidgets.QLabel(self.windowPreviewFrame)
         self.windowTextFontSub.setGeometry(QtCore.QRect(232, 147, 717, 61))
@@ -337,77 +302,50 @@ class Ui_MainWindow(object):
 
         self.OtherScreen = QtWidgets.QWidget()
         self.OtherScreen.setObjectName("OtherScreen")
-        self.cursoFrame = QtWidgets.QFrame(self.OtherScreen)
-        self.cursoFrame.setGeometry(QtCore.QRect(10, 30, 561, 141))
-        self.cursoFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.cursoFrame.setObjectName("cursoFrame")
+
+        self.cursoFrame = self.create_frame(self.OtherScreen,10,30,561,141,"cursoFrame")
         self.cursorDrop = QtWidgets.QComboBox(self.cursoFrame)
         self.cursorDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
         self.cursorDrop.setObjectName("cursorDrop")
         self.label_15 = self.make_label(self.cursoFrame,"label_15",16,True,(5,5,211,61),None)
-        self.cursorBrowse = QtWidgets.QPushButton(self.cursoFrame)
-        self.cursorBrowse.setGeometry(QtCore.QRect(435, 70, 80, 25))
-        self.cursorBrowse.setObjectName("cursorBrowse")
+        self.cursorBrowse = self.create_button(self.cursoFrame,435,70,80,25,9,False,"cursorBrowse")
         self.label_17 = self.make_label(self.cursoFrame,"label_17",12,True,(195,65,241,30),None)
         self.label_30 = self.make_label(self.cursoFrame,"label_30",12,True,(195,96,241,30),None)
-        self.cursorEditButton = QtWidgets.QPushButton(self.cursoFrame)
-        self.cursorEditButton.setGeometry(QtCore.QRect(435, 101, 80, 25))
-        self.cursorEditButton.setObjectName("cursorEdit")
+        self.cursorEditButton = self.create_button(self.cursoFrame,435,101,80,25,9,False,"cursorEdit")
+        self.cursorPreviewFrame = self.create_frame(self.OtherScreen,680,10,321,166,"cursorPreviewFrame")
 
-        self.cursorPreviewFrame = QtWidgets.QFrame(self.OtherScreen)
-        self.cursorPreviewFrame.setGeometry(QtCore.QRect(680, 10, 321, 166))
-        self.cursorPreviewFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.cursorPreviewFrame.setObjectName("cursorPreviewFrame")
         self.cursorPreview = OtherWidget(self.cursorPreviewFrame)
         self.cursorPreview.setGeometry(QtCore.QRect(5, 5, 310, 155))
         self.cursorPreview.setObjectName("cursorPreview")
-        self.iconFrame = QtWidgets.QFrame(self.OtherScreen)
-        self.iconFrame.setGeometry(QtCore.QRect(10, 225, 561, 80))
-        self.iconFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.iconFrame.setObjectName("iconFrame")
+
+        self.iconFrame = self.create_frame(self.OtherScreen,10,225,561,80,"iconFrame")
         self.iconDrop = QtWidgets.QComboBox(self.iconFrame)
         self.iconDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
         self.iconDrop.setObjectName("iconDrop")
         self.iconDrop.addItem("")
         self.iconDrop.addItem("")
         self.label_20 = self.make_label(self.iconFrame,"label_20",16,True,(5,5,211,61),None)
-        self.speechBubblesFrame = QtWidgets.QFrame(self.OtherScreen)
-        self.speechBubblesFrame.setGeometry(QtCore.QRect(10, 385, 561, 121))
-        self.speechBubblesFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.speechBubblesFrame.setObjectName("speechBubblesFrame")
+
+        self.speechBubblesFrame = self.create_frame(self.OtherScreen,10,385,561,121,"speechBubblesFrame")
         self.speechDrop = QtWidgets.QComboBox(self.speechBubblesFrame)
         self.speechDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
         self.speechDrop.setObjectName("speechDrop")
         self.label_23 = self.make_label(self.speechBubblesFrame,"label_23",16,True,(5,5,211,61),None)
-        self.speechBrowse = QtWidgets.QPushButton(self.speechBubblesFrame)
-        self.speechBrowse.setGeometry(QtCore.QRect(435, 70, 80, 25))
-        self.speechBrowse.setObjectName("speechBrowse")
+        self.speechBrowse = self.create_button(self.speechBubblesFrame,435,70,80,25,9,False,"speechBrowse")
         self.label_24 = self.make_label(self.speechBubblesFrame,"label_24",12,True,(195,65,241,30),None)
-        self.speechBubblePreviewFrame = QtWidgets.QFrame(self.OtherScreen)
-        self.speechBubblePreviewFrame.setGeometry(QtCore.QRect(680, 365, 321, 166))
-        self.speechBubblePreviewFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.speechBubblePreviewFrame.setObjectName("speechBubblePreviewFrame")
+        self.speechBubblePreviewFrame = self.create_frame(self.OtherScreen,680,365,321,166,"speechBubblePreviewFrame")
+
         self.speechBubblePreview = QtWidgets.QWidget(self.speechBubblePreviewFrame)
         self.speechBubblePreview.setGeometry(QtCore.QRect(5, 5, 310, 155))
         self.speechBubblePreview.setObjectName("speechBubblePreview")
-
-
-
 
         self.tabWidget.addTab(self.OtherScreen, "")
         self.Archetype = QtWidgets.QWidget()
         self.Archetype.setObjectName("Archetype")
         self.Mods = QtWidgets.QWidget()
         self.Mods.setObjectName("Mods")
-
-        self.modOrderFrame = QtWidgets.QFrame(self.Mods)
-        self.modOrderFrame.setGeometry(QtCore.QRect(12, 136, 1087, 543))
-        self.modOrderFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.modOrderFrame.setObjectName("modOrderFrame")
-        self.modButtonsFrame = QtWidgets.QFrame(self.Mods)
-        self.modButtonsFrame.setGeometry(QtCore.QRect(238, 20, 585, 97))
-        self.modButtonsFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.modButtonsFrame.setObjectName("modButtonsFrame")
+        self.modOrderFrame = self.create_frame(self.Mods,12,136,1087,543,"modOrderFrame")
+        self.modButtonsFrame = self.create_frame(self.Mods,238,20,585,97,"modButtonsFrame")
 
         self.modButtonLabel = self.make_label(self.modButtonsFrame,"modButtonLabel",12,True,(260,12,79,30),None)
 
@@ -416,59 +354,15 @@ class Ui_MainWindow(object):
         layout.setContentsMargins(0, 0, 0, 0) 
         layout.addWidget(self.mods_widget)
 
-
-        self.GetArchtype = QtWidgets.QFrame(self.Archetype)
-        self.GetArchtype.setGeometry(QtCore.QRect(12, 19, 1089, 657))
-        self.GetArchtype.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.GetArchtype.setObjectName("GetArchtype")
+        self.GetArchtype = self.create_frame(self.Archetype,12,19,1089,657,"GetArchetype")
         self.label_25 = self.make_label(self.GetArchtype,"label_25",16,True,(5,5,236,61),None)
-        self.downloadArch = QtWidgets.QPushButton(self.GetArchtype)
-        self.downloadArch.setGeometry(QtCore.QRect(245, 15, 281, 46))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.downloadArch.setFont(font)
-        self.downloadArch.setObjectName("downloadArch")
-
+        self.downloadArch = self.create_button(self.GetArchtype,245,15,281,46,16,True,"downloadArch")
         self.label_27 = self.make_label(self.GetArchtype,"label_27",16,True,(5,134,210,61),None)
-        self.setModFolder = QtWidgets.QPushButton(self.GetArchtype)
-        self.setModFolder.setGeometry(QtCore.QRect(245, 144, 281, 46))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.setModFolder.setFont(font)
-        self.setModFolder.setObjectName("setModFolder")
-
+        self.setModFolder = self.create_button(self.GetArchtype,245,144,281,46,16,True,"setModFolder")
         self.labelBrowse = self.make_label(self.GetArchtype,"Set Game Path",16,True,(5,70,210,61),None)
-        self.setGamePath = QtWidgets.QPushButton(self.GetArchtype)
-        self.setGamePath.setGeometry(QtCore.QRect(245, 80, 280, 46))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.setGamePath.setFont(font)
-        self.setGamePath.setObjectName("setGamePath")
-        self.completeMod = QtWidgets.QPushButton(self.GetArchtype)
-        self.completeMod.setGeometry(QtCore.QRect(595, 70, 280, 46))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.completeMod.setFont(font)
-        self.completeMod.setObjectName("completeMod")
-
-        self.playPokemmo = QtWidgets.QPushButton(self.GetArchtype)
-        self.playPokemmo.setGeometry(QtCore.QRect(806, 606, 280, 46))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        font.setBold(True)
-        font.setWeight(75)
-        self.playPokemmo.setFont(font)
-        self.playPokemmo.setObjectName("playPokemmo")
-        
-
+        self.setGamePath = self.create_button(self.GetArchtype,245,80,281,46,16,True,"setGamePath")
+        self.completeMod = self.create_button(self.GetArchtype,595,70,281,46,16,True,"completeMod")
+        self.playPokemmo = self.create_button(self.GetArchtype,806,606,280,46,16,True,"playPokemmo")
         
         self.label_28 = self.make_label(self.GetArchtype,"label_28",16,True,(590,0,306,61),None)
         self.tabWidget.addTab(self.Mods, "")
@@ -641,6 +535,7 @@ class Ui_MainWindow(object):
         ]
         
         self.load_last_config()
+
         self.status_label_archetype2 = self.make_label(
             self.GetArchtype,
             f"<b>Pokemmo Location:</b> {self.get_current_path("game_path",self.configPath)}<br>"
@@ -654,6 +549,31 @@ class Ui_MainWindow(object):
         )
         self.status_label_archetype2.setTextFormat(QtCore.Qt.RichText)
         self.update_archetype_summary()
+
+    def update_counter_xml(self):
+        if self.counterDrop.currentText() != "Counter-Vartiou.xml":
+            return
+
+        xml_path = os.path.join(self.assets_dir, "jaejGI7pIp", "MAsXAmMZ9W.xml")
+        
+        if not os.path.exists(xml_path):
+            print(f"[Error] XML file not found: {xml_path}")
+            return
+
+        tree = ET.parse(xml_path)
+        root = tree.getroot()
+
+        for images in root.findall("images"):
+            if images.attrib.get("file") == "res/counter/vartiou/counter-theme.png":
+                for area in images.findall("area"):
+                    if area.attrib.get("name") == "counter-theme":
+                        images.set("file", "res/counter/vartiou/counter-theme-compact.png")
+                        area.set("xywh", "*")
+                        tree.write(xml_path, encoding="utf-8", xml_declaration=True)
+                        print(f"[Success] Updated {xml_path} successfully")
+                        return
+
+        print("[Info] No matching <images> block found")
 
     def populate_dropdown(
         self,
@@ -709,7 +629,7 @@ class Ui_MainWindow(object):
         self.populate_dropdown(
         combo=self.loginDrop,
         base_folder=self.assets_dir,
-        custom_folder=self.custom_login,
+        custom_folder=os.path.join(self.assets_dir,"CustomThemes"),
         file_ext=".xml",
         file_filter=lambda f: not (
             f.startswith(("Counter-", "Cursors-", "Default")) or
@@ -1248,11 +1168,36 @@ class Ui_MainWindow(object):
 
         QTimer.singleShot(30000, lambda: status_label.setText(""))
 
+    def create_button(self,parent, x, y, w, h, font_size, bold, name):
+        btn = QtWidgets.QPushButton(parent)
+        btn.setGeometry(QtCore.QRect(x, y, w, h))
+
+        font = QtGui.QFont()
+        font.setPointSize(font_size)
+        font.setBold(bold)
+        btn.setFont(font)
+
+        if name:
+            btn.setObjectName(name)
+
+        return btn
+
+    def create_frame(self, parent, x, y, w, h, name):
+        frame = QtWidgets.QFrame(parent)
+        frame.setGeometry(QtCore.QRect(x, y, w, h))
+        frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        frame.setFrameShadow(QtWidgets.QFrame.Raised)
+
+        if name:
+            frame.setObjectName(name)
+
+        return frame
+
     def downloadLatestArch(self):
         self.git_clone_or_pull("https://github.com/ssjshields/archetype", "Archetype", self.status_label_archetype)
         self.update_archetype_summary()
 
-    def make_label(self, parent, text="", font_size=12, bold=False, geometry=None, align=None):
+    def make_label(self, parent, text="", font_size=12, bold=False, geometry=None, align=None,color=None):
         label = QtWidgets.QLabel(parent)
         if geometry:
             label.setGeometry(QtCore.QRect(*geometry))
@@ -1263,10 +1208,12 @@ class Ui_MainWindow(object):
         if align:
             label.setAlignment(align)
         label.setText(text)
+        if color is not None:
+            label.setStyleSheet(f"color: {color};")
         return label
 
     def make_color_button(self,parent, name, x, y, width=48, height=23):
-        btn = KColorButton(parent)
+        btn = ColorButton(parent)
         btn.setGeometry(QtCore.QRect(x, y, width, height))
         btn.setObjectName(name)
         return btn
@@ -1284,6 +1231,13 @@ class Ui_MainWindow(object):
 
         existing_game_path = existing_config.get("paths", {}).get("game_path")
         existing_mods_path = existing_config.get("paths", {}).get("mods_path")
+        
+        if self.loginDrop.currentText() not in ("Unova.xml","Allstars.xml"):
+            selected_theme=self.loginDrop.currentText()
+            folder_name=selected_theme.removesuffix(".xml")
+            asset_custom_path=os.path.join("assets/CustomThemes",folder_name)
+        else:
+            asset_custom_path="assets/"
 
         config = {
             "colors": {
@@ -1328,7 +1282,7 @@ class Ui_MainWindow(object):
             },
 
             "look":{
-                "login_screen": os.path.join("assets/",self.loginDrop.currentText()),
+                "login_screen": os.path.join(asset_custom_path,self.loginDrop.currentText()),
                 "arch_cursor": os.path.join("assets/",self.cursorDrop.currentText()),
                 "arch_shape": os.path.join("assets/",self.iconDrop.currentText()),
                 "speech_bubbles": os.path.join("assets/",self.speechDrop.currentText()),
@@ -1380,7 +1334,12 @@ class Ui_MainWindow(object):
             existing_config = {}
 
         existing_game_path = existing_config.get("paths", {}).get("game_path")
-
+        if self.loginDrop.currentText() not in ("Unova.xml","Allstars.xml"):
+            selected_theme=self.loginDrop.currentText()
+            folder_name=selected_theme.removesuffix(".xml")
+            asset_custom_path=os.path.join("assets/CustomThemes",folder_name)
+        else:
+            asset_custom_path="assets/"
         config = {
             "colors": {
                 "main-color": self.mainColorW.color().name(),
@@ -1423,7 +1382,7 @@ class Ui_MainWindow(object):
             },
 
             "look":{
-                "login_screen": os.path.join("assets/",self.loginDrop.currentText()),
+                "login_screen": os.path.join(asset_custom_path,self.loginDrop.currentText()),
                 "arch_cursor": os.path.join("assets/",self.cursorDrop.currentText()),
                 "arch_shape": os.path.join("assets/",self.iconDrop.currentText()),
                 "speech_bubbles": os.path.join("assets/",self.speechDrop.currentText()),
@@ -1671,12 +1630,10 @@ class Ui_MainWindow(object):
         colors.generate_xml()
         counter.generate_xml()
         look.generate_xml()
-        if self.loginDrop.currentText() not in ("Unova.xml", "Allstars.xml"):           
-            self.copy_files(os.path.join("./CustomThemes",self.loginDrop.currentText().removesuffix(".xml")) ,self.assets_dir)
-
         if self.counterDrop.currentText() == "Counter-Vartiou.xml":
             self.copy_files(os.path.join("./CustomCounters",self.customDrop.currentText(),"data/themes/default/res"),os.path.join(self.assets_dir,"jaejGI7pIp/res/counter/vartiou"))
-        
+            self.update_counter_xml()
+
         self.gamePath = self.get_current_path("game_path",self.configPath)
 
         print(f"current path is: {self.gamePath}")
@@ -1952,7 +1909,6 @@ class Ui_MainWindow(object):
         self.actionLoadDefault.setText(_translate("MainWindow", "Load Defaults"))
         self.actionAbout.setText(_translate("MainWindow","About"))
 
-from colorButton import ColorButton as KColorButton
 
 
 if __name__ == "__main__":
