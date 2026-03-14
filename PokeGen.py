@@ -28,7 +28,7 @@ class PokeGen:
                 continue
 
             if line.startswith("client.mods.enabled_mods="):
-                new_lines.append(f"client.mods.enabled_mods=Archetype/{mods_str}\n")
+                new_lines.append(f"client.mods.enabled_mods=archetype-theme/archetype-rounded-icons/{mods_str}\n")
                 found_mods = True
             elif line.startswith("client.ui.theme="):
                 new_lines.append(f"client.ui.theme=Archetype\n")

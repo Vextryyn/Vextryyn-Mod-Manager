@@ -5,6 +5,7 @@ import shutil
 import json
 import zipfile
 import tempfile
+from pathlib import Path
 import xml.etree.ElementTree as ET
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QTimer, QDir
@@ -25,6 +26,7 @@ from messagebox import AboutWindow
 from modOrganizer import ModListWidget
 from otherWidget import OtherWidget
 from colorButton import ColorButton
+from precheck import check_archetype, check_git_installed
 
 
 
@@ -32,21 +34,33 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1118, 788)
-        self.assets_dir = "./Archetype/theme/assets"
-        self.archetype_root="./Archetype"
-        self.custom_counter = "./CustomCounters"  
         if getattr(sys, "frozen", False):
             base_path = os.path.dirname(sys.executable)
         else:
             base_path = os.path.dirname(os.path.abspath(__file__))
 
+        ##check Git status
+        check_git_installed()
+        
+        self.archetype_root= os.path.join(base_path,"Archetype")
+        ##does Archetype Exist
+        if not os.path.exists(self.archetype_root):
+            check_archetype()
+
+        self.assets_dir = os.path.join(self.archetype_root,"archetype-theme/theme")
+        self.login_dir = os.path.join(self.assets_dir, "backgrounds")
+        self.counter_dir = os.path.join(self.assets_dir, "counters")
+        self.speech_dir = os.path.join(self.assets_dir,"speech-bubbles")
+        self.shape_dir = os.path.join(self.assets_dir,"shapes")
+        self.custom_counter = os.path.join(base_path,"CustomCounters")  
         self.defaultConfig = os.path.join(base_path, "default.json")
         self.previewimages = os.path.join(base_path, "Preview")
-        self.pokeballIcon = "./Archetype/theme/assets/jaejGI7pIp/res/custom/counter"
+        self.pokeballIcon = os.path.join(self.assets_dir, "res/custom/counter")
         self.gamePath = ""
-        self.cursorDir = "./Archetype/theme/assets/jaejGI7pIp/res/custom/45pYZKcs0t" 
-        self.themeFolder = "./Archetype/theme"
-        self.configPath="./config.json"
+        self.cursorDir = os.path.join(self.assets_dir,"res/custom/cursors")
+        self.cursorXmlDir = os.path.join(self.assets_dir,"cursors")
+        self.themeFolder = os.path.join(self.archetype_root,"archetype-theme/theme")
+        self.configPath= os.path.join(base_path,"config.json")
         if os.path.exists(self.configPath):
             self.modsLocation=self.get_current_path("mods_path",self.configPath)
         else:
@@ -93,7 +107,7 @@ class Ui_MainWindow(object):
         self.label = self.make_label(self.chooseLogin,"label",16,True,(60,-10,226,51),None)
 
         self.loginPreviewFrame = self.create_frame(self.LoginScreen,360,170,731,506,"loginPreviewFrame")
-        default_xml = os.path.join(self.assets_dir, "Allstars.xml")
+        default_xml = os.path.join(self.assets_dir, "backgrounds/Allstars.xml")
 
         self.loginPreview = XmlAnimationPreview(default_xml,parent=self.loginPreviewFrame)
         self.loginPreview.setGeometry(QtCore.QRect(5, 5, 721, 496))
@@ -549,6 +563,7 @@ class Ui_MainWindow(object):
         )
         self.status_label_archetype2.setTextFormat(QtCore.Qt.RichText)
         self.update_archetype_summary()
+        # self.create_shortcut()
 
     def update_counter_xml(self):
         if self.counterDrop.currentText() != "Counter-Vartiou.xml":
@@ -628,7 +643,7 @@ class Ui_MainWindow(object):
     def update_login_drop(self):
         self.populate_dropdown(
         combo=self.loginDrop,
-        base_folder=self.assets_dir,
+        base_folder=self.login_dir,
         custom_folder=os.path.join(self.assets_dir,"CustomThemes"),
         file_ext=".xml",
         file_filter=lambda f: not (
@@ -645,7 +660,7 @@ class Ui_MainWindow(object):
     def update_counter_drop(self):
         self.populate_dropdown(
             combo=self.counterDrop,
-            base_folder=self.assets_dir,
+            base_folder=self.counter_dir,
             custom_folder=self.custom_counter,
             file_ext=".xml",
             file_filter=lambda f: f.startswith("Counter-"),
@@ -664,7 +679,7 @@ class Ui_MainWindow(object):
 
         self.populate_dropdown(
             combo=self.cursorDrop,
-            base_folder=self.assets_dir,
+            base_folder=self.cursorXmlDir,
             file_ext=".xml", 
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Cursors-"),
@@ -674,12 +689,11 @@ class Ui_MainWindow(object):
 
         self.populate_dropdown(
             combo=self.speechDrop,
-            base_folder=self.assets_dir,
+            base_folder=self.speech_dir,
             file_ext=".xml",
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Default-"),
         )  
-
 
     def poke_start(self, *args):
         self.save_config()
@@ -759,7 +773,7 @@ class Ui_MainWindow(object):
 
         self.populate_dropdown(
             combo=self.iconDrop,
-            base_folder=self.assets_dir,
+            base_folder=self.shape_dir,
             file_ext=".xml", 
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Sharp") or f.startswith("Round"),
@@ -809,7 +823,7 @@ class Ui_MainWindow(object):
 
         self.update_single_preview(
             self.cursorPreview,
-            self.assets_dir,
+            self.cursorXmlDir,
             selected_name
         )
 
@@ -1235,7 +1249,7 @@ class Ui_MainWindow(object):
         if self.loginDrop.currentText() not in ("Unova.xml","Allstars.xml"):
             selected_theme=self.loginDrop.currentText()
             folder_name=selected_theme.removesuffix(".xml")
-            asset_custom_path=os.path.join("assets/CustomThemes",folder_name)
+            asset_custom_path=os.path.join("CustomThemes",folder_name)
         else:
             asset_custom_path="assets/"
 
@@ -1283,12 +1297,12 @@ class Ui_MainWindow(object):
 
             "look":{
                 "login_screen": os.path.join(asset_custom_path,self.loginDrop.currentText()),
-                "arch_cursor": os.path.join("assets/",self.cursorDrop.currentText()),
-                "arch_shape": os.path.join("assets/",self.iconDrop.currentText()),
-                "speech_bubbles": os.path.join("assets/",self.speechDrop.currentText()),
+                "arch_cursor": os.path.join("cursors",self.cursorDrop.currentText()),
+                "arch_shape": os.path.join("shapes",self.iconDrop.currentText()),
+                "speech_bubbles": os.path.join("speech-bubbles/",self.speechDrop.currentText()),
             },
             "counter":{
-                "encounter_counter":os.path.join("assets/",self.counterDrop.currentText()),
+                "encounter_counter":os.path.join("counters/",self.counterDrop.currentText()),
             },
 
             "state": {
@@ -1337,7 +1351,7 @@ class Ui_MainWindow(object):
         if self.loginDrop.currentText() not in ("Unova.xml","Allstars.xml"):
             selected_theme=self.loginDrop.currentText()
             folder_name=selected_theme.removesuffix(".xml")
-            asset_custom_path=os.path.join("assets/CustomThemes",folder_name)
+            asset_custom_path=os.path.join("archetype-theme/theme/CustomThemes",folder_name)
         else:
             asset_custom_path="assets/"
         config = {
@@ -1383,12 +1397,12 @@ class Ui_MainWindow(object):
 
             "look":{
                 "login_screen": os.path.join(asset_custom_path,self.loginDrop.currentText()),
-                "arch_cursor": os.path.join("assets/",self.cursorDrop.currentText()),
-                "arch_shape": os.path.join("assets/",self.iconDrop.currentText()),
-                "speech_bubbles": os.path.join("assets/",self.speechDrop.currentText()),
+                "arch_cursor": os.path.join(self.cursorDir,self.cursorDrop.currentText()),
+                "arch_shape": os.path.join(self.shape_dir,self.iconDrop.currentText()),
+                "speech_bubbles": os.path.join(self.speech_dir,self.speechDrop.currentText()),
             },
             "counter":{
-                "encounter_counter":os.path.join("assets/",self.counterDrop.currentText()),
+                "encounter_counter":os.path.join(self.counter_dir,self.counterDrop.currentText()),
             },
 
             "state": {
@@ -1631,7 +1645,7 @@ class Ui_MainWindow(object):
         counter.generate_xml()
         look.generate_xml()
         if self.counterDrop.currentText() == "Counter-Vartiou.xml":
-            self.copy_files(os.path.join("./CustomCounters",self.customDrop.currentText(),"data/themes/default/res"),os.path.join(self.assets_dir,"jaejGI7pIp/res/counter/vartiou"))
+            self.copy_files(os.path.join("./CustomCounters",self.customDrop.currentText(),"data/themes/default/res"),os.path.join(self.assets_dir,"res/counter/vartiou"))
             self.update_counter_xml()
 
         self.gamePath = self.get_current_path("game_path",self.configPath)
@@ -1639,7 +1653,8 @@ class Ui_MainWindow(object):
         print(f"current path is: {self.gamePath}")
         if os.path.exists(os.path.join(self.gamePath,"data/mods/Archetype")):
             shutil.rmtree(os.path.join(self.gamePath,"data/mods/Archetype"))
-        self.symlink_create("./Archetype", os.path.join(self.gamePath,"data/mods/Archetype"))
+        self.symlink_create("./Archetype/archetype-theme", os.path.join(self.gamePath,"data/mods/archetype-theme"))
+        self.symlink_create("./Archetype/archetype-rounded-icons", os.path.join(self.gamePath,"data/mods/archetype-rounded-icons"))
         self.symlink_create(self.modsLocation,os.path.join(self.gamePath,"data/mods"))
         PokeGen.update_poke(os.path.join(self.gamePath,"config/main.properties"),self.modsLocation)
         self.status_label_archetype.setText(f"All Mods Installed Successfully!!")
@@ -1719,19 +1734,19 @@ class Ui_MainWindow(object):
         cursor_name = base_name
 
         counter = 1
-        target_png = os.path.join(self.assets_dir, f"Cursors-{cursor_name}.png")
-        target_xml = os.path.join(self.assets_dir, f"Cursors-{cursor_name}.xml")
-        extra_png = f"Cursors-{cursor_name}.png"
+        target_png = os.path.join(self.cursorDir, f"Cursors-{cursor_name}.png")
+        target_xml = os.path.join(self.cursorXmlDir, f"Cursors-{cursor_name}.xml")
+        extra_png = f"../res/custom/cursors/Cursors-{cursor_name}.png"
 
         while os.path.exists(target_png) or os.path.exists(target_xml):
             cursor_name = f"{base_name}_{counter}"
-            target_png = os.path.join(self.assets_dir, f"Cursors-{cursor_name}.png")
-            target_xml = os.path.join(self.assets_dir, f"Cursors-{cursor_name}.xml")
+            target_png = os.path.join(self.cursorDir, f"Cursors-{cursor_name}.png")
+            target_xml = os.path.join(self.cursorXmlDir, f"Cursors-{cursor_name}.xml")
             counter += 1
 
         shutil.copy(file_path, target_png)
 
-        source_xml = os.path.join(self.assets_dir, "Cursors-Black.xml")
+        source_xml = os.path.join(self.cursorXmlDir, "Cursors-Black.xml")
         if os.path.exists(source_xml):
             shutil.copy(source_xml, target_xml)
 
@@ -1761,7 +1776,7 @@ class Ui_MainWindow(object):
         if not cursor_name.lower().endswith(".xml"):
             cursor_name = f"{cursor_name}.xml"
 
-        xml_path = os.path.join(self.assets_dir, cursor_name)
+        xml_path = os.path.join(self.cursorXmlDir, cursor_name)
 
         dialog = CursorEdit(
             xml_path,
@@ -1769,6 +1784,52 @@ class Ui_MainWindow(object):
         )
 
         dialog.exec_()
+
+
+    # def create_shortcut(self, parent=None):
+
+    #     exec_path = Path(os.environ.get("APPIMAGE", sys.argv[0])).resolve()
+
+    #     local_apps_dir = Path.home() / ".local/share/applications"
+    #     local_apps_dir.mkdir(parents=True, exist_ok=True)
+    #     desktop_file = local_apps_dir / "VexModMan.desktop"
+
+    #     if desktop_file.exists():
+    #         return
+
+    #     reply = QMessageBox.question(
+    #         parent,
+    #         "Create Desktop Shortcut",
+    #         "Would you like to create a desktop shortcut for VexModMan?",
+    #         QMessageBox.Yes | QMessageBox.No,
+    #         QMessageBox.Yes
+    #     )
+    #     if reply != QMessageBox.Yes:
+    #         return
+
+    #     desktop_entry = (
+    #         "[Desktop Entry]\n"
+    #         "Type=Application\n"
+    #         "Name=VexModMan\n"
+    #         f"Exec={exec_path}\n"
+    #         "Icon=VMM\n"
+    #         "Terminal=false\n"
+    #         "Categories=Utility;\n"
+    #     )
+
+    #     desktop_file.write_text(desktop_entry)
+    #     desktop_file.chmod(0o755)
+
+    #     os.system(f'gio set "{desktop_file}" metadata::trusted true')
+
+    #     desktop_dir = Path.home() / "Desktop"
+    #     if desktop_dir.exists():
+    #         desktop_file_desktop = desktop_dir / "VexModMan.desktop"
+    #         if not desktop_file_desktop.exists():
+    #             desktop_file_desktop.write_text(desktop_entry)
+    #             desktop_file_desktop.chmod(0o755)
+    #             os.system(f'gio set "{desktop_file_desktop}" metadata::trusted true')
+
 
     def ensure_archetype(self, parent=None):
         if os.path.exists(self.archetype_root):

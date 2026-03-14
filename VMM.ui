@@ -17,14 +17,14 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>2</x>
       <y>0</y>
       <width>1116</width>
       <height>721</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="LoginScreen">
      <attribute name="title">
@@ -1256,9 +1256,9 @@ berrydisabled</string>
       </widget>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab">
+    <widget class="QWidget" name="Mods">
      <attribute name="title">
-      <string>Page</string>
+      <string>Mods</string>
      </attribute>
      <widget class="QFrame" name="frame">
       <property name="geometry">
