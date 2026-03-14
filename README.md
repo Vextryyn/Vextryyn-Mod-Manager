@@ -1,6 +1,8 @@
 # **Vextryyn’s Mod Manager**  
 *(Name is not final, suggtestions welcome)*
 
+_For the moment while I figure out my appimage creation issues, Clone the repo and run the .sh file or from the terminal run python VMM.py_
+
 This project is part of a larger mod-management tool I’ve been developing. Right now, there’s no solid Linux solution for managing PokeMMO mods, so this tool started as a way to fill that gap—not just for PokeMMO, but for other games I play as well. Since it’s functional and some people may find it useful, I’m releasing it, even if it’s still a bit rough around the edges.
 
 For Windows users, there’s already a great mod manager by Ryukotsuki:  
