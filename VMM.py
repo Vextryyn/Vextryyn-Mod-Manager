@@ -567,7 +567,7 @@ class Ui_MainWindow(object):
         if self.counterDrop.currentText() != "Counter-Vartiou.xml":
             return
 
-        xml_path = os.path.join(self.assets_dir, "jaejGI7pIp", "MAsXAmMZ9W.xml")
+        xml_path = os.path.join(self.assets_dir, "gfx.xml")
         
         if not os.path.exists(xml_path):
             print(f"[Error] XML file not found: {xml_path}")
