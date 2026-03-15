@@ -29,6 +29,8 @@ config/
 *.exe
 *.spec
 Screenshots/
+CustomContent/
+buildenv/
 BuildInstructionsVexVersion.txt
 cursors-black.png
 cursors-test.png

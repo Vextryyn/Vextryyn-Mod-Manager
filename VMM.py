@@ -45,7 +45,12 @@ class Ui_MainWindow(object):
         self.counter_dir = os.path.join(self.assets_dir, "counters")
         self.speech_dir = os.path.join(self.assets_dir,"speech-bubbles")
         self.shape_dir = os.path.join(self.assets_dir,"shapes")
-        self.custom_counter = os.path.join(base_path,"CustomCounters")  
+        ##custom Content Stuff
+        self.customContent = os.path.join(base_path,"CustomContent")
+        self.custom_counter = os.path.join(self.customContent,"CustomCounters")
+        self.custom_login = os.path.join(self.customContent,"CustomThemes") 
+        self.custom_cursor = os.path.join(self.customContent,"CustomCursors")
+
         self.defaultConfig = os.path.join(base_path, "default.json")
         self.previewimages = self.resource_path("Preview")
         self.pokeballIcon = os.path.join(self.assets_dir, "res/custom/counter")
@@ -432,7 +437,7 @@ class Ui_MainWindow(object):
         self.screenDrop = QtWidgets.QComboBox(self.GetArchtype)
         self.screenDrop.setGeometry(QtCore.QRect(806, 560, 280, 25))
         self.screenDrop.setObjectName("screenDrop")
-        self.screenDrop.addItems(["PokeMMO Default","Gamescope Fullscreen Wayland","Gamescope Fullscreen X11"])
+        self.screenDrop.addItems(["PokeMMO Default", "PokeMMO Default + VKCapture","Gamescope Fullscreen Wayland","Gamescope Fullscreen X11"])
         self.screenDrop.setCurrentIndex(0)
 
         self.label_29 = self.make_label(self.GetArchtype,"label_29",14,True,(800,504,61,29),None)
@@ -642,7 +647,7 @@ class Ui_MainWindow(object):
         self.populate_dropdown(
         combo=self.loginDrop,
         base_folder=self.login_dir,
-        custom_folder=os.path.join(self.assets_dir,"CustomThemes"),
+        custom_folder=self.custom_login,
         file_ext=".xml",
         file_filter=lambda f: not (
             f.startswith(("Counter-", "Cursors-", "Default")) or
@@ -678,6 +683,7 @@ class Ui_MainWindow(object):
         self.populate_dropdown(
             combo=self.cursorDrop,
             base_folder=self.cursorXmlDir,
+            custom_folder=self.custom_cursor,
             file_ext=".xml", 
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Cursors-"),
@@ -696,7 +702,7 @@ class Ui_MainWindow(object):
     def poke_start(self, *args):
         self.save_config()
         try:
-            with open("config.json", "r") as f:
+            with open(self.configPath, "r") as f:
                 config = json.load(f)
         except Exception:
             self.status_label_archetype.setText("Error: The Game Path is not set")
@@ -756,6 +762,9 @@ class Ui_MainWindow(object):
                 "-f",
             ]
             cmd = gamescope_args + base_cmd
+        elif selection == "PokeMMO Default + VKCapture":
+            cmd = ["obs-gamecapture"] + base_cmd
+        
         else:
             cmd = base_cmd
 
@@ -819,11 +828,18 @@ class Ui_MainWindow(object):
 
         selected_name = self.cursorDrop.itemText(current_index)
 
-        self.update_single_preview(
-            self.cursorPreview,
-            self.cursorXmlDir,
-            selected_name
-        )
+        if selected_name not in os.listdir(self.cursorXmlDir):
+            self.update_single_preview(
+                self.cursorPreview,
+                self.custom_cursor,
+                selected_name
+            )            
+        else:
+            self.update_single_preview(
+                self.cursorPreview,
+                self.cursorXmlDir,
+                selected_name
+            )
 
     def update_preview_layers(self, preview_widget, base_path, image_list, color_map, combine_map=None):
         if not base_path or not os.path.exists(base_path):
@@ -1027,7 +1043,7 @@ class Ui_MainWindow(object):
         file_path, _ = QFileDialog.getOpenFileName(None, "Select a Theme ZIP", "", "Zip Files (*.zip);;All Files (*)")
         if not file_path:
             return
-        new_theme = self.theme_manager.add_theme_from_zip(file_path,os.path.join(self.assets_dir,"CustomThemes"), parent_widget=self)
+        new_theme = self.theme_manager.add_theme_from_zip(file_path,self.custom_login, parent_widget=self)
         if new_theme:
             update_func()
             label_widget.setText(f"✔ Imported: {os.path.basename(new_theme)}")
@@ -1069,7 +1085,7 @@ class Ui_MainWindow(object):
         try:
             up_to_date = self.check_remote_version(
                 "https://github.com/ssjshields/archetype",
-                "Archetype"
+                self.archetype_root
             )
 
             if up_to_date:
@@ -1121,6 +1137,7 @@ class Ui_MainWindow(object):
             return False
 
     def git_clone_or_pull(self, repo_url, destination, status_label):
+
         try:
             subprocess.run(["git", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except (subprocess.CalledProcessError, FileNotFoundError):
@@ -1134,48 +1151,31 @@ class Ui_MainWindow(object):
                 ["git", "ls-remote", "--symref", repo_url, "HEAD"],
                 check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
             )
-            
+
+            default_branch = "main"
             for line in remote_refs.stdout.splitlines():
                 if line.startswith("ref:"):
                     default_branch = line.split()[1].split("/")[-1]
                     break
+
+            if os.path.exists(os.path.join(destination, ".git")):
+                subprocess.run(["git", "-C", destination, "fetch", "--all"], check=True)
+                subprocess.run(["git", "-C", destination, "reset", "--hard", f"origin/{default_branch}"], check=True)
+                subprocess.run(["git", "-C", destination, "clean", "-fd"], check=True)
+                msg = "Updated Successfully, Please run Complete Build Again"
+
             else:
-                default_branch = "main"
+                if os.path.exists(destination):
+                    shutil.rmtree(destination)
 
-            remote_hash_output = subprocess.run(
-                ["git", "ls-remote", repo_url, f"refs/heads/{default_branch}"],
-                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-            )
-            remote_hash = remote_hash_output.stdout.split()[0].strip()
+                subprocess.run(["git", "clone", repo_url, destination], check=True)
+                msg = "Downloaded"
 
-            local_hash = None
-            if os.path.exists(destination) and os.path.exists(os.path.join(destination, ".git")):
-                local_hash_output = subprocess.run(
-                    ["git", "-C", destination, "rev-parse", default_branch],
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-                )
-                if local_hash_output.returncode == 0:
-                    local_hash = local_hash_output.stdout.strip()
-
-            if local_hash == remote_hash:
-                status_label.setText("Archetype is already up to date.")
-                status_label.setStyleSheet("color: green; font-size: 18pt;")
-            else:
-                if local_hash:
-                    subprocess.run(["git", "-C", destination, "pull"], check=True)
-                    msg = "Updated"
-                else:
-                    if os.path.exists(destination):
-                        import shutil
-                        shutil.rmtree(destination)
-                    subprocess.run(["git", "clone", repo_url, destination], check=True)
-                    msg = "Downloaded"
-
-                status_label.setText(f"Archetype {msg}")
-                status_label.setStyleSheet("color: green; font-size: 18pt;")
+            status_label.setText(f"Archetype {msg}")
+            status_label.setStyleSheet("color: green; font-size: 18pt;")
 
         except subprocess.CalledProcessError as e:
-            status_label.setText(f"Failed!: {e}")
+            status_label.setText(f"Git operation failed: {e}")
             status_label.setStyleSheet("color: red; font-size: 18pt;")
 
         QTimer.singleShot(30000, lambda: status_label.setText(""))
@@ -1206,7 +1206,7 @@ class Ui_MainWindow(object):
         return frame
 
     def downloadLatestArch(self):
-        self.git_clone_or_pull("https://github.com/ssjshields/archetype", "Archetype", self.status_label_archetype)
+        self.git_clone_or_pull("https://github.com/ssjshields/archetype", self.archetype_root, self.status_label_archetype)
         self.update_archetype_summary()
 
     def make_label(self, parent, text="", font_size=12, bold=False, geometry=None, align=None,color=None):
@@ -1250,6 +1250,13 @@ class Ui_MainWindow(object):
             asset_custom_path=os.path.join("CustomThemes",folder_name)
         else:
             asset_custom_path="assets/"
+
+        selected_name = self.cursorDrop.itemText(self.cursorDrop.currentIndex())
+        if selected_name not in os.listdir(self.cursorXmlDir):
+            cursorlocation = "CustomCursors"
+        else:
+            cursorlocation="cursors"
+
 
         config = {
             "colors": {
@@ -1295,7 +1302,7 @@ class Ui_MainWindow(object):
 
             "look":{
                 "login_screen": os.path.join(asset_custom_path,self.loginDrop.currentText()),
-                "arch_cursor": os.path.join("cursors",self.cursorDrop.currentText()),
+                "arch_cursor": os.path.join(cursorlocation,self.cursorDrop.currentText()),
                 "arch_shape": os.path.join("shapes",self.iconDrop.currentText()),
                 "speech_bubbles": os.path.join("speech-bubbles/",self.speechDrop.currentText()),
             },
@@ -1349,7 +1356,7 @@ class Ui_MainWindow(object):
         if self.loginDrop.currentText() not in ("Unova.xml","Allstars.xml"):
             selected_theme=self.loginDrop.currentText()
             folder_name=selected_theme.removesuffix(".xml")
-            asset_custom_path=os.path.join("archetype-theme/theme/CustomThemes",folder_name)
+            asset_custom_path=os.path.join("CustomThemes",folder_name)
         else:
             asset_custom_path="assets/"
         config = {
@@ -1585,7 +1592,7 @@ class Ui_MainWindow(object):
                 self.save_config()
                 up_to_date = self.check_remote_version(
                     "https://github.com/ssjshields/archetype",
-                    "Archetype"
+                    self.archetype_root
                 )
 
                 if up_to_date:
@@ -1617,7 +1624,7 @@ class Ui_MainWindow(object):
                 self.save_config()
                 up_to_date = self.check_remote_version(
                     "https://github.com/ssjshields/archetype",
-                    "Archetype"
+                    self.archetype_root
                 )
 
                 if up_to_date:
@@ -1637,13 +1644,15 @@ class Ui_MainWindow(object):
         colors = CompleteBuild(self.configPath, os.path.join(self.themeFolder, "CHOOSE_YOUR_COLORS.xml"), category="colors")
         counter = CompleteBuild(self.configPath, os.path.join(self.themeFolder, "CHOOSE_YOUR_COUNTER.xml"), category="counter")
         look = CompleteBuild(self.configPath, os.path.join(self.themeFolder, "CHOOSE_YOUR_LOOK.xml"), category="look")
+        
+        self.copy_files(self.customContent,self.themeFolder)
 
         print(self.counterDrop.currentText())
         colors.generate_xml()
         counter.generate_xml()
         look.generate_xml()
         if self.counterDrop.currentText() == "Counter-Vartiou.xml":
-            self.copy_files(os.path.join("./CustomCounters",self.customDrop.currentText(),"data/themes/default/res"),os.path.join(self.assets_dir,"res/counter/vartiou"))
+            self.copy_files(os.path.join(self.custom_counter,self.customDrop.currentText(),"data/themes/default/res"),os.path.join(self.assets_dir,"res/counter/vartiou"))
             self.update_counter_xml()
 
         self.gamePath = self.get_current_path("game_path",self.configPath)
@@ -1651,8 +1660,8 @@ class Ui_MainWindow(object):
         print(f"current path is: {self.gamePath}")
         if os.path.exists(os.path.join(self.gamePath,"data/mods/Archetype")):
             shutil.rmtree(os.path.join(self.gamePath,"data/mods/Archetype"))
-        self.symlink_create("./Archetype/archetype-theme", os.path.join(self.gamePath,"data/mods/archetype-theme"))
-        self.symlink_create("./Archetype/archetype-rounded-icons", os.path.join(self.gamePath,"data/mods/archetype-rounded-icons"))
+        self.symlink_create(os.path.join(self.archetype_root,"archetype-theme"), os.path.join(self.gamePath,"data/mods/archetype-theme"))
+        self.symlink_create(os.path.join(self.archetype_root,"archetype-rounded-icons"), os.path.join(self.gamePath,"data/mods/archetype-rounded-icons"))
         self.symlink_create(self.modsLocation,os.path.join(self.gamePath,"data/mods"))
         PokeGen.update_poke(os.path.join(self.gamePath,"config/main.properties"),self.modsLocation)
         self.status_label_archetype.setText(f"All Mods Installed Successfully!!")
@@ -1732,16 +1741,18 @@ class Ui_MainWindow(object):
         cursor_name = base_name
 
         counter = 1
-        target_png = os.path.join(self.cursorDir, f"Cursors-{cursor_name}.png")
-        target_xml = os.path.join(self.cursorXmlDir, f"Cursors-{cursor_name}.xml")
-        extra_png = f"../res/custom/cursors/Cursors-{cursor_name}.png"
+        target_png = os.path.join(self.custom_cursor, f"Cursors-{cursor_name}.png")
+        target_xml = os.path.join(self.custom_cursor, f"Cursors-{cursor_name}.xml")
+        extra_png = f"Cursors-{cursor_name}.png"
 
         while os.path.exists(target_png) or os.path.exists(target_xml):
             cursor_name = f"{base_name}_{counter}"
-            target_png = os.path.join(self.cursorDir, f"Cursors-{cursor_name}.png")
-            target_xml = os.path.join(self.cursorXmlDir, f"Cursors-{cursor_name}.xml")
+            target_png = os.path.join(self.custom_cursor, f"Cursors-{cursor_name}.png")
+            target_xml = os.path.join(self.custom_cursor, f"Cursors-{cursor_name}.xml")
             counter += 1
 
+
+        os.makedirs(os.path.dirname(target_png), exist_ok=True)
         shutil.copy(file_path, target_png)
 
         source_xml = os.path.join(self.cursorXmlDir, "Cursors-Black.xml")
@@ -1774,7 +1785,7 @@ class Ui_MainWindow(object):
         if not cursor_name.lower().endswith(".xml"):
             cursor_name = f"{cursor_name}.xml"
 
-        xml_path = os.path.join(self.cursorXmlDir, cursor_name)
+        xml_path = os.path.join(self.custom_cursor, cursor_name)
 
         dialog = CursorEdit(
             xml_path,
