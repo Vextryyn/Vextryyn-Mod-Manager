@@ -10,13 +10,13 @@ class ThemeManager:
         self.custom_dir = custom_dir or os.path.join(os.getcwd(),"Archetype", "archetype-theme", "theme","CustomThemes")
         os.makedirs(self.custom_dir, exist_ok=True)
 
-    def add_theme_from_zip(self, zip_path, parent_widget=None):
+    def add_theme_from_zip(self, zip_path, custom_dir, parent_widget=None):
         if not os.path.exists(zip_path):
             self._show_message("Error", f"ZIP file does not exist:\n{zip_path}", parent_widget)
             return None
 
         zip_name = os.path.splitext(os.path.basename(zip_path))[0]
-        extract_path = os.path.join(self.custom_dir, zip_name)
+        extract_path = os.path.join(custom_dir, zip_name)
 
         try:
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
@@ -49,7 +49,7 @@ class ThemeManager:
 
             self._show_message(
                 "Theme Added",
-                f"Successfully added theme:\n{zip_name}.xml in folder {zip_name}",
+                f"Successfully added theme:\n{zip_name}.xml {new_xml_path} in folder {zip_name}",
                 parent_widget
             )
             return new_xml_path

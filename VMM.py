@@ -34,19 +34,12 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1118, 788)
-        if getattr(sys, "frozen", False):
-            base_path = os.path.dirname(sys.executable)
-        else:
-            base_path = os.path.dirname(os.path.abspath(__file__))
 
-        ##check Git status
-        check_git_installed()
-        
+        base_path = self.get_base_path()
+        print("Base path:", base_path)
         self.archetype_root= os.path.join(base_path,"Archetype")
-        ##does Archetype Exist
-        if not os.path.exists(self.archetype_root):
-            check_archetype()
-
+        if not self.ensure_archetype(MainWindow):
+            sys.exit(0) 
         self.assets_dir = os.path.join(self.archetype_root,"archetype-theme/theme")
         self.login_dir = os.path.join(self.assets_dir, "backgrounds")
         self.counter_dir = os.path.join(self.assets_dir, "counters")
@@ -54,17 +47,24 @@ class Ui_MainWindow(object):
         self.shape_dir = os.path.join(self.assets_dir,"shapes")
         self.custom_counter = os.path.join(base_path,"CustomCounters")  
         self.defaultConfig = os.path.join(base_path, "default.json")
-        self.previewimages = os.path.join(base_path, "Preview")
+        self.previewimages = self.resource_path("Preview")
         self.pokeballIcon = os.path.join(self.assets_dir, "res/custom/counter")
         self.gamePath = ""
         self.cursorDir = os.path.join(self.assets_dir,"res/custom/cursors")
         self.cursorXmlDir = os.path.join(self.assets_dir,"cursors")
         self.themeFolder = os.path.join(self.archetype_root,"archetype-theme/theme")
         self.configPath= os.path.join(base_path,"config.json")
+        self.modsLocation = self.get_current_path("mods_path", self.configPath)
         if os.path.exists(self.configPath):
-            self.modsLocation=self.get_current_path("mods_path",self.configPath)
+            self.modsLocation = self.get_current_path("mods_path", self.configPath)
         else:
-            self.modsLocation=self.get_current_path("mods_path",self.defaultConfig)
+            self.modsLocation = self.get_current_path("mods_path", self.defaultConfig)
+
+        if not self.modsLocation:
+            self.modsLocation = self.resource_path("Mods") 
+
+        self.mod_order_file = os.path.join(self.modsLocation, "mod_order.txt")
+
         self.flipped_cache = {}
         self.mod_order_file = os.path.join(self.modsLocation, "mod_order.txt")
         self.theme_manager = ThemeManager()
@@ -92,8 +92,6 @@ class Ui_MainWindow(object):
 
         self.label_2_status = self.make_label(self.LoginScreen,"",9,True,(386,20,685,117),None,"green")
 
-        if not self.ensure_archetype(MainWindow):
-            sys.exit(0) 
         
         self.loginBrowse = self.create_button(self.addOwnLogin,235,20,80,25,10,False,"loginBrowse")
         self.loginBrowse.clicked.connect(self.handle_login_browse)        
@@ -1029,7 +1027,7 @@ class Ui_MainWindow(object):
         file_path, _ = QFileDialog.getOpenFileName(None, "Select a Theme ZIP", "", "Zip Files (*.zip);;All Files (*)")
         if not file_path:
             return
-        new_theme = self.theme_manager.add_theme_from_zip(file_path, parent_widget=self)
+        new_theme = self.theme_manager.add_theme_from_zip(file_path,os.path.join(self.assets_dir,"CustomThemes"), parent_widget=self)
         if new_theme:
             update_func()
             label_widget.setText(f"✔ Imported: {os.path.basename(new_theme)}")
@@ -1831,6 +1829,31 @@ class Ui_MainWindow(object):
     #             os.system(f'gio set "{desktop_file_desktop}" metadata::trusted true')
 
 
+    def get_base_path(self):
+        # Try APPIMAGE environment first
+        appimage_path = os.environ.get("APPIMAGE")
+        if appimage_path:
+            return os.path.dirname(os.path.abspath(appimage_path))
+        
+        # Check for PyInstaller frozen executable
+        if getattr(sys, "frozen", False) and sys.executable:
+            return os.path.dirname(os.path.abspath(sys.executable))
+        
+        # Normal Python script
+        if '__file__' in globals():
+            return os.path.dirname(os.path.abspath(__file__))
+        
+        # Last resort: current working directory
+        return os.getcwd()
+
+    def resource_path(self, relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except AttributeError:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
+
     def ensure_archetype(self, parent=None):
         if os.path.exists(self.archetype_root):
             return True
@@ -1838,7 +1861,10 @@ class Ui_MainWindow(object):
         choice = QMessageBox.question(
             parent,
             "Archetype Missing",
-            "Archetype is required in order to use Vextryyn's Mod Manager.\nThere are 2 ways to do this:\n\nOption 1: Go to https://github.com/ssjshields/archetype download and extract into the VMM folder\n\nOption 2: press Yes and this will download all the files for you",
+            "Archetype is required in order to use Vextryyn's Mod Manager.\n"
+            "There are 2 ways to do this:\n\n"
+            "Option 1: Go to https://github.com/ssjshields/archetype download and extract into the VMM folder\n\n"
+            "Option 2: press Yes and this will download all the files for you",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.Yes
         )
@@ -1846,7 +1872,8 @@ class Ui_MainWindow(object):
         if choice == QMessageBox.No:
             return False 
 
-        status_win = QtWidgets.QWidget()
+        # Show status window
+        status_win = QtWidgets.QWidget(parent)
         status_win.setWindowTitle("Installing Archetype")
         status_win.setFixedSize(300, 100)
         from PyQt5.QtWidgets import QVBoxLayout, QLabel
@@ -1855,18 +1882,24 @@ class Ui_MainWindow(object):
         layout.addWidget(status_label)
         status_win.setLayout(layout)
         status_win.show()
-        QApplication.processEvents()
+        QApplication.processEvents()  # allow GUI to update
 
         repo_url = "https://github.com/ssjshields/archetype"
-        if os.path.exists(self.archetype_root):
-            subprocess.run(["git", "-C", self.archetype_root, "pull"])
-        else:
-            subprocess.run(["git", "clone", repo_url, self.archetype_root])
+        try:
+            if os.path.exists(self.archetype_root):
+                subprocess.run(["git", "-C", self.archetype_root, "pull"], check=True)
+            else:
+                subprocess.run(["git", "clone", repo_url, self.archetype_root], check=True)
+        except subprocess.CalledProcessError as e:
+            QMessageBox.critical(parent, "Error", f"Failed to download Archetype:\n{e}")
+            status_win.close()
+            return False
 
         status_label.setText("Download complete!")
         QApplication.processEvents()
         status_win.close()
         return True
+
 
     def show_about_window(self):
         dlg = AboutWindow()
