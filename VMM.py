@@ -1359,6 +1359,13 @@ class Ui_MainWindow(object):
             asset_custom_path=os.path.join("CustomThemes",folder_name)
         else:
             asset_custom_path="assets/"
+        
+        selected_name = self.cursorDrop.itemText(self.cursorDrop.currentIndex())
+        if selected_name not in os.listdir(self.cursorXmlDir):
+            cursorlocation = "CustomCursors"
+        else:
+            cursorlocation="cursors"            
+        
         config = {
             "colors": {
                 "main-color": self.mainColorW.color().name(),
@@ -1402,12 +1409,12 @@ class Ui_MainWindow(object):
 
             "look":{
                 "login_screen": os.path.join(asset_custom_path,self.loginDrop.currentText()),
-                "arch_cursor": os.path.join(self.cursorDir,self.cursorDrop.currentText()),
-                "arch_shape": os.path.join(self.shape_dir,self.iconDrop.currentText()),
-                "speech_bubbles": os.path.join(self.speech_dir,self.speechDrop.currentText()),
+                "arch_cursor": os.path.join(cursorlocation,self.cursorDrop.currentText()),
+                "arch_shape": os.path.join("shapes",self.iconDrop.currentText()),
+                "speech_bubbles": os.path.join("speech-bubbles/",self.speechDrop.currentText()),
             },
             "counter":{
-                "encounter_counter":os.path.join(self.counter_dir,self.counterDrop.currentText()),
+                "encounter_counter":os.path.join("counters/",self.counterDrop.currentText()),
             },
 
             "state": {
@@ -1785,8 +1792,12 @@ class Ui_MainWindow(object):
         if not cursor_name.lower().endswith(".xml"):
             cursor_name = f"{cursor_name}.xml"
 
-        xml_path = os.path.join(self.custom_cursor, cursor_name)
-
+        selected_name = self.cursorDrop.itemText(self.cursorDrop.currentIndex())
+        if selected_name not in os.listdir(self.cursorXmlDir):
+            xml_path = os.path.join(self.custom_cursor, cursor_name)
+        else:
+            xml_path = os.path.join(self.cursorXmlDir, cursor_name)
+            
         dialog = CursorEdit(
             xml_path,
             on_save=self.update_cursor_preview
