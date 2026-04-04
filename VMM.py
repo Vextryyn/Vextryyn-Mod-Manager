@@ -566,7 +566,7 @@ class Ui_MainWindow(object):
         )
         self.status_label_archetype2.setTextFormat(QtCore.Qt.RichText)
         self.update_archetype_summary()
-        # self.create_shortcut()
+        self.create_shortcut()
 
     def update_counter_xml(self):
         if self.counterDrop.currentText() != "Counter-Vartiou.xml":
@@ -1249,7 +1249,7 @@ class Ui_MainWindow(object):
             folder_name=selected_theme.removesuffix(".xml")
             asset_custom_path=os.path.join("CustomThemes",folder_name)
         else:
-            asset_custom_path="assets/"
+            asset_custom_path="backgrounds/"
 
         selected_name = self.cursorDrop.itemText(self.cursorDrop.currentIndex())
         if selected_name not in os.listdir(self.cursorXmlDir):
@@ -1806,66 +1806,60 @@ class Ui_MainWindow(object):
         dialog.exec_()
 
 
-    # def create_shortcut(self, parent=None):
+    def create_shortcut(self, parent=None):
+        base_path = self.get_base_path()
 
-    #     exec_path = Path(os.environ.get("APPIMAGE", sys.argv[0])).resolve()
+        exec_path = Path(os.environ.get("APPIMAGE", sys.argv[0])).resolve()
 
-    #     local_apps_dir = Path.home() / ".local/share/applications"
-    #     local_apps_dir.mkdir(parents=True, exist_ok=True)
-    #     desktop_file = local_apps_dir / "VexModMan.desktop"
+        local_apps_dir = Path.home() / ".local/share/applications"
+        local_apps_dir.mkdir(parents=True, exist_ok=True)
+        desktop_file = local_apps_dir / "VexModMan.desktop"
 
-    #     if desktop_file.exists():
-    #         return
+        if desktop_file.exists():
+            return
 
-    #     reply = QMessageBox.question(
-    #         parent,
-    #         "Create Desktop Shortcut",
-    #         "Would you like to create a desktop shortcut for VexModMan?",
-    #         QMessageBox.Yes | QMessageBox.No,
-    #         QMessageBox.Yes
-    #     )
-    #     if reply != QMessageBox.Yes:
-    #         return
+        reply = QMessageBox.question(
+            parent,
+            "Create Desktop Shortcut",
+            "Would you like to create shortcuts for VexModMan?\n(This will create a desktop entry and a menu shortcut.)",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.Yes
+        )
+        if reply != QMessageBox.Yes:
+            return
 
-    #     desktop_entry = (
-    #         "[Desktop Entry]\n"
-    #         "Type=Application\n"
-    #         "Name=VexModMan\n"
-    #         f"Exec={exec_path}\n"
-    #         "Icon=VMM\n"
-    #         "Terminal=false\n"
-    #         "Categories=Utility;\n"
-    #     )
+        desktop_entry = (
+            "[Desktop Entry]\n"
+            "Type=Application\n"
+            "Name=VexModMan\n"
+            f"Exec={exec_path}\n"
+            f"Icon={base_path}/VMM.png\n"
+            "Terminal=false\n"
+            "Categories=Game;\n"
+        )
 
-    #     desktop_file.write_text(desktop_entry)
-    #     desktop_file.chmod(0o755)
+        desktop_file.write_text(desktop_entry)
+        desktop_file.chmod(0o755)
 
-    #     os.system(f'gio set "{desktop_file}" metadata::trusted true')
+        os.system(f'gio set "{desktop_file}" metadata::trusted true')
 
-    #     desktop_dir = Path.home() / "Desktop"
-    #     if desktop_dir.exists():
-    #         desktop_file_desktop = desktop_dir / "VexModMan.desktop"
-    #         if not desktop_file_desktop.exists():
-    #             desktop_file_desktop.write_text(desktop_entry)
-    #             desktop_file_desktop.chmod(0o755)
-    #             os.system(f'gio set "{desktop_file_desktop}" metadata::trusted true')
+        desktop_dir = Path.home() / "Desktop"
+        if desktop_dir.exists():
+            desktop_file_desktop = desktop_dir / "VexModMan.desktop"
+            if not desktop_file_desktop.exists():
+                desktop_file_desktop.write_text(desktop_entry)
+                desktop_file_desktop.chmod(0o755)
+                os.system(f'gio set "{desktop_file_desktop}" metadata::trusted true')
 
 
     def get_base_path(self):
-        # Try APPIMAGE environment first
         appimage_path = os.environ.get("APPIMAGE")
         if appimage_path:
-            return os.path.dirname(os.path.abspath(appimage_path))
-        
-        # Check for PyInstaller frozen executable
+            return os.path.dirname(os.path.abspath(appimage_path))       
         if getattr(sys, "frozen", False) and sys.executable:
-            return os.path.dirname(os.path.abspath(sys.executable))
-        
-        # Normal Python script
+            return os.path.dirname(os.path.abspath(sys.executable))        
         if '__file__' in globals():
-            return os.path.dirname(os.path.abspath(__file__))
-        
-        # Last resort: current working directory
+            return os.path.dirname(os.path.abspath(__file__))        
         return os.getcwd()
 
     def resource_path(self, relative_path):
