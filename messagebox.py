@@ -16,13 +16,13 @@ class AboutWindow(QDialog):
         layout = QVBoxLayout()
 
         # App name + version
-        title = QLabel("Vextryyn's Mod Manager v0.0.7b")
+        title = QLabel("Vextryyn's Mod Manager v0.0.9")
         title.setFont(QFont("Arial", 16, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
 
         # Description
         desc = QLabel(
-            "<p>This manager is made for easy customization of the Archetype Theme by ssjshields.</p>"
+            "<p>This manager is made for easy customization of the Archetype Theme.</p>"
             '<p>Archetype Theme by: <b>nurver</b><br>'
             'Donate to nurver: <a href="https://ko-fi.com/ssjshields">ko-fi.com/ssjshields</a></p>'
             '<p>Theme/Mod Tool by <b>Vextryyn</b><br>'
@@ -48,7 +48,6 @@ class AboutWindow(QDialog):
         version_info.setAlignment(Qt.AlignCenter)
         version_info.setWordWrap(True)
 
-        # OK button
         ok_btn = QPushButton("OK")
         ok_btn.clicked.connect(self.accept)
         btn_layout = QHBoxLayout()

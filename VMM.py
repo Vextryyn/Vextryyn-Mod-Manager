@@ -45,20 +45,30 @@ class Ui_MainWindow(object):
         self.counter_dir = os.path.join(self.assets_dir, "counters")
         self.speech_dir = os.path.join(self.assets_dir,"speech-bubbles")
         self.shape_dir = os.path.join(self.assets_dir,"shapes")
+        
         ##custom Content Stuff
         self.customContent = os.path.join(base_path,"CustomContent")
         self.custom_counter = os.path.join(self.customContent,"CustomCounters")
         self.custom_login = os.path.join(self.customContent,"CustomThemes") 
         self.custom_cursor = os.path.join(self.customContent,"CustomCursors")
+        self.config_root = self.get_config_base_folder("VexModMan")
+        os.makedirs(self.config_root, exist_ok=True)
+        self.config_dir = self.config_root
 
+       
+       
         self.defaultConfig = os.path.join(base_path, "default.json")
+        self.configSelector = os.path.join(self.config_dir, "config_selector.json")
+        self.configPath= os.path.join(self.config_dir,"config.json")
+        if not hasattr(self, "configPath") or not self.configPath:
+            self.configPath = os.path.join(self.config_dir, "config.json")
+
         self.previewimages = self.resource_path("Preview")
         self.pokeballIcon = os.path.join(self.assets_dir, "res/custom/counter")
         self.gamePath = ""
         self.cursorDir = os.path.join(self.assets_dir,"res/custom/cursors")
         self.cursorXmlDir = os.path.join(self.assets_dir,"cursors")
         self.themeFolder = os.path.join(self.archetype_root,"archetype-theme/theme")
-        self.configPath= os.path.join(base_path,"config.json")
         self.modsLocation = self.get_current_path("mods_path", self.configPath)
         if os.path.exists(self.configPath):
             self.modsLocation = self.get_current_path("mods_path", self.configPath)
@@ -434,23 +444,29 @@ class Ui_MainWindow(object):
         self.status_label_mods.setText("") 
         self.status_label_mods.setStyleSheet("color: green; font-size: 12pt;")
 
-        self.screenDrop = QtWidgets.QComboBox(self.GetArchtype)
-        self.screenDrop.setGeometry(QtCore.QRect(806, 560, 280, 25))
+        self.screenFrame = self.create_frame(self.GetArchtype,784,492,305,91,"screenFrame")
+        self.screenDrop = QtWidgets.QComboBox(self.screenFrame)
+        self.screenDrop.setGeometry(QtCore.QRect(14, 54, 280, 25))
         self.screenDrop.setObjectName("screenDrop")
         self.screenDrop.addItems(["PokeMMO Default", "PokeMMO Default + VKCapture","Gamescope Fullscreen Wayland","Gamescope Fullscreen X11"])
         self.screenDrop.setCurrentIndex(0)
+        self.label_29 = self.make_label(self.screenFrame,"label_29",14,True,(10,10,61,29),None)
+        self.label_31 = self.make_label(self.screenFrame,"label_31",14,True,(158,10,69,29),None)
 
-        self.label_29 = self.make_label(self.GetArchtype,"label_29",14,True,(800,504,61,29),None)
-        self.label_31 = self.make_label(self.GetArchtype,"label_31",14,True,(948,504,69,29),None)
-
-        self.screenResW = QtWidgets.QTextEdit(self.GetArchtype)
-        self.screenResW.setGeometry(QtCore.QRect(866,504,61,29))
+        self.screenResW = QtWidgets.QTextEdit(self.screenFrame)
+        self.screenResW.setGeometry(QtCore.QRect(76,10,61,29))
         self.screenResW.setText("1920")
         self.screenResW.setObjectName("res_w")
-        self.screenResH = QtWidgets.QTextEdit(self.GetArchtype)
-        self.screenResH.setGeometry(QtCore.QRect(1022,504,61,29))
+        self.screenResH = QtWidgets.QTextEdit(self.screenFrame)
+        self.screenResH.setGeometry(QtCore.QRect(232,10,61,29))
         self.screenResH.setText("1080")
         self.screenResH.setObjectName("res_h")
+
+        self.configFrame = self.create_frame(self.GetArchtype,784,402,305,91,"configFrame")
+        self.configDrop = QtWidgets.QComboBox(self.configFrame)
+        self.configDrop.setGeometry(QtCore.QRect(14, 54, 280, 25))
+        self.configDrop.setObjectName("configDrop")
+        self.configLabel = self.make_label(self.configFrame,"configLabel",20,True,(48,8,223,38),None)
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(5)
@@ -480,6 +496,13 @@ class Ui_MainWindow(object):
             self.mainColor: "#1c2328",
             self.subColor:"#42b9ff",
             self.minMaxButtonColor:"#ffffff",
+            self.berryDisabled:"#ffffff",
+            self.reshiramColor:"#1b2526",
+            self.reshiramAura:"#cb4e03",
+            self.zekromColor:"#070b0b",
+            self.zekromAura:"#00a5c9",
+            self.ballOutline:"#ffffff",
+            self.fontColor:"#ffffff",
         }
         for widget, color in default_colors.items():
             widget.setColor(color)
@@ -505,6 +528,7 @@ class Ui_MainWindow(object):
         self.counterDrop.currentIndexChanged.connect(self.update_counter_preview)
         self.customDrop.currentIndexChanged.connect(self.update_vartiou_drop)
         self.cursorDrop.currentIndexChanged.connect(self.update_cursor_preview)
+        self.configDrop.currentIndexChanged.connect(self.on_config_changed)
 
 
         self.mainColor.colorChanged.connect(lambda c: self.counterPreview.set_layer_tint(0, QColor(c)))
@@ -697,9 +721,39 @@ class Ui_MainWindow(object):
             file_ext=".xml",
             include_subfolders=False,
             file_filter=lambda f: f.startswith("Default-"),
-        )  
+        )
 
+    def refresh_config_dropdown(self):
+        self.configDrop.blockSignals(True)
+        self.configDrop.clear()
+
+        for file in sorted(os.listdir(self.config_dir)):
+            if not file.endswith(".json"):
+                continue
+
+            if file == "config_selector.json":
+                continue
+
+            full_path = os.path.join(self.config_dir, file)
+            self.configDrop.addItem(file, full_path)
+        # set current active
+        active = self.get_active_config_path()
+
+        index = self.configDrop.findData(active)
+        if index >= 0:
+            self.configDrop.setCurrentIndex(index)
+
+        self.configDrop.blockSignals(False)
+
+    def on_config_changed(self, index):
+        path = self.configDrop.itemData(index)
+        if not path:
+            return
+        self.set_active_config_path(path)
+        self._load_config_from_path(path)
+    
     def poke_start(self, *args):
+
         self.save_config()
         try:
             with open(self.configPath, "r") as f:
@@ -1039,6 +1093,12 @@ class Ui_MainWindow(object):
     def updateFontColor(self, color, label):
         label.setStyleSheet(f"color: {color.name()};")
 
+    def get_config_base_folder(self, app_name="VexModMan"):
+        return os.path.join(
+            os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
+            app_name
+        )
+
     def handle_zip_import(self, update_func, label_widget):
         file_path, _ = QFileDialog.getOpenFileName(None, "Select a Theme ZIP", "", "Zip Files (*.zip);;All Files (*)")
         if not file_path:
@@ -1229,192 +1289,94 @@ class Ui_MainWindow(object):
         btn.setGeometry(QtCore.QRect(x, y, width, height))
         btn.setObjectName(name)
         return btn
+    #Save Section 
+    #_______________________________#
+    def col(self, widget):
+        return widget.color().name()
 
-    def save_config(self):
-        if os.path.exists(self.configPath):
-            try:
-                with open(self.configPath, "r", encoding="utf-8") as f:
-                    existing_config = json.load(f)
-            except Exception as e:
-                print(f"Failed to load existing config: {e}")
-                existing_config = {}
+    def safe_load_json(self, path):
+        if not os.path.exists(path):
+            return {}
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+
+    def asset_paths(self):
+        login = self.loginDrop.currentText()
+
+        if login not in ("Unova.xml", "Allstars.xml"):
+            folder = login.removesuffix(".xml")
+            login_path = os.path.join("CustomThemes", folder)
         else:
-            existing_config = {}
+            login_path = "backgrounds/"
 
-        existing_game_path = existing_config.get("paths", {}).get("game_path")
-        existing_mods_path = existing_config.get("paths", {}).get("mods_path")
-        
-        if self.loginDrop.currentText() not in ("Unova.xml","Allstars.xml"):
-            selected_theme=self.loginDrop.currentText()
-            folder_name=selected_theme.removesuffix(".xml")
-            asset_custom_path=os.path.join("CustomThemes",folder_name)
-        else:
-            asset_custom_path="backgrounds/"
-
-        selected_name = self.cursorDrop.itemText(self.cursorDrop.currentIndex())
-        if selected_name not in os.listdir(self.cursorXmlDir):
-            cursorlocation = "CustomCursors"
-        else:
-            cursorlocation="cursors"
-
-
-        config = {
-            "colors": {
-                "main-color": self.mainColorW.color().name(),
-                "sub-color": self.subColorW.color().name(),
-                "button-color": self.buttonColorW.color().name(),
-                "accent-color": self.accentColorW.color().name(),
-                "font-main-color": self.fontMainW.color().name(),
-                "font-sub-color": self.fontSubW.color().name(),
-                "font-button-color": self.fontButtonW.color().name(),
-                "font-disabled-color": self.fontDisabledColorW.color().name(),
-                "hp-high-color": self.hpHighW.color().name(),
-                "hp-mid-color": self.hpMidW.color().name(),
-                "hp-low-color": self.hpLowW.color().name(),
-                "xp-color": self.xpColorW.color().name(),
-                "friendship-color": self.friendshipColorW.color().name(),
-                "icon-color": self.iconColorW.color().name(),
-                "water-background": self.waterbg.color().name(),
-                "water-warning": self.waterW.color().name(),
-                "berry-progress": self.berryProgress.color().name(),
-                "berry-progress-warning": self.berryWarning.color().name(),
-                "berry-progress-disabled": self.berryDisabled.color().name(),
-                "reshiram-color": self.reshiramColor.color().name(),
-                "reshiram-aura": self.reshiramAura.color().name(),
-                "zekrom-color": self.zekromColor.color().name(),
-                "zekrom-aura": self.zekromAura.color().name(),
-                "counter-ball-color": self.ballColor.color().name(),
-                "counter-ball-outline":self.ballOutline.color().name(),
-                "counter-min-max-button-color": self.minMaxButtonColor.color().name(),
-                "counter-main-color": self.mainColor.color().name(),
-                "counter-sub-color": self.subColor.color().name(),
-                "counter-font": self.fontColor.color().name(),
-                "counter-font-border":self.fontBorder.color().name(),
-            },
-            
-            "paths": {
-                "login_screen": self.loginDrop.currentText(),
-                "encounter_counter": self.counterDrop.currentText(),
-                "custom_counter_current": self.customDrop.currentText(),
-                "game_path": self.gamePath or existing_game_path,
-                "mods_path": self.modsLocation or existing_mods_path
-            },
-
-            "look":{
-                "login_screen": os.path.join(asset_custom_path,self.loginDrop.currentText()),
-                "arch_cursor": os.path.join(cursorlocation,self.cursorDrop.currentText()),
-                "arch_shape": os.path.join("shapes",self.iconDrop.currentText()),
-                "speech_bubbles": os.path.join("speech-bubbles/",self.speechDrop.currentText()),
-            },
-            "counter":{
-                "encounter_counter":os.path.join("counters/",self.counterDrop.currentText()),
-            },
-
-            "state": {
-                "current_tab": self.tabWidget.currentIndex(),
-                "loginDrop": self.loginDrop.currentIndex(),
-                "counterDrop": self.counterDrop.currentIndex(),
-                "customDrop": self.customDrop.currentIndex(),
-                "bubblesDrop": self.speechDrop.currentIndex(),
-                "icon_drop": self.iconDrop.currentIndex(),
-                "cursor_drop": self.cursorDrop.currentIndex(),
-                "screenDrop": self.screenDrop.currentIndex(),
-            },
-        }
-
-        with open(self.configPath, "w", encoding="utf-8") as f:
-            json.dump(config, f, indent=4)
-
-        print(f"Config saved: {self.configPath}")
-
-    def save_config_as(self):
-        new_path, _ = QtWidgets.QFileDialog.getSaveFileName(
-            None,
-            "Save Configuration As",
-            os.path.expanduser("~"),
-            "JSON Files (*.json);;All Files (*)"
+        cursor_name = self.cursorDrop.currentText()
+        cursor_path = (
+            "CustomCursors"
+            if cursor_name not in os.listdir(self.cursorXmlDir)
+            else "cursors"
         )
 
-        if not new_path:
-            print("Save As canceled.")
-            return
+        return login_path, cursor_path
 
-        if not new_path.lower().endswith(".json"):
-            new_path += ".json"
+    def build_config(self, existing_game_path=None, existing_mods_path=None):
+        login_path, cursor_path = self.asset_paths()
 
-        if os.path.exists(self.configPath):
-            try:
-                with open(self.configPath, "r", encoding="utf-8") as f:
-                    existing_config = json.load(f)
-            except Exception as e:
-                print(f"Failed to load existing config: {e}")
-                existing_config = {}
-        else:
-            existing_config = {}
+        c = self.col
 
-        existing_game_path = existing_config.get("paths", {}).get("game_path")
-        if self.loginDrop.currentText() not in ("Unova.xml","Allstars.xml"):
-            selected_theme=self.loginDrop.currentText()
-            folder_name=selected_theme.removesuffix(".xml")
-            asset_custom_path=os.path.join("CustomThemes",folder_name)
-        else:
-            asset_custom_path="assets/"
-        
-        selected_name = self.cursorDrop.itemText(self.cursorDrop.currentIndex())
-        if selected_name not in os.listdir(self.cursorXmlDir):
-            cursorlocation = "CustomCursors"
-        else:
-            cursorlocation="cursors"            
-        
-        config = {
+        return {
             "colors": {
-                "main-color": self.mainColorW.color().name(),
-                "sub-color": self.subColorW.color().name(),
-                "button-color": self.buttonColorW.color().name(),
-                "accent-color": self.accentColorW.color().name(),
-                "font-main-color": self.fontMainW.color().name(),
-                "font-sub-color": self.fontSubW.color().name(),
-                "font-button-color": self.fontButtonW.color().name(),
-                "font-disabled-color": self.fontDisabledColorW.color().name(),
-                "hp-high-color": self.hpHighW.color().name(),
-                "hp-mid-color": self.hpMidW.color().name(),
-                "hp-low-color": self.hpLowW.color().name(),
-                "xp-color": self.xpColorW.color().name(),
-                "friendship-color": self.friendshipColorW.color().name(),
-                "icon-color": self.iconColorW.color().name(),
-                "water-background": self.waterbg.color().name(),
-                "water-warning": self.waterW.color().name(),
-                "berry-progress": self.berryProgress.color().name(),
-                "berry-progress-warning": self.berryWarning.color().name(),
-                "berry-progress-disabled": self.berryDisabled.color().name(),
-                "reshiram-color": self.reshiramColor.color().name(),
-                "reshiram-aura": self.reshiramAura.color().name(),
-                "zekrom-color": self.zekromColor.color().name(),
-                "zekrom-aura": self.zekromAura.color().name(),
-                "counter-ball-color": self.ballColor.color().name(),
-                "counter-ball-outline":self.ballOutline.color().name(),
-                "counter-min-max-button-color": self.minMaxButtonColor.color().name(),
-                "counter-main-color": self.mainColor.color().name(),
-                "counter-sub-color": self.subColor.color().name(),
-                "counter-font": self.fontColor.color().name(),
-                "counter-font-border":self.fontBorder.color().name(),
+                "main-color": c(self.mainColorW),
+                "sub-color": c(self.subColorW),
+                "button-color": c(self.buttonColorW),
+                "accent-color": c(self.accentColorW),
+                "font-main-color": c(self.fontMainW),
+                "font-sub-color": c(self.fontSubW),
+                "font-button-color": c(self.fontButtonW),
+                "font-disabled-color": c(self.fontDisabledColorW),
+                "hp-high-color": c(self.hpHighW),
+                "hp-mid-color": c(self.hpMidW),
+                "hp-low-color": c(self.hpLowW),
+                "xp-color": c(self.xpColorW),
+                "friendship-color": c(self.friendshipColorW),
+                "icon-color": c(self.iconColorW),
+                "water-background": c(self.waterbg),
+                "water-warning": c(self.waterW),
+                "berry-progress": c(self.berryProgress),
+                "berry-progress-warning": c(self.berryWarning),
+                "berry-progress-disabled": c(self.berryDisabled),
+                "reshiram-color": c(self.reshiramColor),
+                "reshiram-aura": c(self.reshiramAura),
+                "zekrom-color": c(self.zekromColor),
+                "zekrom-aura": c(self.zekromAura),
+                "counter-ball-color": c(self.ballColor),
+                "counter-ball-outline": c(self.ballOutline),
+                "counter-min-max-button-color": c(self.minMaxButtonColor),
+                "counter-main-color": c(self.mainColor),
+                "counter-sub-color":c(self.subColor),
+                "counter-font":c(self.fontColor),
+                "counter-font-border":c(self.fontBorder)
             },
-            
+
             "paths": {
                 "login_screen": self.loginDrop.currentText(),
                 "encounter_counter": self.counterDrop.currentText(),
                 "custom_counter_current": self.customDrop.currentText(),
                 "game_path": self.gamePath or existing_game_path,
+                "mods_path": self.modsLocation or existing_mods_path,
             },
 
-            "look":{
-                "login_screen": os.path.join(asset_custom_path,self.loginDrop.currentText()),
-                "arch_cursor": os.path.join(cursorlocation,self.cursorDrop.currentText()),
-                "arch_shape": os.path.join("shapes",self.iconDrop.currentText()),
-                "speech_bubbles": os.path.join("speech-bubbles/",self.speechDrop.currentText()),
+            "look": {
+                "login_screen": os.path.join(login_path, self.loginDrop.currentText()),
+                "arch_cursor": os.path.join(cursor_path, self.cursorDrop.currentText()),
+                "arch_shape": os.path.join("shapes", self.iconDrop.currentText()),
+                "speech_bubbles": os.path.join("speech-bubbles", self.speechDrop.currentText()),
             },
-            "counter":{
-                "encounter_counter":os.path.join("counters/",self.counterDrop.currentText()),
+
+            "counter": {
+                "encounter_counter": os.path.join("counters", self.counterDrop.currentText()),
             },
 
             "state": {
@@ -1429,13 +1391,57 @@ class Ui_MainWindow(object):
             },
         }
 
-        try:
-            with open(new_path, "w", encoding="utf-8") as f:
-                json.dump(config, f, indent=4)
-            print(f"Config saved as: {new_path}")
-            self.configPath = new_path
-        except Exception as e:
-            print(f"Failed to save config as {new_path}: {e}")
+    def save_config(self):
+        path = self.get_active_config_path()
+
+        existing = self.safe_load_json(path)
+
+        config = self.build_config(
+            existing.get("paths", {}).get("game_path"),
+            existing.get("paths", {}).get("mods_path"),
+        )
+
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4)
+
+        print(f"Config saved: {path}")
+
+    def save_config_as(self):
+        name, ok = QtWidgets.QInputDialog.getText(
+            None,
+            "Save Config",
+            "Enter config name:"
+        )
+
+        if not ok or not name.strip():
+            return
+
+        name = name.strip()
+        if not name.endswith(".json"):
+            name += ".json"
+
+        new_path = os.path.join(self.config_dir, name)
+
+        existing = self.safe_load_json(self.get_active_config_path())
+
+        config = self.build_config(
+            existing.get("paths", {}).get("game_path"),
+            existing.get("paths", {}).get("mods_path"),
+        )
+
+        with open(new_path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4)
+
+        self.set_active_config_path(new_path)
+        self.configPath = new_path
+
+        print(f"Saved and activated config: {new_path}")
+
+        if hasattr(self, "configDrop"):
+            self.refresh_config_dropdown()
+
+    #EndSaveSection
+    #___________________________________________
 
     def get_Archstatus(self):
         repo_path = self.archetype_root
@@ -1474,6 +1480,35 @@ class Ui_MainWindow(object):
         except subprocess.CalledProcessError as e:
             print(f"Git command failed: {e}")
             return '<span style="color: red;">Git error</span>'
+    #Load Section
+    #_______________________________________
+    def ensure_config_selector(self):
+        if not os.path.exists(self.configSelector):
+            with open(self.configSelector, "w", encoding="utf-8") as f:
+                json.dump({
+                    "active_config": self.defaultConfig
+                }, f, indent=4)
+
+    def get_active_config_path(self):
+        self.ensure_config_selector()
+
+        try:
+            with open(self.configSelector, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            return self.defaultConfig
+
+        path = data.get("active_config", self.defaultConfig)
+
+        if not os.path.exists(path):
+            print(f"[Warn] Missing config: {path}, falling back to default")
+            return self.defaultConfig
+
+        return path
+
+    def set_active_config_path(self, path):
+        with open(self.configSelector, "w", encoding="utf-8") as f:
+            json.dump({"active_config": path}, f, indent=4)
 
     def _load_config_from_path(self, path):
         if not os.path.exists(path):
@@ -1540,21 +1575,33 @@ class Ui_MainWindow(object):
         self.modsLocation=self.get_current_path("mods_path",self.configPath)
 
     def load_last_config(self):
-        self._load_config_from_path(self.configPath)
+        path = self.get_active_config_path()
+
+        self.configPath = path
+        self._load_config_from_path(path)
+
+        if hasattr(self, "configDrop"):
+            self.refresh_config_dropdown()
+
+            index = self.configDrop.findData(path)
+            if index >= 0:
+                self.configDrop.blockSignals(True)
+                self.configDrop.setCurrentIndex(index)
+                self.configDrop.blockSignals(False)
 
     def load_default_config(self):
         self._load_config_from_path(self.defaultConfig)
 
     def load_config(self):
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
-            None,  
+            None,
             "Select Config File",
-            os.path.dirname(self.configPath) if hasattr(self, "configPath") else "",
+            self.config_dir,
             "JSON Files (*.json);;All Files (*)"
         )
 
         if not file_path:
-            print("No config file selected, using defaults.")
+            print("No config file selected.")
             return
 
         if not os.path.exists(file_path):
@@ -1562,10 +1609,14 @@ class Ui_MainWindow(object):
             return
 
         self._load_config_from_path(file_path)
-
+        self.set_active_config_path(file_path)
         self.configPath = file_path
 
-        print(f"Loaded config from: {file_path}")
+        if hasattr(self, "configDrop"):
+            self.refresh_config_dropdown()
+
+        print(f"Loaded and activated config: {file_path}")
+
 
     def get_current_path(self, path_type=None, config_file=None):
             config_file = config_file or getattr(self, "configPath", None)
@@ -1888,7 +1939,6 @@ class Ui_MainWindow(object):
         if choice == QMessageBox.No:
             return False 
 
-        # Show status window
         status_win = QtWidgets.QWidget(parent)
         status_win.setWindowTitle("Installing Archetype")
         status_win.setFixedSize(300, 100)
@@ -1898,7 +1948,7 @@ class Ui_MainWindow(object):
         layout.addWidget(status_label)
         status_win.setLayout(layout)
         status_win.show()
-        QApplication.processEvents()  # allow GUI to update
+        QApplication.processEvents()  
 
         repo_url = "https://github.com/ssjshields/archetype"
         try:
@@ -2001,6 +2051,7 @@ class Ui_MainWindow(object):
         self.label_27.setText(_translate("MainWindow", "Set Mods Folder"))
         self.label_29.setText(_translate("MainWindow", "Width"))
         self.label_31.setText(_translate("MainWindow", "Height"))
+        self.configLabel.setText(_translate("MainWindow", "Config Selection"))
         self.downloadArch.setText(_translate("MainWindow", "Download"))
         self.setModFolder.setText(_translate("MainWindow", "Browse..."))
         self.playPokemmo.setText(_translate("MainWindow", "Play Pokemmo"))
