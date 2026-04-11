@@ -8,8 +8,6 @@ For Windows users, there’s already a great mod manager by Ryukotsuki:
 
 If that project ever gets a Linux port, I’ll likely wind down standalone development here and shift back to my broader project
 
-**Extra note:** True Borderless will likely not be an option until there is something reliable for Wayland, I do not plan to do anything x11 since that will be going away in the near future. Debating on utilizng gamescope for advanced functions but unsure, there also seem to be some pretty universal solutions for hyperland, but I would rather a one approach works for all solution. Any recommendations are appreciated.
-
 ---
 **Requirements**
  - Git
