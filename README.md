@@ -22,11 +22,11 @@ If that project ever gets a Linux port, I’ll likely wind down standalone devel
 
 ---
 ## **Current Feature Status**
-_0.0.07c_
-fixed for current version of archetype
-I dont think there is anything new in there, i did some stuff in January that i didnt commit. Trying to add a desktop entry and want to add to aur, but i think that is a long way away.
+_0.0.9_
+Added Config Selector 
+I included the default.json just in case, but I dont believe it is needed anymore with the changes I added. 
 
-_Updated for 0.0.7a_
+_Updated for 0.0.9_
 ### **Not Implemented Yet**
 - Custom speech bubbles  
 - Berry watering colors(colors should work, I rarely do berry stuff, so I havent tested yet. I dont want to move it to partial until I've confirmed its working)
@@ -43,9 +43,9 @@ _Updated for 0.0.7a_
   - symlink handling
   - custom modfolder location
   
-Not Working/In Progress
-  - No enable/disable toggle yet — **anything in the list is active**.
-  - does not check game mods folder for existing mods - **Will overwrite duplicates, but if existing is not in list it will not overwrite or enable**
+-**Not Working/In Progress**
+  - No Mod enable/disable toggle yet — **anything in the list is active**.
+  - Multiple mod profiles
 
 ---
 
@@ -110,6 +110,8 @@ A simple drag-and-drop mod manager:
 - Alerts you if an update is available.
 - Can automatically update Archetype when needed.
 - Ensures the game path is correct and mod placement is valid.
+- Config Selector, use for quickly choosing between configs
+- Play mode, choose between Default Pokemmo, Gamescope fullscreen options and VKCapture(generally streaming related stuff)
 - **Complete** applies mods and sets the Archetype theme.
 - **Play PokeMMO** launches the game.
 
