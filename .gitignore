@@ -34,3 +34,6 @@ buildenv/
 BuildInstructionsVexVersion.txt
 cursors-black.png
 cursors-test.png
+memray-VMM.py.70838.bin
+VexModMan.code-workspace
+config_selector.json
