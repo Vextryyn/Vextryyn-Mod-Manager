@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from collections import OrderedDict
 
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import QPixmap, QPainter, QColor
+from PyQt5.QtGui import QImageReader, QPixmap, QPainter, QColor
 from PyQt5.QtWidgets import QLabel, QWidget, QVBoxLayout
 
 
@@ -58,6 +58,13 @@ class XmlAnimationPreview(QWidget):
         # Small bounded cache for decoded source images only.
         self.pixmap_cache = LruPixmapCache(max_items=24)
 
+        # Reused each paint to avoid per-frame full-size QPixmap allocations.
+        self._merge_buffer = None
+        self._merge_buffer_size = (0, 0)
+        self._tint_overlay = None
+        self._tint_result = None
+        self._tint_buf_size = (0, 0)
+
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
 
@@ -88,6 +95,11 @@ class XmlAnimationPreview(QWidget):
         self.layer_frame_indices = {}
         self.canvas_size = (200, 200)
         self.pixmap_cache.clear()
+        self._merge_buffer = None
+        self._merge_buffer_size = (0, 0)
+        self._tint_overlay = None
+        self._tint_result = None
+        self._tint_buf_size = (0, 0)
 
         base_dir = os.path.dirname(self.xml_path)
 
@@ -138,6 +150,17 @@ class XmlAnimationPreview(QWidget):
 
         self.pixmap_cache.put(abs_path, pixmap)
         return pixmap
+
+    @staticmethod
+    def _image_pixel_size(abs_path):
+        """Image dimensions without decoding the full bitmap (saves RAM vs QPixmap)."""
+        reader = QImageReader(abs_path)
+        if not reader.canRead():
+            return 200, 200
+        size = reader.size()
+        if not size.isValid():
+            return 200, 200
+        return size.width(), size.height()
 
     def resolve_frames(self, node):
         frames = []
@@ -322,18 +345,22 @@ class XmlAnimationPreview(QWidget):
         for frames in alias_frames_map.values():
             for frame in frames:
                 if frame.get("kind") == "image":
-                    pix = self.frame_pixmap(frame)
-                    if pix and not pix.isNull():
-                        max_width = max(max_width, pix.width())
-                        max_height = max(max_height, pix.height())
+                    file_path = frame.get("file")
+                    if file_path and os.path.isfile(file_path):
+                        w, h = self._image_pixel_size(file_path)
+                        max_width = max(max_width, w)
+                        max_height = max(max_height, h)
 
                 elif frame.get("kind") == "grid":
                     for sub_frames in frame["grid"].values():
                         for sub_frame in sub_frames:
-                            pix = self.frame_pixmap(sub_frame)
-                            if pix and not pix.isNull():
-                                max_width = max(max_width, pix.width())
-                                max_height = max(max_height, pix.height())
+                            if sub_frame.get("kind") != "image":
+                                continue
+                            file_path = sub_frame.get("file")
+                            if file_path and os.path.isfile(file_path):
+                                w, h = self._image_pixel_size(file_path)
+                                max_width = max(max_width, w)
+                                max_height = max(max_height, h)
 
         return max_width, max_height
 
@@ -366,10 +393,15 @@ class XmlAnimationPreview(QWidget):
         if not color.isValid():
             return pixmap
 
-        overlay = QPixmap(pixmap.size())
-        overlay.fill(color)
+        w, h = pixmap.width(), pixmap.height()
+        if self._tint_buf_size != (w, h) or self._tint_overlay is None or self._tint_result is None:
+            self._tint_overlay = QPixmap(w, h)
+            self._tint_result = QPixmap(w, h)
+            self._tint_buf_size = (w, h)
 
-        result = QPixmap(pixmap.size())
+        overlay = self._tint_overlay
+        result = self._tint_result
+        overlay.fill(color)
         result.fill(Qt.transparent)
 
         painter = QPainter(result)
@@ -386,7 +418,13 @@ class XmlAnimationPreview(QWidget):
             return
 
         max_width, max_height = self.canvas_size
-        merged_pixmap = QPixmap(max_width, max_height)
+        if (
+            self._merge_buffer is None
+            or self._merge_buffer_size != (max_width, max_height)
+        ):
+            self._merge_buffer = QPixmap(max_width, max_height)
+            self._merge_buffer_size = (max_width, max_height)
+        merged_pixmap = self._merge_buffer
         merged_pixmap.fill(Qt.transparent)
 
         painter = QPainter(merged_pixmap)

@@ -23,7 +23,7 @@ from functools import partial
 from typing import Dict
 from PIL import Image
 from messagebox import AboutWindow
-from modOrganizer import ModListWidget
+from modOrganizer import ModListWidget, MOD_FILENAME_SUFFIXES
 from otherWidget import OtherWidget
 from colorButton import ColorButton
 from precheck import check_archetype, check_git_installed
@@ -90,311 +90,14 @@ class Ui_MainWindow(object):
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setGeometry(QtCore.QRect(0, 0, 1116, 721))
         self.tabWidget.setObjectName("tabWidget")
-        self.LoginScreen = QtWidgets.QWidget()
-        self.LoginScreen.setObjectName("LoginScreen")
 
-        self.unovaLoginOptions = self.create_frame(self.LoginScreen,5,415,340,261,"unovaLoginOptions")
+        self._setup_login_tab()
+        self._setup_counter_tab()
+        self._setup_window_tab()
+        self._setup_other_tab()
+        self._setup_mods_tab()
+        self._setup_archetype_tab()
 
-        self.label_8 = self.make_label(self.unovaLoginOptions,"label_8",12,False,(20,65,181,201),None)
-        self.label_9 = self.make_label(self.unovaLoginOptions,"label_9",16,True,(15,15,311,41),None)
-        self.zekromColor = self.make_color_button(self.unovaLoginOptions,"zekrom-color",150,175)
-        self.reshiramColor = self.make_color_button(self.unovaLoginOptions,"reshiram-color",150,90)
-        self.zekromAura = self.make_color_button(self.unovaLoginOptions,"zekrom-aura",150,220)        
-        self.reshiramAura = self.make_color_button(self.unovaLoginOptions,"reshiram-aura",150,130)
-
-        self.addOwnLogin = self.create_frame(self.LoginScreen,5,15,340,66,"addOwnLogin")
-        self.label_2 = self.make_label(self.addOwnLogin,"label_2",12,True,(5,15,241,30),None)
-
-        self.label_2_status = self.make_label(self.LoginScreen,"",9,True,(386,20,685,117),None,"green")
-
-        
-        self.loginBrowse = self.create_button(self.addOwnLogin,235,20,80,25,10,False,"loginBrowse")
-        self.loginBrowse.clicked.connect(self.handle_login_browse)        
-
-        self.chooseLogin = self.create_frame(self.LoginScreen,5,90,340,320,"chooseLogin")
-
-        self.loginDrop = QtWidgets.QComboBox(self.chooseLogin)
-        self.loginDrop.setGeometry(QtCore.QRect(15, 35, 301, 25))
-        self.loginDrop.setObjectName("loginDrop")
-
-        self.label = self.make_label(self.chooseLogin,"label",16,True,(60,-10,226,51),None)
-
-        self.loginPreviewFrame = self.create_frame(self.LoginScreen,360,170,731,506,"loginPreviewFrame")
-        default_xml = os.path.join(self.assets_dir, "backgrounds/Allstars.xml")
-
-        self.loginPreview = XmlAnimationPreview(default_xml,parent=self.loginPreviewFrame)
-        self.loginPreview.setGeometry(QtCore.QRect(5, 5, 721, 496))
-        self.loginPreview.setObjectName("loginPreview")
-
-        self.tabWidget.addTab(self.LoginScreen, "")
-
-        self.EncounterCounter = QtWidgets.QWidget()
-        self.EncounterCounter.setObjectName("EncounterCounter")
-
-        self.counterColorFrame = self.create_frame(self.EncounterCounter,15,105,306,391,"counterColorFrame")
-        self.label_6 = self.make_label(self.counterColorFrame,"label_6",16,True,(15,15,311,41),None)
-        self.label_7 = self.make_label(self.counterColorFrame,"label_7",12,False,(20,35,181,361),None)
-        self.ballColor = self.make_color_button(self.counterColorFrame,"counter-ball-color",220,75)
-        self.mainColor = self.make_color_button(self.counterColorFrame,"counter-main-color",220,205)
-        self.fontColor = self.make_color_button(self.counterColorFrame,"counter-font",220,290)
-        self.minMaxButtonColor = self.make_color_button(self.counterColorFrame,"counter-min-max-button-color",220,160)
-        self.ballOutline = self.make_color_button(self.counterColorFrame,"ballOutline",220,115)
-        self.subColor = self.make_color_button(self.counterColorFrame,"counter-sub-color",220,250)
-        self.fontBorder = self.make_color_button(self.counterColorFrame,"counter-font-border",220,335)
-        self.counterSelectorFrame = self.create_frame(self.EncounterCounter,15,20,531,80,"counterSelectorFrame")
-
-        self.counterDrop = QtWidgets.QComboBox(self.counterSelectorFrame)
-        self.counterDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
-        self.counterDrop.setObjectName("counterDrop")
-        self.counterDrop.setCurrentIndex(1)
-
-        self.label_5 = self.make_label(self.counterSelectorFrame,"label_5",16,True,(5,5,211,61),None)
-
-        self.counterPreviewFrame = self.create_frame(self.EncounterCounter,345,125,731,506,"counterPreviewFrame")
-
-        default_xml = os.path.join(self.assets_dir, "Counter-Right.xml")
-        self.counterPreview = CounterPreview(parent=self.counterPreviewFrame)
-        self.counterPreview.setGeometry(QtCore.QRect(5, 5, 721, 496))
-        self.counterPreview.setObjectName("counterPreview")
-
-        self.counterText = QtWidgets.QLabel(self.counterPreviewFrame)
-        self.counterText.setGeometry(QtCore.QRect(300, 170, 211, 200))
-        font = QFont("Noto Sans", 14)
-        font.setBold(True)
-        self.counterText.setFont(font)
-        self.counterText.setObjectName("counterText")
-        self.fontColor.colorChanged.connect(lambda color: self.updateFontColor(color, self.counterText))
-
-        self.addOwnVaritou = self.create_frame(self.EncounterCounter,565,20,456,86,"addOwnVaritou")
-        self.label_3 = self.make_label(self.addOwnVaritou,"label_3",12,True,(25,0,211,30),None)
-
-        self.varitouBrowse = self.create_button(self.addOwnVaritou,235,5,80,25,9,False,"varitouBrowse")
-        self.varitouBrowse.clicked.connect(self.handle_vartiou_browse)        
-        self.label_16 = self.make_label(self.addOwnVaritou,"label_16",9,False,(25,35,386,17),None)
-
-        self.customDrop = QtWidgets.QComboBox(self.addOwnVaritou)
-        self.customDrop.setGeometry(QtCore.QRect(150, 55, 301, 25))
-        self.customDrop.setObjectName("customDrop")
-
-        self.label_18 = self.make_label(self.addOwnVaritou,"label_18",12,True,(5,50,141,30),None)
-
-        self.tabWidget.addTab(self.EncounterCounter, "")
-        self.WindowColors = QtWidgets.QWidget()
-        self.WindowColors.setObjectName("WindowColors")
-
-        self.windowPreviewFrame = self.create_frame(self.WindowColors,15, 25, 829, 653,"windowPreviewFrame")
-
-        self.windowPreview = CounterPreview(parent=self.windowPreviewFrame)
-        self.windowPreview.setGeometry(QtCore.QRect(5, 5, 805, 577))
-        self.windowPreview.setObjectName("windowPreview")
-
-        self.hpBar = CounterPreview(parent=self.windowPreviewFrame)
-        self.hpBar.setGeometry(QtCore.QRect(7, 592, 297, 63))
-        self.hpBar.setObjectName("hpBar")       
-        self.BerryPreview = QtWidgets.QWidget(self.windowPreviewFrame)
-        self.BerryPreview.setGeometry(QtCore.QRect(347, 592, 307, 57))
-        self.BerryPreview.setObjectName("BerryPreview")
-
-        self.MainWindowFrame = self.create_frame(self.WindowColors,868, 10, 233, 656,"MainWindowFrame")
-
-        self.label_4 = self.make_label(self.MainWindowFrame,"label_4",16,False,(8,319,146,137),None)        
-        self.label_10 = self.make_label(self.MainWindowFrame,"label_10",16,False,(8,56,81,121),None)
-        self.label_11 = self.make_label(self.MainWindowFrame,"label_11",16,False,(8,171,101,146),None)        
-        self.label_12 = self.make_label(self.MainWindowFrame,"label_12",16,False,(8,515,143,139),None)
-        self.label_13 = self.make_label(self.MainWindowFrame,"label_13",16,True,(46,1,155,61),None)
-        self.label_14 = self.make_label(self.MainWindowFrame,"label_14",16,True,(-2,464,230,61),None)
-
-        self.accentColorW = self.make_color_button(self.MainWindowFrame,"accent-color",158,152)
-        self.subColorW = self.make_color_button(self.MainWindowFrame,"sub-color",158,94)
-        self.mainColorW = self.make_color_button(self.MainWindowFrame,"main-color",158,66)        
-        self.fontButtonW = self.make_color_button(self.MainWindowFrame,"font-button-color",158,378)        
-        self.buttonColorW = self.make_color_button(self.MainWindowFrame,"button-color",158,124)
-        self.fontSubW = self.make_color_button(self.MainWindowFrame,"font-sub-color",158,348)
-        self.fontDisabledColorW = self.make_color_button(self.MainWindowFrame,"font-disabled-color",158,406)
-        self.xpColorW = self.make_color_button(self.MainWindowFrame,"xp-color",158,264)
-        self.friendshipColorW = self.make_color_button(self.MainWindowFrame,"friendship-color",158,292)
-        self.fontMainW = self.make_color_button(self.MainWindowFrame,"font-main-color",158,320)
-        self.hpHighW = self.make_color_button(self.MainWindowFrame,"hp-high-color",158,179)
-        self.hpLowW = self.make_color_button(self.MainWindowFrame,"hp-low-color",158,234)
-        self.hpMidW = self.make_color_button(self.MainWindowFrame,"hp-mid-color",158,206)
-        self.waterW = self.make_color_button(self.MainWindowFrame,"water-warning",158,546)
-        self.waterbg = self.make_color_button(self.MainWindowFrame,"water-background",158,518)
-        self.berryProgress = self.make_color_button(self.MainWindowFrame,"berry-progress",158,576)
-        self.berryWarning = self.make_color_button(self.MainWindowFrame,"berry-progress-warning",158,604)
-        self.berryDisabled = self.make_color_button(self.MainWindowFrame,"berry-progress-disabled",158,632)
-        self.iconColorW = self.make_color_button(self.MainWindowFrame,"icon-color",158,434)
-
-        self.windowTextFontMain = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontMain.setGeometry(QtCore.QRect(40, -50, 211, 200))
-        font = QFont("Noto Sans", 8)
-        font.setBold(True)
-        self.windowTextFontMain.setFont(font)
-        self.windowTextFontMain.setObjectName("windowMainText")
-        self.fontMainW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontMain))
-        self.windowTextFontMain2 = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontMain2.setGeometry(QtCore.QRect(47, -27, 211, 200))
-        font = QFont("Noto Sans", 7)
-        self.windowTextFontMain2.setFont(font)
-        self.windowTextFontMain2.setObjectName("windowMainText2")
-        self.fontMainW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontMain2))
-
-        self.windowTextFontSub = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontSub.setGeometry(QtCore.QRect(232, 147, 717, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontSub.setFont(font)
-        self.windowTextFontSub.setObjectName("windowSubText")
-        self.fontSubW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontSub))     
-        self.windowTextFontSub2 = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontSub2.setGeometry(QtCore.QRect(110, 115, 717, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontSub2.setFont(font)
-        self.windowTextFontSub2.setObjectName("windowSubText2")
-        self.fontSubW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontSub2))    
-
-        self.windowTextFontMinIV = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontMinIV.setGeometry(QtCore.QRect(428, 147, 61, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontMinIV.setFont(font)
-        self.windowTextFontMinIV.setObjectName("WindowMinIV")
-        self.windowTextFontMinIV.setStyleSheet("color: #f46263;")
-        self.windowTextFontMaxIV = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontMaxIV.setGeometry(QtCore.QRect(317, 147, 61, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontMaxIV.setFont(font)
-        self.windowTextFontMaxIV.setObjectName("WindowMaxIV")
-        self.windowTextFontMaxIV.setStyleSheet("color: #6eb66e;") 
-        
-        self.windowTextFontButton1 = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontButton1.setGeometry(QtCore.QRect(160,45, 717, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontButton1.setFont(font)
-        self.windowTextFontButton1.setObjectName("TextFontButton1")
-        self.fontButtonW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontButton1))     
-        self.windowTextFontButton2 = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontButton2.setGeometry(QtCore.QRect(100, 80, 717, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontButton2.setFont(font)
-        self.windowTextFontButton2.setObjectName("TextFontButton2")
-        self.fontButtonW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontButton2))    
-        self.windowTextFontButton3 = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontButton3.setGeometry(QtCore.QRect(130, 147, 717, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontButton3.setFont(font)
-        self.windowTextFontButton3.setObjectName("TextFontButton3")
-        self.fontButtonW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontButton3))    
-        self.windowTextFontButton4 = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontButton4.setGeometry(QtCore.QRect(225, 493, 717, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontButton4.setFont(font)
-        self.windowTextFontButton4.setObjectName("TextFontButton4")
-        self.fontButtonW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontButton4))    
-        
-        self.windowTextFontDisabled1 = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontDisabled1.setGeometry(QtCore.QRect(602, 80, 61, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontDisabled1.setFont(font)
-        self.windowTextFontDisabled1.setObjectName("TextFontDisabled1")
-        self.fontDisabledColorW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontDisabled1))  
-        self.windowTextFontDisabled2 = QtWidgets.QLabel(self.windowPreviewFrame)
-        self.windowTextFontDisabled2.setGeometry(QtCore.QRect(160, 493, 100, 61))
-        font = QFont("Noto Sans", 8)
-        self.windowTextFontDisabled2.setFont(font)
-        self.windowTextFontDisabled2.setObjectName("TextFontDisabled1")
-        self.fontDisabledColorW.colorChanged.connect(lambda color: self.updateFontColor(color, self.windowTextFontDisabled2))  
-
-        self.label_12.raise_()
-        self.label_11.raise_()
-        self.label_4.raise_()
-        self.label_10.raise_()
-        self.accentColorW.raise_()
-        self.subColorW.raise_()
-        self.mainColorW.raise_()
-        self.fontButtonW.raise_()
-        self.buttonColorW.raise_()
-        self.fontSubW.raise_()
-        self.fontDisabledColorW.raise_()
-        self.xpColorW.raise_()
-        self.friendshipColorW.raise_()
-        self.fontMainW.raise_()
-        self.hpHighW.raise_()
-        self.hpLowW.raise_()
-        self.hpMidW.raise_()
-        self.label_13.raise_()
-        self.waterW.raise_()
-        self.label_14.raise_()
-        self.waterbg.raise_()
-        self.berryProgress.raise_()
-        self.berryWarning.raise_()
-        self.tabWidget.addTab(self.WindowColors, "")
-
-        self.OtherScreen = QtWidgets.QWidget()
-        self.OtherScreen.setObjectName("OtherScreen")
-
-        self.cursoFrame = self.create_frame(self.OtherScreen,10,30,561,141,"cursoFrame")
-        self.cursorDrop = QtWidgets.QComboBox(self.cursoFrame)
-        self.cursorDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
-        self.cursorDrop.setObjectName("cursorDrop")
-        self.label_15 = self.make_label(self.cursoFrame,"label_15",16,True,(5,5,211,61),None)
-        self.cursorBrowse = self.create_button(self.cursoFrame,435,70,80,25,9,False,"cursorBrowse")
-        self.label_17 = self.make_label(self.cursoFrame,"label_17",12,True,(195,65,241,30),None)
-        self.label_30 = self.make_label(self.cursoFrame,"label_30",12,True,(195,96,241,30),None)
-        self.cursorEditButton = self.create_button(self.cursoFrame,435,101,80,25,9,False,"cursorEdit")
-        self.cursorPreviewFrame = self.create_frame(self.OtherScreen,680,10,321,166,"cursorPreviewFrame")
-
-        self.cursorPreview = OtherWidget(self.cursorPreviewFrame)
-        self.cursorPreview.setGeometry(QtCore.QRect(5, 5, 310, 155))
-        self.cursorPreview.setObjectName("cursorPreview")
-
-        self.iconFrame = self.create_frame(self.OtherScreen,10,225,561,80,"iconFrame")
-        self.iconDrop = QtWidgets.QComboBox(self.iconFrame)
-        self.iconDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
-        self.iconDrop.setObjectName("iconDrop")
-        self.iconDrop.addItem("")
-        self.iconDrop.addItem("")
-        self.label_20 = self.make_label(self.iconFrame,"label_20",16,True,(5,5,211,61),None)
-
-        self.speechBubblesFrame = self.create_frame(self.OtherScreen,10,385,561,121,"speechBubblesFrame")
-        self.speechDrop = QtWidgets.QComboBox(self.speechBubblesFrame)
-        self.speechDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
-        self.speechDrop.setObjectName("speechDrop")
-        self.label_23 = self.make_label(self.speechBubblesFrame,"label_23",16,True,(5,5,211,61),None)
-        self.speechBrowse = self.create_button(self.speechBubblesFrame,435,70,80,25,9,False,"speechBrowse")
-        self.label_24 = self.make_label(self.speechBubblesFrame,"label_24",12,True,(195,65,241,30),None)
-        self.speechBubblePreviewFrame = self.create_frame(self.OtherScreen,680,365,321,166,"speechBubblePreviewFrame")
-
-        self.speechBubblePreview = QtWidgets.QWidget(self.speechBubblePreviewFrame)
-        self.speechBubblePreview.setGeometry(QtCore.QRect(5, 5, 310, 155))
-        self.speechBubblePreview.setObjectName("speechBubblePreview")
-
-        self.tabWidget.addTab(self.OtherScreen, "")
-        self.Archetype = QtWidgets.QWidget()
-        self.Archetype.setObjectName("Archetype")
-        self.Mods = QtWidgets.QWidget()
-        self.Mods.setObjectName("Mods")
-        self.modOrderFrame = self.create_frame(self.Mods,12,136,1087,543,"modOrderFrame")
-        self.modButtonsFrame = self.create_frame(self.Mods,238,20,585,97,"modButtonsFrame")
-
-        self.modButtonLabel = self.make_label(self.modButtonsFrame,"modButtonLabel",12,True,(260,12,79,30),None)
-
-        self.mods_widget = ModListWidget(mods_folder=self.modsLocation,parent=self.modOrderFrame)
-        layout = QtWidgets.QVBoxLayout(self.modOrderFrame)
-        layout.setContentsMargins(0, 0, 0, 0) 
-        layout.addWidget(self.mods_widget)
-
-        self.GetArchtype = self.create_frame(self.Archetype,12,19,1089,657,"GetArchetype")
-        self.label_25 = self.make_label(self.GetArchtype,"label_25",16,True,(5,5,236,61),None)
-        self.downloadArch = self.create_button(self.GetArchtype,245,15,281,46,16,True,"downloadArch")
-        self.label_27 = self.make_label(self.GetArchtype,"label_27",16,True,(5,134,210,61),None)
-        self.setModFolder = self.create_button(self.GetArchtype,245,144,281,46,16,True,"setModFolder")
-        self.labelBrowse = self.make_label(self.GetArchtype,"Set Game Path",16,True,(5,70,210,61),None)
-        self.setGamePath = self.create_button(self.GetArchtype,245,80,281,46,16,True,"setGamePath")
-        self.completeMod = self.create_button(self.GetArchtype,595,70,281,46,16,True,"completeMod")
-        self.playPokemmo = self.create_button(self.GetArchtype,806,606,280,46,16,True,"playPokemmo")
-        
-        self.label_28 = self.make_label(self.GetArchtype,"label_28",16,True,(590,0,306,61),None)
-        self.tabWidget.addTab(self.Mods, "")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.tabWidget.addTab(self.Archetype, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1118, 22))
@@ -419,10 +122,9 @@ class Ui_MainWindow(object):
         self.actionAbout.setObjectName("actionAbout")
         self.actionLoadDefault = QtWidgets.QAction(MainWindow)
         self.actionLoadDefault.setObjectName("actionLoadDefault")
-        self.menuFile.addAction(self.actionSave)
-        self.menuFile.addAction(self.actionSaveAs)
-        self.menuFile.addAction(self.actionLoad)
-        self.menuFile.addAction(self.actionLoadDefault)
+
+        for action in [self.actionSave, self.actionSaveAs, self.actionLoad, self.actionLoadDefault]:
+            self.menuFile.addAction(action)
         self.menuHelp.addAction(self.actionAbout)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
@@ -431,17 +133,14 @@ class Ui_MainWindow(object):
 
         self.status_label_archetype = QtWidgets.QLabel(self.GetArchtype)
         self.status_label_archetype.setGeometry(QtCore.QRect(4, 610, 795, 35))
-        self.status_label_archetype.setText("") 
         self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
 
         self.status_label_custom_counter = QtWidgets.QLabel(self.counterPreview)
         self.status_label_custom_counter.setGeometry(QtCore.QRect(277, 10, 383, 17))
-        self.status_label_custom_counter.setText("") 
         self.status_label_custom_counter.setStyleSheet("color: green; font-size: 8pt;")
 
         self.status_label_mods = QtWidgets.QLabel(self.modButtonsFrame)
         self.status_label_mods.setGeometry(QtCore.QRect(0, 0, 255, 30))
-        self.status_label_mods.setText("") 
         self.status_label_mods.setStyleSheet("color: green; font-size: 12pt;")
 
         self.screenFrame = self.create_frame(self.GetArchtype,784,492,305,91,"screenFrame")
@@ -530,26 +229,18 @@ class Ui_MainWindow(object):
         self.cursorDrop.currentIndexChanged.connect(self.update_cursor_preview)
         self.configDrop.currentIndexChanged.connect(self.on_config_changed)
 
+        for btn, idx in [(self.mainColor, 0), (self.subColor, 1), (self.minMaxButtonColor, 2),
+                          (self.ballOutline, 8), (self.ballColor, 7)]:
+            btn.colorChanged.connect(lambda c, i=idx: self.counterPreview.set_layer_tint(i, QColor(c)))
 
-        self.mainColor.colorChanged.connect(lambda c: self.counterPreview.set_layer_tint(0, QColor(c)))
-        self.subColor.colorChanged.connect(lambda c: self.counterPreview.set_layer_tint(1, QColor(c)))
-        self.minMaxButtonColor.colorChanged.connect(lambda c: self.counterPreview.set_layer_tint(2, QColor(c)))
-        self.ballOutline.colorChanged.connect(lambda c: self.counterPreview.set_layer_tint(8, c))
-        self.ballColor.colorChanged.connect(lambda c: self.counterPreview.set_layer_tint(7, c))
+        for btn, idx in [(self.buttonColorW, 0), (self.iconColorW, 1), (self.subColorW, 3),
+                          (self.accentColorW, 4), (self.mainColorW, 5)]:
+            btn.colorChanged.connect(lambda c, i=idx: self.windowPreview.set_layer_tint(i, QColor(c)))
 
-        self.buttonColorW.colorChanged.connect(lambda c:self.windowPreview.set_layer_tint(0, QColor(c)))
-        self.iconColorW.colorChanged.connect(lambda c: self.windowPreview.set_layer_tint(1, QColor(c)))
-        self.subColorW.colorChanged.connect(lambda c: self.windowPreview.set_layer_tint(3, QColor(c)))
-        self.accentColorW.colorChanged.connect(lambda c: self.windowPreview.set_layer_tint(4, QColor(c)))
-        self.mainColorW.colorChanged.connect(lambda c: self.windowPreview.set_layer_tint(5, QColor(c)))
-        
-        self.subColorW.colorChanged.connect(lambda c:self.hpBar.set_layer_tint(1, QColor(c)))
-        self.hpHighW.colorChanged.connect(lambda c: self.hpBar.set_layer_tint(3, QColor(c)))
-        self.hpMidW.colorChanged.connect(lambda c: self.hpBar.set_layer_tint(4, QColor(c)))
-        self.hpLowW.colorChanged.connect(lambda c: self.hpBar.set_layer_tint(5, QColor(c)))
-        self.xpColorW.colorChanged.connect(lambda c: self.hpBar.set_layer_tint(6, QColor(c)))
+        for btn, idx in [(self.subColorW, 1), (self.hpHighW, 3), (self.hpMidW, 4),
+                          (self.hpLowW, 5), (self.xpColorW, 6)]:
+            btn.colorChanged.connect(lambda c, i=idx: self.hpBar.set_layer_tint(i, QColor(c)))
 
-        
         self.downloadArch.clicked.connect(self.downloadLatestArch)
         self.setGamePath.clicked.connect(self.select_game_path)
         self.actionSave.triggered.connect(self.save_config)
@@ -790,6 +481,14 @@ class Ui_MainWindow(object):
                 f"Error: Launch script not found:\n{script_path}"
             )
             return
+
+        mods_path = config.get("paths", {}).get("mods_path")
+        if mods_path and os.path.isdir(mods_path):
+            self.sync_user_mod_symlinks(gamepath, mods_path)
+            PokeGen.update_poke(
+                os.path.join(gamepath, "config", "main.properties"),
+                mods_path,
+            )
 
         selection = self.screenDrop.currentText()
         width = int(self.screenResW.toPlainText())
@@ -1118,7 +817,13 @@ class Ui_MainWindow(object):
         file_path, _ = QFileDialog.getOpenFileName(None, "Select a Mod", "", "Zip Files (*.zip);;Mod Files (*.mod);;All Files (*)")
         if not file_path:
             return
-        shutil.copy2(file_path,self.modsLocation)
+        shutil.copy2(file_path, self.modsLocation)
+        if hasattr(self, "mods_widget"):
+            cfg = self.safe_load_json(self.get_active_config_path())
+            pm = cfg.get("mods")
+            self.mods_widget.load_mods(
+                profile_mods=pm if isinstance(pm, dict) else None
+            )
 
     def handle_basic_import(self, update_func,target_dir, label_widget):
         file_path, _ = QFileDialog.getOpenFileName(None, "Select a Theme ZIP", "", "Zip Files (*.zip);;All Files (*)")
@@ -1143,25 +848,15 @@ class Ui_MainWindow(object):
 
     def update_archetype_summary(self):
         try:
-            up_to_date = self.check_remote_version(
-                "https://github.com/ssjshields/archetype",
-                self.archetype_root
-            )
-
-            if up_to_date:
-                archetype_status = '<span style="color:#28a745;">Up to date.</span>'
-            else:
-                archetype_status = '<span style="color:#ff9800;">Update available!</span>'
-
+            self._update_archetype_summary_label("")
         except Exception:
             archetype_status = '<span style="color:#ff3b3b;">Could not check status.</span>'
-
-        self.status_label_archetype2.setText(
-            f"<b>Pokemmo Location:</b> {self.get_current_path("game_path",self.configPath)}<br>"
-            f"<b>Archetype Status:</b> {archetype_status}<br>"
-            f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
-            f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}"
-        )
+            self.status_label_archetype2.setText(
+                f"<b>Pokemmo Location:</b> {self.get_current_path('game_path', self.configPath)}<br>"
+                f"<b>Archetype Status:</b> {archetype_status}<br>"
+                f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
+                f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}"
+            )
 
     def check_remote_version(self, repo_url, destination):
         try:
@@ -1289,6 +984,14 @@ class Ui_MainWindow(object):
         btn.setGeometry(QtCore.QRect(x, y, width, height))
         btn.setObjectName(name)
         return btn
+
+    def make_font_label(self, parent, geometry, size=8, bold=False):
+        lbl = QtWidgets.QLabel(parent)
+        lbl.setGeometry(QtCore.QRect(*geometry))
+        font = QFont("Noto Sans", size)
+        font.setBold(bold)
+        lbl.setFont(font)
+        return lbl
     #Save Section 
     #_______________________________#
     def col(self, widget):
@@ -1389,6 +1092,12 @@ class Ui_MainWindow(object):
                 "cursor_drop": self.cursorDrop.currentIndex(),
                 "screenDrop": self.screenDrop.currentIndex(),
             },
+
+            "mods": (
+                self.mods_widget.get_mod_profile_state()
+                if hasattr(self, "mods_widget")
+                else {"order": [], "disabled": []}
+            ),
         }
 
     def save_config(self):
@@ -1518,6 +1227,8 @@ class Ui_MainWindow(object):
         with open(path, "r", encoding="utf-8") as f:
             config = json.load(f)
 
+        self.configPath = path
+
         color_map = {
             "main-color": "mainColorW",
             "sub-color": "subColorW",
@@ -1571,8 +1282,10 @@ class Ui_MainWindow(object):
                     combo.setCurrentIndex(index)
                 else:
                     print(f"[Warning] Index {index} out of range for {attr}")
-                    
-        self.modsLocation=self.get_current_path("mods_path",self.configPath)
+
+        self.modsLocation = self.get_current_path("mods_path", path)
+        if hasattr(self, "mods_widget"):
+            self.mods_widget.set_mods_folder(self.modsLocation, profile_mods=config.get("mods"))
 
     def load_last_config(self):
         path = self.get_active_config_path()
@@ -1632,7 +1345,20 @@ class Ui_MainWindow(object):
             except Exception as e:
                 print(f"Failed to read config: {e}")
                 return None
-    
+
+    def _update_archetype_summary_label(self, success_msg):
+        up_to_date = self.check_remote_version(
+            "https://github.com/ssjshields/archetype",
+            self.archetype_root
+        )
+        archetype_status = '<span style="color:#28a745;">Up to date.</span>' if up_to_date else '<span style="color:#ff9800;">Update available!</span>'
+        self.status_label_archetype2.setText(
+            f"<b>Pokemmo Location:</b> {self.get_current_path('game_path', self.configPath)}<br>"
+            f"<b>Archetype Status:</b> {archetype_status}<br>"
+            f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
+            f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}"
+        )
+
     def select_mods_path(self):
         dialog = QtWidgets.QFileDialog()
         dialog.setWindowTitle("Select Mods Location")
@@ -1647,23 +1373,13 @@ class Ui_MainWindow(object):
                 self.status_label_archetype.setText(f"Mods path set to {self.modsLocation}")
                 self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
 
+                cfg = self.safe_load_json(self.get_active_config_path())
+                if hasattr(self, "mods_widget"):
+                    self.mods_widget.set_mods_folder(
+                        self.modsLocation, profile_mods=cfg.get("mods")
+                    )
                 self.save_config()
-                up_to_date = self.check_remote_version(
-                    "https://github.com/ssjshields/archetype",
-                    self.archetype_root
-                )
-
-                if up_to_date:
-                    archetype_status = "Up to Date."
-                else:
-                    archetype_status = "Update available!"
-
-                self.status_label_archetype2.setText(
-                    f"<b>Pokemmo Location:</b> {self.get_current_path("game_path",self.configPath)}<br>"
-                    f"<b>Archetype Status:</b> {archetype_status}<br>"
-                    f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
-                    f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}"
-                )
+                self._update_archetype_summary_label("")
 
     def select_game_path(self):
         dialog = QtWidgets.QFileDialog()
@@ -1680,22 +1396,7 @@ class Ui_MainWindow(object):
                 self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
 
                 self.save_config()
-                up_to_date = self.check_remote_version(
-                    "https://github.com/ssjshields/archetype",
-                    self.archetype_root
-                )
-
-                if up_to_date:
-                    archetype_status = "Up to Date."
-                else:
-                    archetype_status = "Update available!"
-
-                self.status_label_archetype2.setText(
-                    f"<b>Pokemmo Location:</b> {self.get_current_path("game_path",self.configPath)}<br>"
-                    f"<b>Archetype Status:</b> {archetype_status}<br>"
-                    f"<b>Mod Folder:</b>{os.path.abspath(self.modsLocation)}<br>"
-                    f"<b>Mod Count:</b> {self.mod_count(self.modsLocation)}"
-                )
+                self._update_archetype_summary_label("")
 
     def complete_build(self):
         self.save_config()
@@ -1720,7 +1421,7 @@ class Ui_MainWindow(object):
             shutil.rmtree(os.path.join(self.gamePath,"data/mods/Archetype"))
         self.symlink_create(os.path.join(self.archetype_root,"archetype-theme"), os.path.join(self.gamePath,"data/mods/archetype-theme"))
         self.symlink_create(os.path.join(self.archetype_root,"archetype-rounded-icons"), os.path.join(self.gamePath,"data/mods/archetype-rounded-icons"))
-        self.symlink_create(self.modsLocation,os.path.join(self.gamePath,"data/mods"))
+        self.sync_user_mod_symlinks(self.gamePath, self.modsLocation)
         PokeGen.update_poke(os.path.join(self.gamePath,"config/main.properties"),self.modsLocation)
         self.status_label_archetype.setText(f"All Mods Installed Successfully!!")
         self.status_label_archetype.setStyleSheet("color: green; font-size: 18pt;")
@@ -1777,6 +1478,77 @@ class Ui_MainWindow(object):
                 print(f"Failed to symlink {src_path} -> {dst_path}: {e}")
 
         print(f"Symlinks created from '{src_folder}' to '{dst_folder}'")
+
+    def sync_user_mod_symlinks(self, game_path, mods_folder):
+        """Symlink only enabled mod files into the game; remove symlinks for disabled mods."""
+        if not mods_folder or not os.path.isdir(mods_folder):
+            print(f"sync_user_mod_symlinks: mods folder missing: {mods_folder}")
+            return
+
+        data_mods = os.path.join(game_path, "data", "mods")
+        if not os.path.exists(data_mods):
+            os.makedirs(data_mods)
+
+        _, disabled = PokeGen.read_mod_lists(mods_folder)
+        abs_mods = os.path.abspath(mods_folder)
+
+        for name in os.listdir(mods_folder):
+            if not name.lower().endswith(MOD_FILENAME_SUFFIXES):
+                continue
+            src_path = os.path.join(mods_folder, name)
+            if not (os.path.isfile(src_path) or os.path.isdir(src_path)):
+                continue
+
+            dst_path = os.path.join(data_mods, name)
+
+            if name in disabled:
+                try:
+                    if os.path.islink(dst_path):
+                        os.remove(dst_path)
+                except Exception as e:
+                    print(f"Failed to remove disabled mod symlink {dst_path}: {e}")
+                continue
+
+            try:
+                if os.path.lexists(dst_path):
+                    if os.path.islink(dst_path):
+                        cur = os.readlink(dst_path)
+                        if os.path.abspath(cur) == os.path.abspath(src_path):
+                            continue
+                        os.remove(dst_path)
+                    elif os.path.isdir(dst_path):
+                        shutil.rmtree(dst_path)
+                    else:
+                        os.remove(dst_path)
+
+                abs_src = os.path.abspath(src_path)
+                abs_dst = os.path.abspath(dst_path)
+                try:
+                    os.symlink(
+                        abs_src,
+                        abs_dst,
+                        target_is_directory=os.path.isdir(src_path),
+                    )
+                except TypeError:
+                    os.symlink(abs_src, abs_dst)
+                print(f"Creating symlink: {abs_src} -> {abs_dst}")
+            except Exception as e:
+                print(f"Failed to symlink mod {src_path} -> {dst_path}: {e}")
+
+        try:
+            for name in os.listdir(data_mods):
+                dst_path = os.path.join(data_mods, name)
+                if not os.path.islink(dst_path):
+                    continue
+                target = os.path.abspath(os.path.join(os.path.dirname(dst_path), os.readlink(dst_path)))
+                if not target.startswith(abs_mods + os.sep) and target != abs_mods:
+                    continue
+                base = os.path.basename(target)
+                if not os.path.exists(target) or base not in os.listdir(mods_folder):
+                    os.remove(dst_path)
+                    print(f"Removed stale mod symlink: {dst_path}")
+        except Exception as e:
+            print(f"Stale symlink cleanup skipped: {e}")
 
     def handle_cursor_browse(self):
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -1866,38 +1638,88 @@ class Ui_MainWindow(object):
         local_apps_dir.mkdir(parents=True, exist_ok=True)
         desktop_file = local_apps_dir / "VexModMan.desktop"
 
-        if desktop_file.exists():
-            return
-
-        reply = QMessageBox.question(
-            parent,
-            "Create Desktop Shortcut",
-            "Would you like to create shortcuts for VexModMan?\n(This will create a desktop entry and a menu shortcut.)",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.Yes
-        )
-        if reply != QMessageBox.Yes:
-            return
-
         desktop_entry = (
             "[Desktop Entry]\n"
             "Type=Application\n"
             "Name=VexModMan\n"
+            "Comment=Pokemmo Mod Manager\n"
             f"Exec={exec_path}\n"
             f"Icon={base_path}/VMM.png\n"
             "Terminal=false\n"
             "Categories=Game;\n"
         )
 
+        needs_update = False
+        if desktop_file.exists():
+            content = desktop_file.read_text()
+            if f"Exec={exec_path}" not in content or f"Icon={base_path}/VMM.png" not in content:
+                needs_update = True
+        else:
+            needs_update = True
+
+        if not needs_update:
+            return
+
+        try:
+            with open(self.configSelector, "r", encoding="utf-8") as f:
+                config_data = json.load(f)
+        except Exception:
+            config_data = {}
+
+        if config_data.get("ignored", False):
+            return
+
+        dialog = QtWidgets.QDialog(parent)
+        dialog.setWindowTitle("Create Desktop Shortcut")
+        dialog.setMinimumWidth(350)
+        layout = QtWidgets.QVBoxLayout(dialog)
+
+        label = QtWidgets.QLabel("Would you like to create shortcuts for VexModMan?\n(This will create a desktop entry and a menu shortcut.)")
+        layout.addWidget(label)
+
+        checkbox = QtWidgets.QCheckBox("Ignore (don't ask again)")
+        layout.addWidget(checkbox)
+
+        button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Yes | QtWidgets.QDialogButtonBox.No)
+        layout.addWidget(button_box)
+
+        button_box.accepted.connect(dialog.accept)
+        button_box.rejected.connect(dialog.reject)
+
+        reply = dialog.exec_()
+
+        if checkbox.isChecked():
+            try:
+                with open(self.configSelector, "r", encoding="utf-8") as f:
+                    config_data = json.load(f)
+            except Exception:
+                config_data = {}
+            config_data["ignored"] = True
+            with open(self.configSelector, "w", encoding="utf-8") as f:
+                json.dump(config_data, f, indent=4)
+
+        if reply != QtWidgets.QDialog.Accepted:
+            return
+
         desktop_file.write_text(desktop_entry)
         desktop_file.chmod(0o755)
 
         os.system(f'gio set "{desktop_file}" metadata::trusted true')
+        os.system("update-desktop-database ~/.local/share/applications 2>/dev/null")
 
         desktop_dir = Path.home() / "Desktop"
         if desktop_dir.exists():
             desktop_file_desktop = desktop_dir / "VexModMan.desktop"
-            if not desktop_file_desktop.exists():
+
+            desktop_needs_update = False
+            if desktop_file_desktop.exists():
+                content = desktop_file_desktop.read_text()
+                if f"Exec={exec_path}" not in content or f"Icon={base_path}/VMM.png" not in content:
+                    desktop_needs_update = True
+            else:
+                desktop_needs_update = True
+
+            if desktop_needs_update:
                 desktop_file_desktop.write_text(desktop_entry)
                 desktop_file_desktop.chmod(0o755)
                 os.system(f'gio set "{desktop_file_desktop}" metadata::trusted true')
@@ -1971,104 +1793,340 @@ class Ui_MainWindow(object):
         dlg = AboutWindow()
         dlg.exec_() 
 
+    def _setup_login_tab(self):
+        self.LoginScreen = QtWidgets.QWidget()
+        self.LoginScreen.setObjectName("LoginScreen")
+
+        self.unovaLoginOptions = self.create_frame(self.LoginScreen, 5, 415, 340, 261, "unovaLoginOptions")
+        self.label_8 = self.make_label(self.unovaLoginOptions, "label_8", 12, False, (20, 65, 181, 201), None)
+        self.label_9 = self.make_label(self.unovaLoginOptions, "label_9", 16, True, (15, 15, 311, 41), None)
+
+        for attr, name, y in [
+            ("zekromColor", "zekrom-color", 175),
+            ("reshiramColor", "reshiram-color", 90),
+            ("zekromAura", "zekrom-aura", 220),
+            ("reshiramAura", "reshiram-aura", 130),
+        ]:
+            setattr(self, attr, self.make_color_button(self.unovaLoginOptions, name, 150, y))
+
+        self.addOwnLogin = self.create_frame(self.LoginScreen, 5, 15, 340, 66, "addOwnLogin")
+        self.label_2 = self.make_label(self.addOwnLogin, "label_2", 12, True, (5, 15, 241, 30), None)
+        self.label_2_status = self.make_label(self.LoginScreen, "", 9, True, (386, 20, 685, 117), None, "green")
+        self.loginBrowse = self.create_button(self.addOwnLogin, 235, 20, 80, 25, 10, False, "loginBrowse")
+        self.loginBrowse.clicked.connect(self.handle_login_browse)
+
+        self.chooseLogin = self.create_frame(self.LoginScreen, 5, 90, 340, 320, "chooseLogin")
+        self.loginDrop = QtWidgets.QComboBox(self.chooseLogin)
+        self.loginDrop.setGeometry(QtCore.QRect(15, 35, 301, 25))
+        self.loginDrop.setObjectName("loginDrop")
+        self.label = self.make_label(self.chooseLogin, "label", 16, True, (60, -10, 226, 51), None)
+
+        self.loginPreviewFrame = self.create_frame(self.LoginScreen, 360, 170, 731, 506, "loginPreviewFrame")
+        default_xml = os.path.join(self.assets_dir, "backgrounds/Allstars.xml")
+        self.loginPreview = XmlAnimationPreview(default_xml, parent=self.loginPreviewFrame)
+        self.loginPreview.setGeometry(QtCore.QRect(5, 5, 721, 496))
+        self.loginPreview.setObjectName("loginPreview")
+
+        self.tabWidget.addTab(self.LoginScreen, "")
+
+    def _setup_counter_tab(self):
+        self.EncounterCounter = QtWidgets.QWidget()
+        self.EncounterCounter.setObjectName("EncounterCounter")
+
+        self.counterColorFrame = self.create_frame(self.EncounterCounter, 15, 105, 306, 391, "counterColorFrame")
+        self.label_6 = self.make_label(self.counterColorFrame, "label_6", 16, True, (15, 15, 311, 41), None)
+        self.label_7 = self.make_label(self.counterColorFrame, "label_7", 12, False, (20, 35, 181, 361), None)
+
+        for attr, name, y in [
+            ("ballColor", "counter-ball-color", 75),
+            ("mainColor", "counter-main-color", 205),
+            ("fontColor", "counter-font", 290),
+            ("minMaxButtonColor", "counter-min-max-button-color", 160),
+            ("ballOutline", "ballOutline", 115),
+            ("subColor", "counter-sub-color", 250),
+            ("fontBorder", "counter-font-border", 335),
+        ]:
+            setattr(self, attr, self.make_color_button(self.counterColorFrame, name, 220, y))
+
+        self.counterSelectorFrame = self.create_frame(self.EncounterCounter, 15, 20, 531, 80, "counterSelectorFrame")
+        self.counterDrop = QtWidgets.QComboBox(self.counterSelectorFrame)
+        self.counterDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
+        self.counterDrop.setObjectName("counterDrop")
+        self.counterDrop.setCurrentIndex(1)
+        self.label_5 = self.make_label(self.counterSelectorFrame, "label_5", 16, True, (5, 5, 211, 61), None)
+
+        self.counterPreviewFrame = self.create_frame(self.EncounterCounter, 345, 125, 731, 506, "counterPreviewFrame")
+        default_xml = os.path.join(self.assets_dir, "Counter-Right.xml")
+        self.counterPreview = CounterPreview(parent=self.counterPreviewFrame)
+        self.counterPreview.setGeometry(QtCore.QRect(5, 5, 721, 496))
+        self.counterPreview.setObjectName("counterPreview")
+
+        self.counterText = self.make_font_label(self.counterPreviewFrame, (300, 170, 211, 200), 14, True)
+        self.counterText.setObjectName("counterText")
+        self.fontColor.colorChanged.connect(lambda c, lbl=self.counterText: self.updateFontColor(c, lbl))
+
+        self.addOwnVaritou = self.create_frame(self.EncounterCounter, 565, 20, 456, 86, "addOwnVaritou")
+        self.label_3 = self.make_label(self.addOwnVaritou, "label_3", 12, True, (25, 0, 211, 30), None)
+        self.varitouBrowse = self.create_button(self.addOwnVaritou, 235, 5, 80, 25, 9, False, "varitouBrowse")
+        self.varitouBrowse.clicked.connect(self.handle_vartiou_browse)
+        self.label_16 = self.make_label(self.addOwnVaritou, "label_16", 9, False, (25, 35, 386, 17), None)
+        self.customDrop = QtWidgets.QComboBox(self.addOwnVaritou)
+        self.customDrop.setGeometry(QtCore.QRect(150, 55, 301, 25))
+        self.customDrop.setObjectName("customDrop")
+        self.label_18 = self.make_label(self.addOwnVaritou, "label_18", 12, True, (5, 50, 141, 30), None)
+
+        self.tabWidget.addTab(self.EncounterCounter, "")
+
+    def _setup_window_tab(self):
+        self.WindowColors = QtWidgets.QWidget()
+        self.WindowColors.setObjectName("WindowColors")
+
+        self.windowPreviewFrame = self.create_frame(self.WindowColors, 15, 25, 829, 653, "windowPreviewFrame")
+        self.windowPreview = CounterPreview(parent=self.windowPreviewFrame)
+        self.windowPreview.setGeometry(QtCore.QRect(5, 5, 805, 577))
+        self.windowPreview.setObjectName("windowPreview")
+
+        self.hpBar = CounterPreview(parent=self.windowPreviewFrame)
+        self.hpBar.setGeometry(QtCore.QRect(7, 592, 297, 63))
+        self.hpBar.setObjectName("hpBar")
+        self.BerryPreview = QtWidgets.QWidget(self.windowPreviewFrame)
+        self.BerryPreview.setGeometry(QtCore.QRect(347, 592, 307, 57))
+        self.BerryPreview.setObjectName("BerryPreview")
+
+        self.MainWindowFrame = self.create_frame(self.WindowColors, 868, 10, 233, 656, "MainWindowFrame")
+
+        for attr, geo, bold in [
+            ("label_4", (8, 319, 146, 137), False),
+            ("label_10", (8, 56, 81, 121), False),
+            ("label_11", (8, 171, 101, 146), False),
+            ("label_12", (8, 515, 143, 139), False),
+            ("label_13", (46, 1, 155, 61), True),
+            ("label_14", (-2, 464, 230, 61), True),
+        ]:
+            setattr(self, attr, self.make_label(self.MainWindowFrame, attr, 16, bold, geo, None))
+
+        for attr, name, y in [
+            ("accentColorW", "accent-color", 152),
+            ("subColorW", "sub-color", 94),
+            ("mainColorW", "main-color", 66),
+            ("fontButtonW", "font-button-color", 378),
+            ("buttonColorW", "button-color", 124),
+            ("fontSubW", "font-sub-color", 348),
+            ("fontDisabledColorW", "font-disabled-color", 406),
+            ("xpColorW", "xp-color", 264),
+            ("friendshipColorW", "friendship-color", 292),
+            ("fontMainW", "font-main-color", 320),
+            ("hpHighW", "hp-high-color", 179),
+            ("hpLowW", "hp-low-color", 234),
+            ("hpMidW", "hp-mid-color", 206),
+            ("waterW", "water-warning", 546),
+            ("waterbg", "water-background", 518),
+            ("berryProgress", "berry-progress", 576),
+            ("berryWarning", "berry-progress-warning", 604),
+            ("berryDisabled", "berry-progress-disabled", 632),
+            ("iconColorW", "icon-color", 434),
+        ]:
+            setattr(self, attr, self.make_color_button(self.MainWindowFrame, name, 158, y))
+
+        for attr, geo, size, bold in [
+            ("windowTextFontMain", (40, -50, 211, 200), 8, True),
+            ("windowTextFontMain2", (47, -27, 211, 200), 7, False),
+            ("windowTextFontSub", (232, 147, 717, 61), 8, False),
+            ("windowTextFontSub2", (110, 115, 717, 61), 8, False),
+            ("windowTextFontMinIV", (428, 147, 61, 61), 8, False),
+            ("windowTextFontMaxIV", (317, 147, 61, 61), 8, False),
+            ("windowTextFontButton1", (160, 45, 717, 61), 8, False),
+            ("windowTextFontButton2", (100, 80, 717, 61), 8, False),
+            ("windowTextFontButton3", (130, 147, 717, 61), 8, False),
+            ("windowTextFontButton4", (225, 493, 717, 61), 8, False),
+            ("windowTextFontDisabled1", (602, 80, 61, 61), 8, False),
+            ("windowTextFontDisabled2", (160, 493, 100, 61), 8, False),
+        ]:
+            setattr(self, attr, self.make_font_label(self.windowPreviewFrame, geo, size, bold))
+            label = getattr(self, attr)
+            label.setObjectName(attr)
+
+        self.windowTextFontMinIV.setStyleSheet("color: #f46263;")
+        self.windowTextFontMaxIV.setStyleSheet("color: #6eb66e;")
+
+        for btn, labels in [
+            (self.fontMainW, [self.windowTextFontMain, self.windowTextFontMain2]),
+            (self.fontSubW, [self.windowTextFontSub, self.windowTextFontSub2]),
+            (self.fontButtonW, [self.windowTextFontButton1, self.windowTextFontButton2,
+                                self.windowTextFontButton3, self.windowTextFontButton4]),
+            (self.fontDisabledColorW, [self.windowTextFontDisabled1, self.windowTextFontDisabled2]),
+        ]:
+            for lbl in labels:
+                btn.colorChanged.connect(lambda c, lbl=lbl: self.updateFontColor(c, lbl))
+
+        for widget in [self.label_12, self.label_11, self.label_4, self.label_10, self.accentColorW,
+            self.subColorW, self.mainColorW, self.fontButtonW, self.buttonColorW, self.fontSubW,
+            self.fontDisabledColorW, self.xpColorW, self.friendshipColorW, self.fontMainW,
+            self.hpHighW, self.hpLowW, self.hpMidW, self.label_13, self.waterW, self.label_14,
+            self.waterbg, self.berryProgress, self.berryWarning]:
+            widget.raise_()
+
+        self.tabWidget.addTab(self.WindowColors, "")
+
+    def _setup_other_tab(self):
+        self.OtherScreen = QtWidgets.QWidget()
+        self.OtherScreen.setObjectName("OtherScreen")
+
+        self.cursoFrame = self.create_frame(self.OtherScreen, 10, 30, 561, 141, "cursoFrame")
+        self.cursorDrop = QtWidgets.QComboBox(self.cursoFrame)
+        self.cursorDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
+        self.cursorDrop.setObjectName("cursorDrop")
+        self.label_15 = self.make_label(self.cursoFrame, "label_15", 16, True, (5, 5, 211, 61), None)
+        self.cursorBrowse = self.create_button(self.cursoFrame, 435, 70, 80, 25, 9, False, "cursorBrowse")
+        self.label_17 = self.make_label(self.cursoFrame, "label_17", 12, True, (195, 65, 241, 30), None)
+        self.label_30 = self.make_label(self.cursoFrame, "label_30", 12, True, (195, 96, 241, 30), None)
+        self.cursorEditButton = self.create_button(self.cursoFrame, 435, 101, 80, 25, 9, False, "cursorEdit")
+        self.cursorPreviewFrame = self.create_frame(self.OtherScreen, 680, 10, 321, 166, "cursorPreviewFrame")
+
+        self.cursorPreview = OtherWidget(self.cursorPreviewFrame)
+        self.cursorPreview.setGeometry(QtCore.QRect(5, 5, 310, 155))
+        self.cursorPreview.setObjectName("cursorPreview")
+
+        self.iconFrame = self.create_frame(self.OtherScreen, 10, 225, 561, 80, "iconFrame")
+        self.iconDrop = QtWidgets.QComboBox(self.iconFrame)
+        self.iconDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
+        self.iconDrop.setObjectName("iconDrop")
+        self.iconDrop.addItem("")
+        self.iconDrop.addItem("")
+        self.label_20 = self.make_label(self.iconFrame, "label_20", 16, True, (5, 5, 211, 61), None)
+
+        self.speechBubblesFrame = self.create_frame(self.OtherScreen, 10, 385, 561, 121, "speechBubblesFrame")
+        self.speechDrop = QtWidgets.QComboBox(self.speechBubblesFrame)
+        self.speechDrop.setGeometry(QtCore.QRect(225, 25, 301, 25))
+        self.speechDrop.setObjectName("speechDrop")
+        self.label_23 = self.make_label(self.speechBubblesFrame, "label_23", 16, True, (5, 5, 211, 61), None)
+        self.speechBrowse = self.create_button(self.speechBubblesFrame, 435, 70, 80, 25, 9, False, "speechBrowse")
+        self.label_24 = self.make_label(self.speechBubblesFrame, "label_24", 12, True, (195, 65, 241, 30), None)
+        self.speechBubblePreviewFrame = self.create_frame(self.OtherScreen, 680, 365, 321, 166, "speechBubblePreviewFrame")
+
+        self.speechBubblePreview = QtWidgets.QWidget(self.speechBubblePreviewFrame)
+        self.speechBubblePreview.setGeometry(QtCore.QRect(5, 5, 310, 155))
+        self.speechBubblePreview.setObjectName("speechBubblePreview")
+
+        self.tabWidget.addTab(self.OtherScreen, "")
+
+    def _setup_archetype_tab(self):
+        self.Archetype = QtWidgets.QWidget()
+        self.Archetype.setObjectName("Archetype")
+
+        self.GetArchtype = self.create_frame(self.Archetype, 12, 19, 1089, 657, "GetArchtype")
+        self.label_25 = self.make_label(self.GetArchtype, "label_25", 16, True, (5, 5, 236, 61), None)
+        self.downloadArch = self.create_button(self.GetArchtype, 245, 15, 281, 46, 16, True, "downloadArch")
+        self.label_27 = self.make_label(self.GetArchtype, "label_27", 16, True, (5, 134, 210, 61), None)
+        self.setModFolder = self.create_button(self.GetArchtype, 245, 144, 281, 46, 16, True, "setModFolder")
+        self.labelBrowse = self.make_label(self.GetArchtype, "Set Game Path", 16, True, (5, 70, 210, 61), None)
+        self.setGamePath = self.create_button(self.GetArchtype, 245, 80, 281, 46, 16, True, "setGamePath")
+        self.completeMod = self.create_button(self.GetArchtype, 595, 70, 281, 46, 16, True, "completeMod")
+        self.playPokemmo = self.create_button(self.GetArchtype, 806, 606, 280, 46, 16, True, "playPokemmo")
+        self.label_28 = self.make_label(self.GetArchtype, "label_28", 16, True, (590, 0, 306, 61), None)
+
+        self.tabWidget.addTab(self.Archetype, "")
+
+    def _setup_mods_tab(self):
+        self.Mods = QtWidgets.QWidget()
+        self.Mods.setObjectName("Mods")
+
+        self.modOrderFrame = self.create_frame(self.Mods, 12, 136, 1087, 543, "modOrderFrame")
+        self.modButtonsFrame = self.create_frame(self.Mods, 238, 20, 585, 97, "modButtonsFrame")
+        self.modButtonLabel = self.make_label(self.modButtonsFrame, "modButtonLabel", 12, True, (260, 12, 79, 30), None)
+
+        self.mods_widget = ModListWidget(
+            mods_folder=self.modsLocation,
+            parent=self.modOrderFrame,
+            on_order_saved=self.save_config,
+        )
+        layout = QtWidgets.QVBoxLayout(self.modOrderFrame)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.mods_widget)
+
+        self.tabWidget.addTab(self.Mods, "")
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Vextryyn's Mod Manager"))
-        self.label_8.setText(_translate("MainWindow", "reshiram color\n"
-        "\n"
-        "reshiram aura\n"
-        "\n"
-        "zekrom color\n"
-        "\n"
-        "zekrom aura"))
-        self.label_9.setText(_translate("MainWindow", "Unova Login Screen Options"))
-        self.label_2.setText(_translate("MainWindow", "Add Your Own Login Screen"))
-        self.loginBrowse.setText(_translate("MainWindow", "Browse..."))
-        self.label.setText(_translate("MainWindow", "Choose Login Screen"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.LoginScreen), _translate("MainWindow", "Login Screen"))
-        self.label_6.setText(_translate("MainWindow", "Encounter Counter Colors"))
-        self.label_7.setText(_translate("MainWindow", " ball color\n"
-        "\n"
-        " ball outline\n"
-        "\n"
-        " min max button color\n"
-        "\n"
-        " main color\n"
-        "\n"
-        " sub color\n"
-        "\n"
-        " font\n"
-        "\n"
-        " font border"))
-        self.label_5.setText(_translate("MainWindow", "Encounter Counter"))
-        self.label_3.setText(_translate("MainWindow", " Add Vartiou here"))
-        self.varitouBrowse.setText(_translate("MainWindow", "Browse..."))
-        self.label_16.setText(_translate("MainWindow", "This will do the work getting what is needed, just choose the zip file"))
-        self.label_18.setText(_translate("MainWindow", "Choose Custom"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.EncounterCounter), _translate("MainWindow", "Encounter Counter"))
-        self.label_11.setText(_translate("MainWindow", "hp high \n"
-        "hp mid\n"
-        "hp low\n"
-        "xp\n"
-        "friendship"))
-        self.label_10.setText(_translate("MainWindow", "main\n"
-        "sub\n"
-        "button\n"
-        "accent"))
-        self.label_4.setText(_translate("MainWindow", "font main\n"
-        "font sub\n"
-        "font button\n"
-        "font disabled\nIcon"))
-        self.label_13.setText(_translate("MainWindow", "Main Window"))
 
-        self.counterText.setText(_translate("MainWindow","Pokemon        1\n\n\nPokemon        2\n\n\nPokemon        3"))
-        self.windowTextFontMain.setText(_translate("MainWindow","           Global Trade Link"))
-        self.windowTextFontMain2.setText(_translate("MainWindow","Pokemon Listings"))
-        self.windowTextFontSub.setText(_translate("MainWindow"," Modest     20               11     16     23               $5,000                   Just now            28 days                      Buy"))
-        self.windowTextFontSub2.setText(_translate("MainWindow","Pokemon\t           Nature\t\tIVs\t\t            Price\t     Start Date          End Date\tBuy"))
-        self.windowTextFontMinIV.setText(_translate("MainWindow","0"))
-        self.windowTextFontMaxIV.setText(_translate("MainWindow","31"))
-        self.windowTextFontButton1.setText(_translate("MainWindow","Item Market       Item Listings       Your Listings       Create Listing       Trade Log"))
-        self.windowTextFontButton2.setText(_translate("MainWindow","Select Template\t\t\t\t\t\t\t          Advanced Search             ↻               Newest"))
-        self.windowTextFontButton3.setText(_translate("MainWindow","Lv. 36 Evee"))
-        self.windowTextFontButton4.setText(_translate("MainWindow","2         3         4         5         6         7         8         9        10       11       12      13       14       >>"))
-        self.windowTextFontDisabled1.setText(_translate("MainWindow","☒"))
-        self.windowTextFontDisabled2.setText(_translate("MainWindow","<<      1"))
-        self.label_14.setText(_translate("MainWindow", "Berry Watering Colors"))
-        self.label_12.setText(_translate("MainWindow", "waterBG\nwaterwarning\nberryprogress\nberrywarning\nberrydisabled"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.WindowColors), _translate("MainWindow", "Window Colors"))
-        self.label_15.setText(_translate("MainWindow", "Cursor Type"))
-        self.cursorBrowse.setText(_translate("MainWindow", "Browse..."))
-        self.cursorEditButton.setText(_translate("MainWindow", "Edit"))
-        self.label_17.setText(_translate("MainWindow", "Add Custom Cursor"))
-        self.label_30.setText(_translate("MainWindow", "Edit Cursor Data"))
-        self.label_20.setText(_translate("MainWindow", "Icon Type"))
-        self.label_23.setText(_translate("MainWindow", "Speech Bubbles"))
-        self.speechBrowse.setText(_translate("MainWindow", "Browse..."))
-        self.label_24.setText(_translate("MainWindow", "Add Custom Speech Bubbles"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.OtherScreen), _translate("MainWindow", "Other"))
-        self.label_25.setText(_translate("MainWindow", "Get/Update Archetype"))
-        self.label_27.setText(_translate("MainWindow", "Set Mods Folder"))
-        self.label_29.setText(_translate("MainWindow", "Width"))
-        self.label_31.setText(_translate("MainWindow", "Height"))
-        self.configLabel.setText(_translate("MainWindow", "Config Selection"))
-        self.downloadArch.setText(_translate("MainWindow", "Download"))
-        self.setModFolder.setText(_translate("MainWindow", "Browse..."))
-        self.playPokemmo.setText(_translate("MainWindow", "Play Pokemmo"))
-        self.modButtonLabel.setText(_translate("MainWindow","Mod List"))
-        self.setGamePath.setText(_translate("MainWindow", "Browse..."))
-        self.completeMod.setText(_translate("MainWindow", "Complete"))
-        self.label_28.setText(_translate("MainWindow", "Finish and add to Pokemmo"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Archetype), _translate("MainWindow", "Archetype"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Mods), _translate("MainWindow", "Mods"))
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
-        self.menuHelp.setTitle(_translate("MainWindow", "Help"))
-        self.actionSave.setText(_translate("MainWindow", "Save"))
-        self.actionExit.setText(_translate("MainWindow", "Exit"))
-        self.actionLoad.setText(_translate("MainWindow", "Load"))
-        self.actionSaveAs.setText(_translate("MainWindow","Save As..."))
-        self.actionLoadDefault.setText(_translate("MainWindow", "Load Defaults"))
-        self.actionAbout.setText(_translate("MainWindow","About"))
+        for widget, text in [
+            (self.label_8, "reshiram color\n\nreshiram aura\n\nzekrom color\n\nzekrom aura"),
+            (self.label_9, "Unova Login Screen Options"),
+            (self.label_2, "Add Your Own Login Screen"),
+            (self.loginBrowse, "Browse..."),
+            (self.label, "Choose Login Screen"),
+            (self.label_6, "Encounter Counter Colors"),
+            (self.label_7, " ball color\n\n ball outline\n\n min max button color\n\n main color\n\n sub color\n\n font\n\n font border"),
+            (self.label_5, "Encounter Counter"),
+            (self.label_3, " Add Vartiou here"),
+            (self.varitouBrowse, "Browse..."),
+            (self.label_16, "This will do the work getting what is needed, just choose the zip file"),
+            (self.label_18, "Choose Custom"),
+            (self.label_11, "hp high \nhp mid\nhp low\nxp\nfriendship"),
+            (self.label_10, "main\nsub\nbutton\naccent"),
+            (self.label_4, "font main\nfont sub\nfont button\nfont disabled\nIcon"),
+            (self.label_13, "Main Window"),
+            (self.counterText, "Pokemon        1\n\n\nPokemon        2\n\n\nPokemon        3"),
+            (self.windowTextFontMain, "           Global Trade Link"),
+            (self.windowTextFontMain2, "Pokemon Listings"),
+            (self.windowTextFontSub, " Modest     20               11     16     23               $5,000                   Just now            28 days                      Buy"),
+            (self.windowTextFontSub2, "Pokemon\t           Nature\t\tIVs\t\t            Price\t     Start Date          End Date\tBuy"),
+            (self.windowTextFontMinIV, "0"),
+            (self.windowTextFontMaxIV, "31"),
+            (self.windowTextFontButton1, "Item Market       Item Listings       Your Listings       Create Listing       Trade Log"),
+            (self.windowTextFontButton2, "Select Template\t\t\t\t\t\t\t          Advanced Search             ↻               Newest"),
+            (self.windowTextFontButton3, "Lv. 36 Evee"),
+            (self.windowTextFontButton4, "2         3         4         5         6         7         8         9        10       11       12      13       14       >>"),
+            (self.windowTextFontDisabled1, "☒"),
+            (self.windowTextFontDisabled2, "<<      1"),
+            (self.label_14, "Berry Watering Colors"),
+            (self.label_12, "waterBG\nwaterwarning\nberryprogress\nberrywarning\nberrydisabled"),
+            (self.label_15, "Cursor Type"),
+            (self.cursorBrowse, "Browse..."),
+            (self.cursorEditButton, "Edit"),
+            (self.label_17, "Add Custom Cursor"),
+            (self.label_30, "Edit Cursor Data"),
+            (self.label_20, "Icon Type"),
+            (self.label_23, "Speech Bubbles"),
+            (self.speechBrowse, "Browse..."),
+            (self.label_24, "Add Custom Speech Bubbles"),
+            (self.label_25, "Get/Update Archetype"),
+            (self.label_27, "Set Mods Folder"),
+            (self.label_29, "Width"),
+            (self.label_31, "Height"),
+            (self.configLabel, "Config Selection"),
+            (self.downloadArch, "Download"),
+            (self.setModFolder, "Browse..."),
+            (self.playPokemmo, "Play Pokemmo"),
+            (self.modButtonLabel, "Mod List"),
+            (self.setGamePath, "Browse..."),
+            (self.completeMod, "Complete"),
+            (self.label_28, "Finish and add to Pokemmo"),
+        ]:
+            widget.setText(_translate("MainWindow", text))
+
+        for tab, name in [
+            (self.LoginScreen, "Login Screen"),
+            (self.EncounterCounter, "Encounter Counter"),
+            (self.WindowColors, "Window Colors"),
+            (self.OtherScreen, "Other"),
+            (self.Archetype, "Archetype"),
+            (self.Mods, "Mods"),
+        ]:
+            self.tabWidget.setTabText(self.tabWidget.indexOf(tab), _translate("MainWindow", name))
+
+        for widget, text in [
+            (self.menuFile, "File"),
+            (self.menuHelp, "Help"),
+            (self.actionSave, "Save"),
+            (self.actionExit, "Exit"),
+            (self.actionLoad, "Load"),
+            (self.actionSaveAs, "Save As..."),
+            (self.actionLoadDefault, "Load Defaults"),
+            (self.actionAbout, "About"),
+        ]:
+            widget.setTitle(_translate("MainWindow", text)) if hasattr(widget, 'setTitle') else widget.setText(_translate("MainWindow", text))
 
 
 

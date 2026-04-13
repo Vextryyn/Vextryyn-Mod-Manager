@@ -2,6 +2,20 @@ import os
 
 class PokeGen:
     @staticmethod
+    def read_mod_lists(mods_folder: str):
+        mod_order_file = os.path.join(mods_folder, "mod_order.txt")
+        mod_disabled_file = os.path.join(mods_folder, "mod_disabled.txt")
+        order = []
+        if os.path.exists(mod_order_file):
+            with open(mod_order_file, "r", encoding="utf-8") as f:
+                order = [line.strip() for line in f if line.strip()]
+        disabled = set()
+        if os.path.exists(mod_disabled_file):
+            with open(mod_disabled_file, "r", encoding="utf-8") as f:
+                disabled = {line.strip() for line in f if line.strip()}
+        return order, disabled
+
+    @staticmethod
     def update_poke(file_path: str, mods_folder: str):
         if os.path.exists(file_path):
             with open(file_path, "r", encoding="utf-8") as f:
@@ -9,14 +23,9 @@ class PokeGen:
         else:
             lines = []
 
-        mod_order_file = os.path.join(mods_folder, "mod_order.txt")
-        if os.path.exists(mod_order_file):
-            with open(mod_order_file, "r") as f:
-                mods_list = [line.strip() for line in f if line.strip()]
-        else:
-            mods_list = []
-
-        mods_str = "/".join(mods_list)
+        mods_list, disabled = PokeGen.read_mod_lists(mods_folder)
+        enabled_ordered = [m for m in mods_list if m not in disabled]
+        mods_str = "/".join(enabled_ordered)
 
         found_mods = False
         found_theme = False
