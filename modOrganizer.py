@@ -31,32 +31,53 @@ class ModListWidget(QtWidgets.QWidget):
 
         self.mod_list = QtWidgets.QListWidget()
         self.mod_list.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
-        layout.addWidget(self.mod_list)
-
         self.mod_list.itemChanged.connect(self._on_item_changed)
 
-        button_layout = QtWidgets.QHBoxLayout()
-        layout.addLayout(button_layout)
+        list_layout = QtWidgets.QHBoxLayout()
+        list_layout.addWidget(self.mod_list)
 
-        self.up_button = QtWidgets.QPushButton("↑ Move Up")
+        right_panel = QtWidgets.QVBoxLayout()
+        right_panel.setSpacing(5)
+
+        self.up_button = QtWidgets.QPushButton("↑")
+        self.up_button.setFixedSize(40, 40)
+        self.up_button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.up_button.clicked.connect(self.move_up)
-        button_layout.addWidget(self.up_button)
+        right_panel.addWidget(self.up_button)
 
-        self.down_button = QtWidgets.QPushButton("↓ Move Down")
-        self.down_button.clicked.connect(self.move_down)
-        button_layout.addWidget(self.down_button)
+        right_panel.addSpacing(100)
 
-        refresh_button = QtWidgets.QPushButton("🔄 Refresh Mods")
-        refresh_button.clicked.connect(self.load_mods)
-        button_layout.addWidget(refresh_button)
-
-        delete_button = QtWidgets.QPushButton("🗑️ Delete Selected")
-        delete_button.clicked.connect(self.delete_selected_mod)
-        button_layout.addWidget(delete_button)
-
-        save_button = QtWidgets.QPushButton("💾 Save Order")
+        save_button = QtWidgets.QPushButton("💾\nSave")
+        save_button.setFixedSize(60, 60)
+        save_button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         save_button.clicked.connect(self.save_mod_order)
-        button_layout.addWidget(save_button)
+        right_panel.addWidget(save_button)
+
+        refresh_button = QtWidgets.QPushButton("🔄\nRefresh")
+        refresh_button.setFixedSize(60, 60)
+        refresh_button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        refresh_button.clicked.connect(self.load_mods)
+        right_panel.addWidget(refresh_button)
+
+        delete_button = QtWidgets.QPushButton("🗑️\nDelete")
+        delete_button.setFixedSize(60, 60)
+        delete_button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        delete_button.clicked.connect(self.delete_selected_mod)
+        right_panel.addWidget(delete_button)
+
+        right_panel.addSpacing(100)
+
+        self.down_button = QtWidgets.QPushButton("↓")
+        self.down_button.setFixedSize(40, 40)
+        self.down_button.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.down_button.clicked.connect(self.move_down)
+        right_panel.addWidget(self.down_button)
+
+        right_panel.addStretch()
+
+        list_layout.addLayout(right_panel)
+
+        layout.addLayout(list_layout)
 
         self.status_label = QtWidgets.QLabel("")
         layout.addWidget(self.status_label)
